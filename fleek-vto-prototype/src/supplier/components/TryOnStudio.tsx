@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Garment, ModelProfile } from '../types'
-import { ETHNICITIES, ETHNICITY_SLUGS, GENDERS, MODEL_SIZES, renderKey } from '../types'
+import { BACKGROUNDS, ETHNICITIES, ETHNICITY_SLUGS, GENDERS, MODEL_SIZES, renderKey } from '../types'
 import { modelPhotoFor } from '../models'
 import type { Health } from '../api'
 import { getStockModels, runSummary, runTryOn, uploadStockModel } from '../api'
@@ -27,7 +27,10 @@ export function TryOnStudio({
   onEdit: (g: Garment) => void
 }) {
   const [g, setG] = useState<Garment>(garment)
-  const [profile, setProfile] = useState<ModelProfile>(garment.modelProfile)
+  const [profile, setProfile] = useState<ModelProfile>({
+    background: 'default',
+    ...garment.modelProfile,
+  })
   const [generating, setGenerating] = useState(false)
   const [summarising, setSummarising] = useState(false)
   const [error, setError] = useState('')
@@ -242,6 +245,21 @@ export function TryOnStudio({
                   onClick={() => setProfile({ ...profile, size: s })}
                 >
                   {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Background</label>
+            <div className="seg">
+              {BACKGROUNDS.map((b) => (
+                <button
+                  key={b.id}
+                  className={(profile.background ?? 'default') === b.id ? 'on' : ''}
+                  onClick={() => setProfile({ ...profile, background: b.id })}
+                >
+                  {b.label}
                 </button>
               ))}
             </div>

@@ -1,4 +1,5 @@
 import type { Garment, ModelProfile, ModelSize } from './types'
+import { backgroundUrl } from './types'
 import { asDataUrl } from './imageUtils'
 import { modelPhotoFor } from './models'
 
@@ -70,10 +71,27 @@ export async function renderDemoTryOn(
       /* try the next candidate */
     }
   }
+  // Custom background behind the drawn figure (model photos fill the whole
+  // frame, so the backdrop only shows on the drawn-figure path).
+  let bgDrawn = false
+  const bgUrl = backgroundUrl(profile.background)
+  if (!photo && bgUrl) {
+    try {
+      const bg = await loadImage(await asDataUrl(bgUrl))
+      drawCover(ctx, bg, 0, 0, W, H)
+      // soft wash so the figure reads clearly against the office scene
+      ctx.fillStyle = 'rgba(250, 248, 244, 0.35)'
+      ctx.fillRect(0, 0, W, H)
+      bgDrawn = true
+    } catch {
+      /* fall back to the studio gradient */
+    }
+  }
+
   if (photo) {
     await drawPhotoBase(ctx, photo)
   } else {
-    drawFigureBase(ctx, profile)
+    drawFigureBase(ctx, profile, !bgDrawn)
   }
 
   await drawGarment(ctx, garment)
@@ -87,16 +105,18 @@ async function drawPhotoBase(ctx: CanvasRenderingContext2D, photoSrc: string) {
   drawCover(ctx, model, 0, 0, W, H)
 }
 
-function drawFigureBase(ctx: CanvasRenderingContext2D, profile: ModelProfile) {
+function drawFigureBase(ctx: CanvasRenderingContext2D, profile: ModelProfile, withBackdrop = true) {
   const { skin, shade, hair } = SKIN[profile.ethnicity] ?? SKIN.Asian
   const { h: hScale, w: wScale } = SIZE_SCALE[profile.size]
 
-  // warm studio backdrop
-  const bg = ctx.createLinearGradient(0, 0, 0, H)
-  bg.addColorStop(0, '#f7f3ea')
-  bg.addColorStop(1, '#e9e2d2')
-  ctx.fillStyle = bg
-  ctx.fillRect(0, 0, W, H)
+  if (withBackdrop) {
+    // warm studio backdrop
+    const bg = ctx.createLinearGradient(0, 0, 0, H)
+    bg.addColorStop(0, '#f7f3ea')
+    bg.addColorStop(1, '#e9e2d2')
+    ctx.fillStyle = bg
+    ctx.fillRect(0, 0, W, H)
+  }
 
   const cx = W / 2
   const figH = 620 * hScale

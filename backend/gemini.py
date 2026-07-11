@@ -45,6 +45,7 @@ async def generate_tryon(
     item_image: Optional[Tuple[bytes, str]],
     template_image: Optional[Tuple[bytes, str]],
     stock_model_image: Optional[Tuple[bytes, str]] = None,
+    background_image: Optional[Tuple[bytes, str]] = None,
 ) -> Tuple[bytes, str]:
     """Returns (image_bytes, mime_type). Raises RuntimeError with a readable message."""
     if not config.GEMINI_API_KEY:
@@ -72,8 +73,17 @@ async def generate_tryon(
     prompt += (
         f"The garment is \"{garment.get('name', '')}\" ({garment.get('category', '')}), "
         f"fabric: {garment.get('fabric') or 'unknown'}. "
-        "Neutral warm studio background, soft daylight, natural relaxed pose, whole outfit visible "
-        "head to toe. No text, no watermark, single model only."
+    )
+    if background_image:
+        prompt += (
+            "Place the model in the environment shown in the LAST attached photo (an interior "
+            "space) — match its lighting and perspective. "
+        )
+    else:
+        prompt += "Neutral warm studio background, soft daylight. "
+    prompt += (
+        "Natural relaxed pose, whole outfit visible head to toe. "
+        "No text, no watermark, single model only."
     )
 
     parts: list[dict[str, Any]] = [{"text": prompt}]
@@ -83,6 +93,8 @@ async def generate_tryon(
         parts.append(_inline_part(*item_image))
     if template_image:
         parts.append(_inline_part(*template_image))
+    if background_image:
+        parts.append(_inline_part(*background_image))
 
     async with httpx.AsyncClient(timeout=120) as client:
         r = await client.post(

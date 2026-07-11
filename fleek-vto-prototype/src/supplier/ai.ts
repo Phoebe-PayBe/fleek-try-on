@@ -1,4 +1,5 @@
 import type { AiSummary, Garment, ModelProfile } from './types'
+import { backgroundUrl } from './types'
 import { asDataUrl, dataUrlToInline } from './imageUtils'
 import { renderDemoTryOn } from './mannequin'
 import { modelPhotoFor } from './models'
@@ -83,6 +84,7 @@ export async function generateTryOn(
   // bundled), dress that exact person; otherwise fall back to a text-described
   // model.
   const modelPhoto = stockModelPhoto ?? modelPhotoFor(profile)
+  const bgUrl = backgroundUrl(profile.background)
 
   const parts: unknown[] = [
     {
@@ -95,8 +97,10 @@ export async function generateTryOn(
             ? `One attached image is the garment's technical spec sheet (paper template); use it for the cut, collar, pockets and proportions. `
             : '') +
           `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
-          `Keep the studio background and lighting natural, whole outfit visible head to toe. ` +
-          `No text, no watermark, single model only.`
+          (bgUrl
+            ? `Place the model in the environment shown in the LAST attached photo (an interior space) — match its lighting and perspective. `
+            : `Keep the studio background and lighting natural, whole outfit visible head to toe. `) +
+          `Whole outfit visible head to toe. No text, no watermark, single model only.`
         : `Photorealistic full-body e-commerce fashion photograph. A ${modelDescription(profile)} ` +
           `is wearing EXACTLY the garment shown in the attached product photo — reproduce its colours, ` +
           `fabric texture, seams, prints and proportions faithfully. ` +
@@ -104,7 +108,10 @@ export async function generateTryOn(
             ? `The second attached image is the garment's technical spec sheet (paper template); use it to get the cut, collar, pockets and proportions right. `
             : '') +
           `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
-          `Neutral warm studio background, soft daylight, natural relaxed pose, whole outfit visible head to toe. ` +
+          (bgUrl
+            ? `Set the scene in the environment shown in the LAST attached photo (an interior space) — match its lighting and perspective. `
+            : `Neutral warm studio background, soft daylight. `) +
+          `Natural relaxed pose, whole outfit visible head to toe. ` +
           `No text, no watermark, single model only.`,
     },
   ]
@@ -116,6 +123,9 @@ export async function generateTryOn(
   }
   if (garment.templateImage) {
     parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.templateImage)) })
+  }
+  if (bgUrl) {
+    parts.push({ inline_data: dataUrlToInline(await asDataUrl(bgUrl)) })
   }
 
   const res = await fetch(`${geminiBase(apiKey)}/${IMAGE_MODEL}:generateContent?key=${apiKey}`, {

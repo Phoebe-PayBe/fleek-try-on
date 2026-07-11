@@ -17,6 +17,8 @@ export interface ModelProfile {
   ethnicity: string
   gender: string
   size: ModelSize
+  /** Background scene id (see BACKGROUNDS). Defaults to the studio backdrop. */
+  background?: string
 }
 
 export interface AiSummary {
@@ -63,6 +65,20 @@ export const ETHNICITY_SLUGS: Record<string, string> = {
 }
 
 export const GENDERS = ['Female', 'Male', 'Non-binary'] as const
+
+/** Try-on backdrop options. 'default' keeps the neutral studio look. */
+export const BACKGROUNDS = [
+  { id: 'default', label: 'Default studio', url: null },
+  {
+    id: 'fleek-office',
+    label: 'Fleek office',
+    url: 'https://pcyiyxlnmqobowdsgmtl.supabase.co/storage/v1/object/public/garment-images/backgrounds/fleek-office.jpg',
+  },
+] as const
+
+export function backgroundUrl(id?: string): string | null {
+  return BACKGROUNDS.find((b) => b.id === id)?.url ?? null
+}
 
 export const MODEL_SIZES: ModelSize[] = ['S', 'M', 'L', 'XL']
 

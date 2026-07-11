@@ -63,6 +63,14 @@ class StockModelIn(BaseModel):
 # One stock model photo per demographic; slugs match the frontend's
 # ETHNICITY_SLUGS map (Black / White / Asian / Indian-Brown).
 STOCK_SLUGS = ("black", "white", "asian", "indian-brown")
+
+# Try-on backdrop options ('default' = neutral studio, no reference image).
+BACKGROUND_URLS = {
+    "fleek-office": (
+        f"{config.SUPABASE_URL}/storage/v1/object/public/"
+        f"{config.STORAGE_BUCKET}/backgrounds/fleek-office.jpg"
+    ),
+}
 ETHNICITY_TO_SLUG = {
     "Black": "black",
     "White": "white",
@@ -243,8 +251,18 @@ async def tryon(garment_id: str, body: TryOnIn) -> dict[str, Any]:
             except Exception:
                 stock = None
 
+    background: Optional[Tuple[bytes, str]] = None
+    bg_url = BACKGROUND_URLS.get(body.model_profile.get("background", ""))
+    if bg_url:
+        try:
+            background = await sb.fetch_bytes(bg_url)
+        except Exception:
+            background = None
+
     try:
-        img, mime = await gemini.generate_tryon(garment, body.model_profile, item, template, stock)
+        img, mime = await gemini.generate_tryon(
+            garment, body.model_profile, item, template, stock, background
+        )
     except RuntimeError as e:
         raise HTTPException(502, str(e))
     ext = "png" if mime == "image/png" else "jpg"
