@@ -32,6 +32,14 @@ export function TryOnStudio({
     ...garment.modelProfile,
   })
   const [generating, setGenerating] = useState(false)
+  const [genSeconds, setGenSeconds] = useState(0)
+
+  useEffect(() => {
+    if (!generating) return
+    setGenSeconds(0)
+    const t = window.setInterval(() => setGenSeconds((s) => s + 1), 1000)
+    return () => window.clearInterval(t)
+  }, [generating])
   const [summarising, setSummarising] = useState(false)
   const [error, setError] = useState('')
   const [publishedNow, setPublishedNow] = useState(false)
@@ -369,8 +377,18 @@ export function TryOnStudio({
             disabled={generating || (!g.itemImage && !g.templateImage)}
           >
             {generating ? <span className="spin" /> : '✦'}
-            {generating ? 'Generating…' : g.tryOnImage ? 'Regenerate try-on' : 'Generate try-on'}
+            {generating
+              ? `Generating… ${genSeconds}s`
+              : g.tryOnImage
+                ? 'Regenerate try-on'
+                : 'Generate try-on'}
           </button>
+          {generating && (
+            <p className="hint" style={{ marginTop: 8, marginBottom: 0 }}>
+              AI renders typically take 15–40s. Past 60s the request has timed out — hit
+              regenerate. Rapid back-to-back renders can hit the free-tier rate limit.
+            </p>
+          )}
           {!aiEnabled && (
             <p className="hint" style={{ marginTop: 10, marginBottom: 0 }}>
               No Gemini key — previews use the built-in demo renderer.
