@@ -138,7 +138,11 @@ async def generate_summary(
         "Attached: product photo and/or technical spec sheet. Respond with STRICT JSON only:\n"
         '{"feel": "2-3 sentences on how the fabric feels to wear — texture, weight, drape, breathability",\n'
         ' "styleNotes": "2-3 sentences on the overall style — era, silhouette, how to style it",\n'
-        ' "buyerNotes": "2-3 sentences for the retail buyer — who it sells to, merchandising angle, the upcycled story"}'
+        ' "buyerNotes": "2-3 sentences for the retail buyer — who it sells to, merchandising angle, the upcycled story",\n'
+        ' "materials": "material composition with estimated percentages — infer from the photos and fabric notes, state clearly when assumed (e.g. Assumed: ~80% reclaimed cotton corduroy…)",\n'
+        ' "care": "special care instructions for this fabric mix — washing, drying, ironing, anything delicate",\n'
+        ' "esg": "concrete ESG benefits: reused fabric diverted from landfill, estimated water/CO2 saved vs new production, circularity story a retailer can quote",\n'
+        ' "provenance": "where the fabric came from before rework — base it on the upcycled source notes, expand reasonably"}'
     )
     parts: list[dict[str, Any]] = [{"text": prompt}]
     if item_image:
@@ -164,9 +168,8 @@ async def generate_summary(
     try:
         parsed = json.loads(re.sub(r"^```json?\s*|```\s*$", "", text.strip()))
         return {
-            "feel": str(parsed.get("feel", "")),
-            "styleNotes": str(parsed.get("styleNotes", "")),
-            "buyerNotes": str(parsed.get("buyerNotes", "")),
+            k: str(parsed.get(k, ""))
+            for k in ("feel", "styleNotes", "buyerNotes", "materials", "care", "esg", "provenance")
         }
     except (json.JSONDecodeError, AttributeError):
         return {"feel": text, "styleNotes": "", "buyerNotes": ""}
@@ -194,12 +197,32 @@ _FEEL_BY_FABRIC = [
 ]
 
 
+_CARE_BY_FABRIC = [
+    (re.compile(r"denim", re.I),
+     "Machine wash cold inside-out, hang dry. Expect gentle colour softening; avoid tumble drying to protect panel seams."),
+    (re.compile(r"cord", re.I),
+     "Machine wash cold on gentle, dry flat, iron on reverse with low heat to protect the corduroy pile."),
+    (re.compile(r"mesh|feather|marabou|sheer", re.I),
+     "Hand wash cold only; keep feather trims dry where possible and reshape by hand. Do not tumble dry or iron trims."),
+    (re.compile(r"cotton|poplin|jersey|canvas", re.I),
+     "Machine wash cold with like colours, line dry. Reclaimed panels can shade slightly differently — wash inside-out."),
+    (re.compile(r"wool|knit", re.I),
+     "Hand wash cool or wool cycle, dry flat away from direct heat."),
+    (re.compile(r"silk|satin", re.I),
+     "Hand wash cold or dry clean. Iron on low with a pressing cloth."),
+]
+
+
 def _fallback_summary(g: dict[str, Any]) -> dict[str, str]:
     fabric = g.get("fabric", "") or ""
     feel = next(
         (text for pattern, text in _FEEL_BY_FABRIC if pattern.search(fabric)),
         "Balanced mid-weight handle typical of quality reclaimed fabric — soft where it touches the skin, "
         "with enough body to keep its shape on the rail and on the customer.",
+    )
+    care = next(
+        (text for pattern, text in _CARE_BY_FABRIC if pattern.search(fabric)),
+        "Machine wash cold on gentle, line dry. As a reworked piece, treat seams kindly and wash inside-out.",
     )
     category = (g.get("category", "piece") or "piece").lower().rstrip("s")
     return {
@@ -215,5 +238,19 @@ def _fallback_summary(g: dict[str, Any]) -> dict[str, str]:
             "scarcity and story justify a premium retail markup. Merchandise around the upcycled narrative — "
             f"\"no two pieces alike\" — at {g.get('wholesale_price') or 'the listed wholesale price'} with "
             f"{g.get('quantity') or 'limited'} available."
+        ),
+        "materials": (
+            f"Declared: {fabric}. " if fabric else ""
+        ) + "Assumed mix for costing: predominantly reclaimed natural fibres (cotton-led) with reused trims "
+            "and hardware retained from the donor garments; composition varies piece to piece as off-cuts differ.",
+        "care": care,
+        "esg": (
+            "Made from reused fabric, so no virgin textile production: each piece diverts roughly 0.5–1.5 kg "
+            "of textile waste from landfill and avoids an estimated 5–15 kg CO2e and thousands of litres of "
+            "water versus a comparable new garment. Fully circular story retailers can put on the swing tag."
+        ),
+        "provenance": (
+            g.get("upcycled_source")
+            or "Reclaimed fabric sourced from damaged garments, deadstock rolls and factory off-cuts saved from landfill."
         ),
     }

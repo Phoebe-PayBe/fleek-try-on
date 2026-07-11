@@ -452,6 +452,30 @@ export function TryOnStudio({
                 <h4>For the buyer</h4>
                 <p>{g.summary.buyerNotes}</p>
               </div>
+              {g.summary.materials && (
+                <div className="summary-block">
+                  <h4>Materials</h4>
+                  <p>{g.summary.materials}</p>
+                </div>
+              )}
+              {g.summary.care && (
+                <div className="summary-block">
+                  <h4>Care</h4>
+                  <p>{g.summary.care}</p>
+                </div>
+              )}
+              {g.summary.esg && (
+                <div className="summary-block">
+                  <h4>ESG impact</h4>
+                  <p>{g.summary.esg}</p>
+                </div>
+              )}
+              {g.summary.provenance && (
+                <div className="summary-block">
+                  <h4>Fabric provenance</h4>
+                  <p>{g.summary.provenance}</p>
+                </div>
+              )}
             </>
           ) : (
             <p className="hint" style={{ fontStyle: 'italic' }}>

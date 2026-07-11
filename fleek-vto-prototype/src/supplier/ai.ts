@@ -168,7 +168,11 @@ export async function generateSummary(garment: Garment, apiKey: string): Promise
         `Attached: product photo and/or technical spec sheet. Respond with STRICT JSON only, no markdown fences:\n` +
         `{"feel": "2-3 sentences on how the fabric feels to wear — texture, weight, drape, breathability",\n` +
         ` "styleNotes": "2-3 sentences on the overall style — era, silhouette, how to style it",\n` +
-        ` "buyerNotes": "2-3 sentences for the retail buyer — who it sells to, merchandising angle, the upcycled story"}`,
+        ` "buyerNotes": "2-3 sentences for the retail buyer — who it sells to, merchandising angle, the upcycled story",\n` +
+        ` "materials": "material composition with estimated percentages — infer from photos and fabric notes, say when assumed",\n` +
+        ` "care": "special care instructions for this fabric mix",\n` +
+        ` "esg": "concrete ESG benefits: fabric reuse, landfill diversion, estimated water/CO2 saved vs new production",\n` +
+        ` "provenance": "where the fabric came from before rework, based on the upcycled source notes"}`,
     },
   ]
   if (garment.itemImage) parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.itemImage)) })
@@ -193,6 +197,10 @@ export async function generateSummary(garment: Garment, apiKey: string): Promise
       feel: String(parsed.feel ?? ''),
       styleNotes: String(parsed.styleNotes ?? ''),
       buyerNotes: String(parsed.buyerNotes ?? ''),
+      materials: String(parsed.materials ?? ''),
+      care: String(parsed.care ?? ''),
+      esg: String(parsed.esg ?? ''),
+      provenance: String(parsed.provenance ?? ''),
     }
   } catch {
     return { feel: text, styleNotes: '', buyerNotes: '' }
@@ -213,6 +221,14 @@ function fallbackSummary(g: Garment): AiSummary {
     FEEL_BY_FABRIC.find(([re]) => re.test(g.fabric))?.[1] ??
     'Balanced mid-weight handle typical of quality reclaimed fabric — soft where it touches the skin, with enough body to keep its shape on the rail and on the customer.'
   return {
+    materials:
+      (g.fabric ? `Declared: ${g.fabric}. ` : '') +
+      'Assumed mix for costing: predominantly reclaimed natural fibres (cotton-led) with reused trims and hardware from the donor garments; composition varies piece to piece.',
+    care: 'Machine wash cold on gentle, wash inside-out, line dry. As a reworked piece, treat seams kindly; avoid tumble drying.',
+    esg: 'Made from reused fabric, so no virgin textile production: each piece diverts roughly 0.5–1.5 kg of textile waste from landfill and avoids an estimated 5–15 kg CO2e and thousands of litres of water versus a comparable new garment.',
+    provenance:
+      g.upcycledSource ||
+      'Reclaimed fabric sourced from damaged garments, deadstock rolls and factory off-cuts saved from landfill.',
     feel,
     styleNotes:
       `A one-of-a-kind upcycled ${g.category.toLowerCase().replace(/s$/, '')} with visible craft value — ` +

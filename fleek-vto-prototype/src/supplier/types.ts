@@ -30,6 +30,14 @@ export interface AiSummary {
   feel: string
   styleNotes: string
   buyerNotes: string
+  /** Material composition — assumed from photos when not declared. */
+  materials?: string
+  /** Special care instructions for the fabric mix. */
+  care?: string
+  /** ESG / sustainability benefits of the reused fabric. */
+  esg?: string
+  /** Where the fabric came from before rework. */
+  provenance?: string
 }
 
 export interface Garment {
