@@ -10,11 +10,13 @@ export type Category =
   | 'Skirts'
   | 'Accessories'
 
+/** Body size for the try-on model. Replaces the old height/weight sliders. */
+export type ModelSize = 'S' | 'M' | 'L' | 'XL'
+
 export interface ModelProfile {
   ethnicity: string
   gender: string
-  heightCm: number
-  weightKg: number
+  size: ModelSize
 }
 
 export interface AiSummary {
@@ -36,25 +38,30 @@ export interface Garment {
   templateImage: string | null
   /** Photo of the actual physical item. Data URL or public path. */
   itemImage: string | null
-  /** Latest generated try-on render. */
+  /** Latest generated try-on render (mirrors the most recent tryOnRenders cell). */
   tryOnImage: string | null
   tryOnIsDemo: boolean
+  /**
+   * Generated renders keyed by `${ethnicity}|${size}` (see renderKey). Lets the
+   * buyer product page show a different render per demographic + size toggle.
+   */
+  tryOnRenders: Record<string, string>
   modelProfile: ModelProfile
   summary: AiSummary | null
   status: GarmentStatus
   createdAt: number
 }
 
-export const ETHNICITIES = [
-  'Asian',
-  'Black',
-  'White',
-  'South Asian',
-  'Hispanic / Latino',
-  'Middle Eastern',
-] as const
+export const ETHNICITIES = ['Asian', 'White', 'Black', 'South Asian'] as const
 
 export const GENDERS = ['Female', 'Male', 'Non-binary'] as const
+
+export const MODEL_SIZES: ModelSize[] = ['S', 'M', 'L', 'XL']
+
+/** Stable key for a demographic + size render cell. */
+export function renderKey(profile: Pick<ModelProfile, 'ethnicity' | 'size'>): string {
+  return `${profile.ethnicity}|${profile.size}`
+}
 
 export const CATEGORIES: Category[] = [
   'Shirts',
@@ -69,7 +76,6 @@ export const CATEGORIES: Category[] = [
 
 export const DEFAULT_MODEL: ModelProfile = {
   ethnicity: 'Asian',
-  gender: 'Female',
-  heightCm: 170,
-  weightKg: 62,
+  gender: 'Male',
+  size: 'M',
 }

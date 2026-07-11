@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Garment, ModelProfile } from '../types'
-import { ETHNICITIES, GENDERS } from '../types'
+import { ETHNICITIES, GENDERS, MODEL_SIZES, renderKey } from '../types'
+import { modelPhotoFor } from '../models'
 import type { Health } from '../api'
 import { runSummary, runTryOn } from '../api'
 
@@ -31,13 +32,6 @@ export function TryOnStudio({
   const [publishedNow, setPublishedNow] = useState(false)
   const [keyDraft, setKeyDraft] = useState(apiKey)
 
-  function patch(p: Partial<Garment>): Garment {
-    const next = { ...g, ...p }
-    setG(next)
-    onSave(next)
-    return next
-  }
-
   async function handleTryOn() {
     setError('')
     setGenerating(true)
@@ -50,6 +44,9 @@ export function TryOnStudio({
         ...stored,
         tryOnImage: result.image,
         tryOnIsDemo: result.isDemo,
+        // keep every generated demographic + size so the product page can
+        // toggle between them
+        tryOnRenders: { ...stored.tryOnRenders, [renderKey(profile)]: result.image },
         modelProfile: profile,
         status: (stored.status === 'published' ? 'published' : 'preview') as Garment['status'],
       }
@@ -79,9 +76,18 @@ export function TryOnStudio({
     }
   }
 
-  function publish() {
-    patch({ status: 'published' })
+  async function publish() {
+    const next = { ...g, status: 'published' as Garment['status'] }
+    setG(next)
     setPublishedNow(true)
+    onSave(next)
+    // Write through immediately (not via the debounce) so the buyer product
+    // page sees the published render right away, even on an instant tab switch.
+    try {
+      await onPersist(next)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
   }
 
   const canPublish = Boolean(g.tryOnImage && g.summary)
@@ -158,33 +164,26 @@ export function TryOnStudio({
             </div>
           </div>
 
-          <div className="slider-row">
-            <div className="top">
-              <span>Height</span>
-              <span className="val">{profile.heightCm} cm</span>
+          <div className="field">
+            <label>Size</label>
+            <div className="seg">
+              {MODEL_SIZES.map((s) => (
+                <button
+                  key={s}
+                  className={profile.size === s ? 'on' : ''}
+                  onClick={() => setProfile({ ...profile, size: s })}
+                >
+                  {s}
+                </button>
+              ))}
             </div>
-            <input
-              type="range"
-              min={150}
-              max={200}
-              value={profile.heightCm}
-              onChange={(e) => setProfile({ ...profile, heightCm: Number(e.target.value) })}
-            />
           </div>
 
-          <div className="slider-row">
-            <div className="top">
-              <span>Weight</span>
-              <span className="val">{profile.weightKg} kg</span>
-            </div>
-            <input
-              type="range"
-              min={45}
-              max={130}
-              value={profile.weightKg}
-              onChange={(e) => setProfile({ ...profile, weightKg: Number(e.target.value) })}
-            />
-          </div>
+          <p className="hint" style={{ marginTop: -4 }}>
+            {modelPhotoFor(profile)
+              ? `📸 Using the real ${profile.ethnicity} model photo (size ${profile.size}).`
+              : `✎ No photo for ${profile.ethnicity} yet — using the drawn demo figure.`}
+          </p>
 
           <button
             className="btn btn-primary btn-lg"

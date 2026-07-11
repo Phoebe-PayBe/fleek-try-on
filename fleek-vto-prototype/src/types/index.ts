@@ -1,5 +1,5 @@
 // ---- VTO domain ----
-export type Demographic = 'asian' | 'white' | 'black';
+export type Demographic = 'asian' | 'white' | 'black' | 'south-asian';
 export type SizeCode = 'S' | 'M' | 'L' | 'XL';
 
 /** Human-readable labels for UI. */
@@ -7,6 +7,7 @@ export const DEMOGRAPHIC_LABELS: Record<Demographic, string> = {
   asian: 'Asian',
   white: 'White',
   black: 'Black',
+  'south-asian': 'South Asian',
 };
 
 export const SIZE_LABELS: Record<SizeCode, string> = {

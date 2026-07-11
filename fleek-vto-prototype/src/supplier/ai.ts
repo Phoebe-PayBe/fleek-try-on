@@ -1,6 +1,7 @@
 import type { AiSummary, Garment, ModelProfile } from './types'
 import { asDataUrl, dataUrlToInline } from './imageUtils'
 import { renderDemoTryOn } from './mannequin'
+import { modelPhotoFor } from './models'
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
 const IMAGE_MODEL = 'gemini-2.5-flash-image'
@@ -11,10 +12,15 @@ export interface TryOnResult {
   isDemo: boolean
 }
 
+const SIZE_BUILD: Record<string, string> = {
+  S: 'slim, size S build',
+  M: 'average, size M build',
+  L: 'broad, size L build',
+  XL: 'plus, size XL build',
+}
+
 function modelDescription(p: ModelProfile): string {
-  const bmi = p.weightKg / Math.pow(p.heightCm / 100, 2)
-  const build = bmi < 19 ? 'slim' : bmi < 25 ? 'average' : bmi < 30 ? 'curvy / broad' : 'plus-size'
-  return `${p.ethnicity} ${p.gender.toLowerCase()} fashion model, approximately ${p.heightCm} cm tall, ${p.weightKg} kg (${build} build)`
+  return `${p.ethnicity} ${p.gender.toLowerCase()} fashion model, ${SIZE_BUILD[p.size] ?? 'average build'}`
 }
 
 /**
@@ -31,20 +37,37 @@ export async function generateTryOn(
     return { image: await renderDemoTryOn(garment, profile), isDemo: true }
   }
 
+  // When we have a real photo of the model, dress that exact person; otherwise
+  // fall back to a text-described model.
+  const modelPhoto = modelPhotoFor(profile)
+
   const parts: unknown[] = [
     {
-      text:
-        `Photorealistic full-body e-commerce fashion photograph. A ${modelDescription(profile)} ` +
-        `is wearing EXACTLY the garment shown in the attached product photo — reproduce its colours, ` +
-        `fabric texture, seams, prints and proportions faithfully. ` +
-        (garment.templateImage
-          ? 'The second attached image is the garment\'s technical spec sheet (paper template); use it to get the cut, collar, pockets and proportions right. '
-          : '') +
-        `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
-        `Neutral warm studio background, soft daylight, natural relaxed pose, whole outfit visible head to toe. ` +
-        `No text, no watermark, single model only.`,
+      text: modelPhoto
+        ? `Photorealistic full-body e-commerce fashion photograph. The FIRST attached image is the model — ` +
+          `keep their face, hair, body proportions and identity unchanged. Dress this exact person in EXACTLY ` +
+          `the garment shown in the following product photo — reproduce its colours, fabric texture, seams, ` +
+          `prints and proportions faithfully, replacing whatever they are currently wearing on that part of the body. ` +
+          (garment.templateImage
+            ? `One attached image is the garment's technical spec sheet (paper template); use it for the cut, collar, pockets and proportions. `
+            : '') +
+          `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
+          `Keep the studio background and lighting natural, whole outfit visible head to toe. ` +
+          `No text, no watermark, single model only.`
+        : `Photorealistic full-body e-commerce fashion photograph. A ${modelDescription(profile)} ` +
+          `is wearing EXACTLY the garment shown in the attached product photo — reproduce its colours, ` +
+          `fabric texture, seams, prints and proportions faithfully. ` +
+          (garment.templateImage
+            ? `The second attached image is the garment's technical spec sheet (paper template); use it to get the cut, collar, pockets and proportions right. `
+            : '') +
+          `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
+          `Neutral warm studio background, soft daylight, natural relaxed pose, whole outfit visible head to toe. ` +
+          `No text, no watermark, single model only.`,
     },
   ]
+  if (modelPhoto) {
+    parts.push({ inline_data: dataUrlToInline(await asDataUrl(modelPhoto)) })
+  }
   if (garment.itemImage) {
     parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.itemImage)) })
   }

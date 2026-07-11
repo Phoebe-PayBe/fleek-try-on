@@ -1,132 +1,185 @@
-import type { Garment, ModelProfile } from './types'
+import type { Garment, ModelProfile, ModelSize } from './types'
 import { asDataUrl } from './imageUtils'
+import { modelPhotoFor } from './models'
 
 /**
- * Demo-mode try-on renderer. Draws a stylised studio figure matched to the
- * requested demographics (skin tone, height, build) and drapes the garment
- * photo over the torso. Used when no Gemini API key is configured so the
- * studio always produces a preview.
+ * Demo-mode try-on renderer (used when no Gemini key is configured).
+ *
+ * When we have a real photo of the model for this demographic + size, we draw
+ * that photo and drape the garment photo over the torso — a stand-in for the
+ * photorealistic Gemini composite. Otherwise we fall back to a stylised drawn
+ * figure scaled to the chosen size. Either way the studio always produces a
+ * preview so the pipeline can be demoed end-to-end without an API key.
  */
+
+const W = 600
+const H = 800
+
+const SIZE_SCALE: Record<ModelSize, { h: number; w: number }> = {
+  S: { h: 0.95, w: 0.86 },
+  M: { h: 1.0, w: 1.0 },
+  L: { h: 1.05, w: 1.16 },
+  XL: { h: 1.09, w: 1.32 },
+}
 
 const SKIN: Record<string, { skin: string; shade: string; hair: string }> = {
   Asian: { skin: '#eac39e', shade: '#d9ab82', hair: '#1d1712' },
   Black: { skin: '#6b4a35', shade: '#57392a', hair: '#120d0a' },
   White: { skin: '#f0d0b7', shade: '#ddb99e', hair: '#5a3d23' },
   'South Asian': { skin: '#c68b59', shade: '#b07747', hair: '#170f0a' },
-  'Hispanic / Latino': { skin: '#d9a374', shade: '#c68f60', hair: '#241610' },
-  'Middle Eastern': { skin: '#d9ae86', shade: '#c69a70', hair: '#1c120c' },
 }
 
-export async function renderDemoTryOn(garment: Garment, profile: ModelProfile): Promise<string> {
-  const { skin, shade, hair } = SKIN[profile.ethnicity] ?? SKIN.Asian
-
-  // SVG rendered via <img> can't fetch external resources, so inline the
-  // garment photo (it may live in Supabase storage) as a data URL first.
-  let garmentData: string | null = null
-  if (garment.itemImage) {
-    try {
-      garmentData = await asDataUrl(garment.itemImage)
-    } catch {
-      garmentData = null
-    }
-  }
-
-  // Proportions: height scales the figure, BMI widens it.
-  const hScale = profile.heightCm / 172
-  const bmi = profile.weightKg / Math.pow(profile.heightCm / 100, 2)
-  const wScale = Math.max(0.82, Math.min(1.45, bmi / 22))
-
-  const W = 640
-  const H = 800
-  const cx = W / 2
-  const figH = 620 * hScale
-  const top = H - 60 - figH // feet anchored near bottom
-
-  const headR = 34 * hScale
-  const shoulderW = 150 * hScale * wScale
-  const hipW = (profile.gender === 'Female' ? 140 : 118) * hScale * wScale
-  const waistW = shoulderW * (profile.gender === 'Female' ? 0.72 : 0.86)
-
-  const neckY = top + headR * 2 + 8
-  const torsoH = figH * 0.34
-  const hipY = neckY + torsoH
-  const legH = figH * 0.5
-  const longHair = profile.gender === 'Female'
-
-  const garmentImg = garmentData
-  const isBottom = garment.category === 'Trousers' || garment.category === 'Skirts'
-  const gW = (isBottom ? hipW : shoulderW) * 1.55
-  const gH = isBottom ? legH * 0.82 : torsoH * 1.32
-  const gX = cx - gW / 2
-  const gY = isBottom ? hipY - 14 : neckY - 12
-
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f7f3ea"/><stop offset="1" stop-color="#e9e2d2"/>
-    </linearGradient>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000" flood-opacity="0.18"/>
-    </filter>
-  </defs>
-  <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  <ellipse cx="${cx}" cy="${H - 48}" rx="${170 * wScale}" ry="20" fill="#000" opacity="0.10"/>
-
-  <!-- legs -->
-  <path d="M ${cx - hipW / 2 + 8} ${hipY} L ${cx - 14} ${hipY} L ${cx - 20} ${hipY + legH} L ${cx - hipW / 2 + 2} ${hipY + legH} Z" fill="${shade}"/>
-  <path d="M ${cx + hipW / 2 - 8} ${hipY} L ${cx + 14} ${hipY} L ${cx + 20} ${hipY + legH} L ${cx + hipW / 2 - 2} ${hipY + legH} Z" fill="${skin}"/>
-  <!-- torso -->
-  <path d="M ${cx - shoulderW / 2} ${neckY + 10}
-           C ${cx - shoulderW / 2 - 6} ${neckY + torsoH * 0.4}, ${cx - waistW / 2} ${neckY + torsoH * 0.6}, ${cx - hipW / 2} ${hipY}
-           L ${cx + hipW / 2} ${hipY}
-           C ${cx + waistW / 2} ${neckY + torsoH * 0.6}, ${cx + shoulderW / 2 + 6} ${neckY + torsoH * 0.4}, ${cx + shoulderW / 2} ${neckY + 10} Z"
-        fill="${skin}"/>
-  <!-- arms -->
-  <path d="M ${cx - shoulderW / 2} ${neckY + 14} q -26 ${torsoH * 0.5} -16 ${torsoH + 40} l 18 -4 q -4 -${torsoH * 0.5} 10 -${torsoH + 10} Z" fill="${shade}"/>
-  <path d="M ${cx + shoulderW / 2} ${neckY + 14} q 26 ${torsoH * 0.5} 16 ${torsoH + 40} l -18 -4 q 4 -${torsoH * 0.5} -10 -${torsoH + 10} Z" fill="${shade}"/>
-  <!-- head -->
-  ${longHair ? `<path d="M ${cx - headR - 8} ${top + headR} q 0 ${headR * 2.6} 10 ${headR * 3} l ${headR * 2 + 16} 0 q 10 -${headR * 0.4} 10 -${headR * 3} q 0 -${headR * 1.4} -${headR + 18} -${headR * 1.3} q -${headR + 18} 0 -${headR + 18} ${headR * 1.3} Z" fill="${hair}"/>` : ''}
-  <circle cx="${cx}" cy="${top + headR + 6}" r="${headR}" fill="${skin}"/>
-  <path d="M ${cx - headR} ${top + headR - 2} a ${headR} ${headR} 0 0 1 ${headR * 2} 0 q -${headR * 0.3} -${headR * 0.9} -${headR} -${headR * 0.9} q -${headR * 0.7} 0 -${headR} ${headR * 0.9} Z" fill="${hair}"/>
-  <rect x="${cx - 12}" y="${top + headR * 2 - 6}" width="24" height="22" fill="${shade}"/>
-
-  ${
-    garmentImg
-      ? `<image href="${garmentImg}" x="${gX}" y="${gY}" width="${gW}" height="${gH}" preserveAspectRatio="xMidYMid meet" filter="url(#soft)"/>`
-      : ''
-  }
-
-  <g font-family="Montserrat, sans-serif">
-    <rect x="16" y="16" width="196" height="30" rx="15" fill="#111"/>
-    <text x="30" y="36" font-size="13" font-weight="700" fill="#ffd643">✦ DEMO PREVIEW MODE</text>
-    <text x="20" y="${H - 16}" font-size="13" font-weight="600" fill="#5c554a">${escapeXml(
-      `${profile.gender} · ${profile.ethnicity} · ${profile.heightCm} cm · ${profile.weightKg} kg`,
-    )}</text>
-  </g>
-</svg>`
-
-  // Rasterise so the result behaves like a normal generated photo (and
-  // embedded garment data URLs survive publishing / export).
-  return svgToPng(svg, W, H)
-}
-
-function svgToPng(svg: string, w: number, h: number): Promise<string> {
+function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      canvas.getContext('2d')!.drawImage(img, 0, 0)
-      resolve(canvas.toDataURL('image/png'))
-    }
-    img.onerror = () => reject(new Error('Demo render failed'))
-    img.src = url
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error(`Could not load image: ${src.slice(0, 40)}`))
+    img.src = src
   })
 }
 
-function escapeXml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+/** Cover-fit a source image into a WxH box (like CSS object-fit: cover). */
+function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number) {
+  const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight)
+  const dw = img.naturalWidth * scale
+  const dh = img.naturalHeight * scale
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh)
+}
+
+export async function renderDemoTryOn(garment: Garment, profile: ModelProfile): Promise<string> {
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')!
+
+  const photo = modelPhotoFor(profile)
+  if (photo) {
+    await drawPhotoBase(ctx, photo)
+  } else {
+    drawFigureBase(ctx, profile)
+  }
+
+  await drawGarment(ctx, garment)
+  drawChrome(ctx, profile)
+
+  return canvas.toDataURL('image/png')
+}
+
+async function drawPhotoBase(ctx: CanvasRenderingContext2D, photoSrc: string) {
+  const model = await loadImage(photoSrc)
+  drawCover(ctx, model, 0, 0, W, H)
+}
+
+function drawFigureBase(ctx: CanvasRenderingContext2D, profile: ModelProfile) {
+  const { skin, shade, hair } = SKIN[profile.ethnicity] ?? SKIN.Asian
+  const { h: hScale, w: wScale } = SIZE_SCALE[profile.size]
+
+  // warm studio backdrop
+  const bg = ctx.createLinearGradient(0, 0, 0, H)
+  bg.addColorStop(0, '#f7f3ea')
+  bg.addColorStop(1, '#e9e2d2')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, W, H)
+
+  const cx = W / 2
+  const figH = 620 * hScale
+  const top = H - 60 - figH
+  const headR = 32 * hScale
+  const shoulderW = 150 * hScale * wScale
+  const hipW = (profile.gender === 'Female' ? 138 : 116) * hScale * wScale
+  const neckY = top + headR * 2 + 6
+  const torsoH = figH * 0.34
+  const hipY = neckY + torsoH
+  const legH = figH * 0.5
+
+  // ground shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.10)'
+  ctx.beginPath()
+  ctx.ellipse(cx, H - 48, 165 * wScale, 20, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // legs
+  ctx.fillStyle = shade
+  ctx.fillRect(cx - hipW / 2 + 6, hipY, hipW / 2 - 18, legH)
+  ctx.fillStyle = skin
+  ctx.fillRect(cx + 12, hipY, hipW / 2 - 18, legH)
+
+  // torso
+  ctx.fillStyle = skin
+  ctx.beginPath()
+  ctx.moveTo(cx - shoulderW / 2, neckY + 8)
+  ctx.quadraticCurveTo(cx - shoulderW / 2, hipY, cx - hipW / 2, hipY)
+  ctx.lineTo(cx + hipW / 2, hipY)
+  ctx.quadraticCurveTo(cx + shoulderW / 2, hipY, cx + shoulderW / 2, neckY + 8)
+  ctx.closePath()
+  ctx.fill()
+
+  // head
+  ctx.fillStyle = skin
+  ctx.beginPath()
+  ctx.arc(cx, top + headR + 6, headR, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = hair
+  ctx.beginPath()
+  ctx.arc(cx, top + headR + 2, headR, Math.PI, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = shade
+  ctx.fillRect(cx - 12, top + headR * 2 - 4, 24, 20)
+}
+
+async function drawGarment(ctx: CanvasRenderingContext2D, garment: Garment) {
+  if (!garment.itemImage) return
+  let src: string
+  try {
+    src = await asDataUrl(garment.itemImage)
+  } catch {
+    return
+  }
+  const g = await loadImage(src).catch(() => null)
+  if (!g) return
+
+  const isBottom = garment.category === 'Trousers' || garment.category === 'Skirts'
+  // Torso box on a standing full-body model, tuned to the asian-male photos.
+  const gW = W * 0.5
+  const ratio = g.naturalHeight / g.naturalWidth
+  const gH = gW * ratio
+  const gX = (W - gW) / 2
+  const gY = isBottom ? H * 0.52 : H * 0.2
+
+  ctx.save()
+  ctx.shadowColor = 'rgba(0,0,0,0.28)'
+  ctx.shadowBlur = 22
+  ctx.shadowOffsetY = 10
+  ctx.drawImage(g, gX, gY, gW, gH)
+  ctx.restore()
+}
+
+function drawChrome(ctx: CanvasRenderingContext2D, profile: ModelProfile) {
+  // "DEMO PREVIEW" pill
+  ctx.fillStyle = '#111'
+  roundRect(ctx, 16, 16, 208, 30, 15)
+  ctx.fill()
+  ctx.fillStyle = '#ffd643'
+  ctx.font = '700 13px Montserrat, sans-serif'
+  ctx.fillText('✦ DEMO PREVIEW MODE', 30, 36)
+
+  // caption
+  const caption = `${profile.gender} · ${profile.ethnicity} · Size ${profile.size}`
+  ctx.font = '600 13px Montserrat, sans-serif'
+  const capW = ctx.measureText(caption).width + 28
+  ctx.fillStyle = 'rgba(0,0,0,0.55)'
+  roundRect(ctx, 16, H - 44, capW, 30, 15)
+  ctx.fill()
+  ctx.fillStyle = '#fff'
+  ctx.fillText(caption, 30, H - 24)
+}
+
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
 }

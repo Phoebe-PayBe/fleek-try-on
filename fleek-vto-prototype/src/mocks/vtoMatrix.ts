@@ -6,7 +6,7 @@ import type {
   GarmentMeasurements,
 } from '../types';
 
-const DEMOGRAPHICS: Demographic[] = ['asian', 'white', 'black'];
+const DEMOGRAPHICS: Demographic[] = ['asian', 'white', 'black', 'south-asian'];
 const SIZES: SizeCode[] = ['S', 'M', 'L', 'XL'];
 
 /** Base measurements for size S; each larger size adds the increments below. */
@@ -25,6 +25,7 @@ const DEMO_BG: Record<Demographic, string> = {
   asian: '2d3a56',
   white: '4a4e69',
   black: '22333b',
+  'south-asian': '3a2d40',
 };
 
 function measurementsFor(size: SizeCode): GarmentMeasurements {

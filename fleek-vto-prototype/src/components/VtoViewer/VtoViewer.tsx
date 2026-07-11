@@ -8,6 +8,8 @@ import styles from './VtoViewer.module.css';
 
 interface VtoViewerProps {
   product: Product;
+  /** True when the renders come from a garment published in the Supplier Studio. */
+  live?: boolean;
 }
 
 /**
@@ -18,18 +20,33 @@ interface VtoViewerProps {
  *  - Measurements overlay + bottom size indicator reflect the current size.
  * All data is pre-set mock data; nothing is generated live.
  */
-export default function VtoViewer({ product }: VtoViewerProps) {
+export default function VtoViewer({ product, live = false }: VtoViewerProps) {
+  // When showing live published renders, open on the first demographic + size
+  // that actually has a generated render (data URL) rather than a placeholder,
+  // so the buyer sees a real try-on immediately.
+  const initial = (() => {
+    if (!live) return {};
+    for (let d = 0; d < product.availableDemographics.length; d++) {
+      for (let s = 0; s < product.availableSizes.length; s++) {
+        const url = product.vtoMatrix[product.availableDemographics[d]][product.availableSizes[s]].imageUrl;
+        if (url.startsWith('data:')) return { demographicIndex: d, sizeIndex: s };
+      }
+    }
+    return {};
+  })();
+
   const vto = useVtoSelection(
     product.availableDemographics,
     product.availableSizes,
     product.vtoMatrix,
+    initial,
   );
 
   return (
     <section className={styles.section} aria-label="Virtual try-on">
       <div className={styles.header}>
         <h2 className={styles.heading}>Virtual Try-On</h2>
-        <span className={styles.badge}>Prototype · mock data</span>
+        <span className={styles.badge}>{live ? 'Live · published render' : 'Prototype · mock data'}</span>
       </div>
 
       <div className={styles.stage}>

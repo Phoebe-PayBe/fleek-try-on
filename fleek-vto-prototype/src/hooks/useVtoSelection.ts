@@ -61,13 +61,17 @@ export function useVtoSelection(
   demographics: Demographic[],
   sizes: SizeCode[],
   matrix: VtoMatrix,
+  initial: { demographicIndex?: number; sizeIndex?: number } = {},
 ): UseVtoSelectionResult {
   const reducer = useMemo(
     () => makeReducer(demographics.length, sizes.length),
     [demographics.length, sizes.length],
   );
 
-  const [state, dispatch] = useReducer(reducer, { demographicIndex: 0, sizeIndex: 0 });
+  const [state, dispatch] = useReducer(reducer, {
+    demographicIndex: initial.demographicIndex ?? 0,
+    sizeIndex: initial.sizeIndex ?? 0,
+  });
 
   const demographic = demographics[state.demographicIndex];
   const size = sizes[state.sizeIndex];
