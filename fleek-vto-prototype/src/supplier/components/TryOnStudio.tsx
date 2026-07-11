@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Garment, ModelProfile } from '../types'
-import { ETHNICITIES, ETHNICITY_SLUGS, GENDERS } from '../types'
+import { ETHNICITIES, ETHNICITY_SLUGS, GENDERS, MODEL_SIZES, renderKey } from '../types'
+import { modelPhotoFor } from '../models'
 import type { Health } from '../api'
 import { getStockModels, runSummary, runTryOn, uploadStockModel } from '../api'
 import { validateGeminiKey } from '../ai'
@@ -38,19 +39,6 @@ export function TryOnStudio({
   const [keyTesting, setKeyTesting] = useState(false)
   const [keyStatus, setKeyStatus] = useState<{ ok: boolean; message: string } | null>(null)
 
-  async function saveAndTestKey() {
-    const key = keyDraft.trim()
-    onApiKey(key)
-    setKeyStatus(null)
-    if (!key) return
-    setKeyTesting(true)
-    try {
-      setKeyStatus(await validateGeminiKey(key))
-    } finally {
-      setKeyTesting(false)
-    }
-  }
-
   useEffect(() => {
     getStockModels(health.mode).then(setStockModels).catch(() => {})
     // if the backend claims a Gemini key, verify it actually works
@@ -63,7 +51,21 @@ export function TryOnStudio({
   }, [health.mode, health.geminiOnServer])
 
   const activeSlug = ETHNICITY_SLUGS[profile.ethnicity] ?? 'asian'
+  /** Uploaded stock photo beats the bundled model photo. */
   const activeStockPhoto = stockModels[activeSlug] ?? null
+
+  async function saveAndTestKey() {
+    const key = keyDraft.trim()
+    onApiKey(key)
+    setKeyStatus(null)
+    if (!key) return
+    setKeyTesting(true)
+    try {
+      setKeyStatus(await validateGeminiKey(key))
+    } finally {
+      setKeyTesting(false)
+    }
+  }
 
   async function handleStockUpload(file?: File | null) {
     if (!file) return
@@ -80,13 +82,6 @@ export function TryOnStudio({
     }
   }
 
-  function patch(p: Partial<Garment>): Garment {
-    const next = { ...g, ...p }
-    setG(next)
-    onSave(next)
-    return next
-  }
-
   async function handleTryOn() {
     setError('')
     setGenerating(true)
@@ -99,6 +94,9 @@ export function TryOnStudio({
         ...stored,
         tryOnImage: result.image,
         tryOnIsDemo: result.isDemo,
+        // keep every generated demographic + size so the product page can
+        // toggle between them
+        tryOnRenders: { ...stored.tryOnRenders, [renderKey(profile)]: result.image },
         modelProfile: profile,
         status: (stored.status === 'published' ? 'published' : 'preview') as Garment['status'],
       }
@@ -128,10 +126,18 @@ export function TryOnStudio({
     }
   }
 
-  function publish() {
-    const next = patch({ status: 'published' })
-    onPersist(next).catch(() => {})
+  async function publish() {
+    const next = { ...g, status: 'published' as Garment['status'] }
+    setG(next)
     setPublishedNow(true)
+    onSave(next)
+    // Write through immediately (not via the debounce) so the buyer product
+    // page sees the published render right away, even on an instant tab switch.
+    try {
+      await onPersist(next)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
   }
 
   const canPublish = Boolean(g.tryOnImage && g.summary)
@@ -169,11 +175,11 @@ export function TryOnStudio({
             <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">
               aistudio.google.com/apikey
             </a>{' '}
-            (not a Cloud Vision key — optional, demo mode works without it):
+            or a Vertex express key (AQ.…) — optional, demo mode works without it:
           </span>
           <input
             type="password"
-            placeholder="AIza…"
+            placeholder="AIza… / AQ.…"
             value={keyDraft}
             onChange={(e) => setKeyDraft(e.target.value)}
           />
@@ -212,11 +218,41 @@ export function TryOnStudio({
           </div>
 
           <div className="field">
+            <label>Model</label>
+            <div className="seg">
+              {GENDERS.map((e) => (
+                <button
+                  key={e}
+                  className={profile.gender === e ? 'on' : ''}
+                  onClick={() => setProfile({ ...profile, gender: e })}
+                >
+                  {e}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Size</label>
+            <div className="seg">
+              {MODEL_SIZES.map((s) => (
+                <button
+                  key={s}
+                  className={profile.size === s ? 'on' : ''}
+                  onClick={() => setProfile({ ...profile, size: s })}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="field">
             <label>Stock model — {profile.ethnicity}</label>
             <div className="stock-model">
               <div className="stock-thumb">
-                {activeStockPhoto ? (
-                  <img src={activeStockPhoto} alt={`${profile.ethnicity} stock model`} />
+                {activeStockPhoto || modelPhotoFor(profile) ? (
+                  <img src={activeStockPhoto ?? modelPhotoFor(profile)!} alt={`${profile.ethnicity} stock model`} />
                 ) : (
                   <span>No photo yet</span>
                 )}
@@ -224,8 +260,10 @@ export function TryOnStudio({
               <div className="stock-meta">
                 <p>
                   {activeStockPhoto
-                    ? 'Used as the try-on base for this demographic.'
-                    : 'Upload a full-body stock model photo — the garment gets modelled onto it.'}
+                    ? 'Uploaded stock photo — used as the try-on base for this demographic.'
+                    : modelPhotoFor(profile)
+                      ? `Bundled ${profile.ethnicity} model photo (size ${profile.size}). Upload to override.`
+                      : 'Upload a full-body stock model photo — the garment gets modelled onto it.'}
                 </p>
                 <input
                   ref={stockInputRef}
@@ -248,49 +286,6 @@ export function TryOnStudio({
                 </button>
               </div>
             </div>
-          </div>
-
-          <div className="field">
-            <label>Model</label>
-            <div className="seg">
-              {GENDERS.map((e) => (
-                <button
-                  key={e}
-                  className={profile.gender === e ? 'on' : ''}
-                  onClick={() => setProfile({ ...profile, gender: e })}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="slider-row">
-            <div className="top">
-              <span>Height</span>
-              <span className="val">{profile.heightCm} cm</span>
-            </div>
-            <input
-              type="range"
-              min={150}
-              max={200}
-              value={profile.heightCm}
-              onChange={(e) => setProfile({ ...profile, heightCm: Number(e.target.value) })}
-            />
-          </div>
-
-          <div className="slider-row">
-            <div className="top">
-              <span>Weight</span>
-              <span className="val">{profile.weightKg} kg</span>
-            </div>
-            <input
-              type="range"
-              min={45}
-              max={130}
-              value={profile.weightKg}
-              onChange={(e) => setProfile({ ...profile, weightKg: Number(e.target.value) })}
-            />
           </div>
 
           <button

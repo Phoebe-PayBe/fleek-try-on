@@ -37,10 +37,12 @@ async function tx<T>(
 
 export async function loadGarments(): Promise<Garment[]> {
   const all = await tx<Garment[]>('garments', 'readonly', (s) => s.getAll())
-  if (all.length === 0) {
+  // Make sure the demo garment (front.jpg denim jacket) is always available to
+  // test with, even if this browser already has other supplier data.
+  if (!all.some((g) => g.id === 'seed-denim-jacket')) {
     const seed = seedGarment()
     await saveGarment(seed)
-    return [seed]
+    all.push(seed)
   }
   return all.sort((a, b) => b.createdAt - a.createdAt)
 }
@@ -74,18 +76,19 @@ export async function setStockModel(slug: string, dataUrl: string): Promise<void
 
 function seedGarment(): Garment {
   return {
-    id: 'seed-pearl-shirt',
-    name: 'Reworked Pearl-Button Shirt',
-    category: 'Shirts',
+    id: 'seed-denim-jacket',
+    name: 'Upcycled Patchwork Denim Hooded Jacket',
+    category: 'Outerwear',
     sizeRange: 'S – XL',
-    fabric: '100% reclaimed cotton poplin, pearl buttons',
-    upcycledSource: 'Deadstock shirting + off-cut sleeve panels saved from landfill',
-    wholesalePrice: '£14.50 / unit',
-    quantity: '40 units',
+    fabric: 'Reclaimed Levi’s denim panels, quilted lining, ribbed cuffs',
+    upcycledSource: 'Vintage Levi’s denim off-cuts patch-worked into a new hooded bomber',
+    wholesalePrice: '£38.00 / unit',
+    quantity: '12 units',
     templateImage: '/samples/template-shirt.jpg',
-    itemImage: null,
+    itemImage: '/standard-gallery/front.jpg',
     tryOnImage: null,
     tryOnIsDemo: false,
+    tryOnRenders: {},
     modelProfile: { ...DEFAULT_MODEL },
     summary: null,
     status: 'draft',

@@ -101,6 +101,7 @@ export default function SupplierApp() {
       itemImage: null,
       tryOnImage: null,
       tryOnIsDemo: false,
+      tryOnRenders: {},
       modelProfile: { ...DEFAULT_MODEL },
       summary: null,
       status: 'draft',

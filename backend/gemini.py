@@ -12,15 +12,27 @@ import config
 BASE = config.GEMINI_API_BASE
 
 
+_SIZE_BUILD = {
+    "S": "slim, size S build",
+    "M": "average, size M build",
+    "L": "broad, size L build",
+    "XL": "plus, size XL build",
+}
+
+
 def _model_description(profile: dict[str, Any]) -> str:
-    height = int(profile.get("heightCm", 170))
-    weight = int(profile.get("weightKg", 62))
-    bmi = weight / ((height / 100) ** 2)
-    build = "slim" if bmi < 19 else "average" if bmi < 25 else "curvy / broad" if bmi < 30 else "plus-size"
-    return (
-        f"{profile.get('ethnicity', 'Asian')} {profile.get('gender', 'female').lower()} fashion model, "
-        f"approximately {height} cm tall, {weight} kg ({build} build)"
-    )
+    # New profiles carry a garment-style size (S/M/L/XL); older ones may still
+    # have heightCm/weightKg — support both.
+    size = profile.get("size")
+    if size in _SIZE_BUILD:
+        build = _SIZE_BUILD[size]
+    else:
+        height = int(profile.get("heightCm", 170))
+        weight = int(profile.get("weightKg", 62))
+        bmi = weight / ((height / 100) ** 2)
+        build = "slim" if bmi < 19 else "average" if bmi < 25 else "curvy / broad" if bmi < 30 else "plus-size"
+        build = f"approximately {height} cm tall, {weight} kg ({build} build)"
+    return f"{profile.get('ethnicity', 'Asian')} {profile.get('gender', 'male').lower()} fashion model, {build}"
 
 
 def _inline_part(data: bytes, mime: str) -> dict[str, Any]:
