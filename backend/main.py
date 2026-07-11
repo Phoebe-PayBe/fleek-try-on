@@ -80,6 +80,37 @@ async def health() -> dict[str, Any]:
     }
 
 
+@app.get("/api/gemini-check")
+async def gemini_check() -> dict[str, Any]:
+    """Validate the backend's Gemini key and explain failures in plain terms."""
+    if not config.GEMINI_API_KEY:
+        return {"ok": False, "message": "No GEMINI_API_KEY set in backend/.env — demo mode active"}
+    import httpx
+
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.get(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{config.GEMINI_IMAGE_MODEL}",
+                params={"key": config.GEMINI_API_KEY},
+            )
+    except Exception as e:
+        return {"ok": False, "message": f"Could not reach Google: {e}"}
+    if r.status_code == 200:
+        return {"ok": True, "message": f"Key valid — {config.GEMINI_IMAGE_MODEL} available"}
+    detail = ""
+    try:
+        detail = r.json().get("error", {}).get("message", "")
+    except Exception:
+        detail = r.text[:200]
+    hint = {
+        400: "The key is not a Gemini API key — create one at aistudio.google.com/apikey (Google Cloud Vision keys will not work).",
+        403: "Key is blocked: API restrictions, or the Generative Language API is not enabled for it.",
+        404: f"Key works but has no access to {config.GEMINI_IMAGE_MODEL}.",
+        429: "Quota exhausted — wait a minute or enable billing.",
+    }.get(r.status_code, "")
+    return {"ok": False, "message": f"Google says ({r.status_code}): {detail} {hint}".strip()}
+
+
 @app.get("/api/stock-models")
 async def stock_models() -> dict[str, str | None]:
     """Map of demographic slug → public URL of its stock model photo (or null)."""

@@ -3,6 +3,7 @@ import type { Garment, ModelProfile } from '../types'
 import { ETHNICITIES, ETHNICITY_SLUGS, GENDERS } from '../types'
 import type { Health } from '../api'
 import { getStockModels, runSummary, runTryOn, uploadStockModel } from '../api'
+import { validateGeminiKey } from '../ai'
 import { fileToDataUrl } from '../imageUtils'
 
 export function TryOnStudio({
@@ -34,10 +35,32 @@ export function TryOnStudio({
   const [stockModels, setStockModels] = useState<Record<string, string | null>>({})
   const [stockUploading, setStockUploading] = useState(false)
   const stockInputRef = useRef<HTMLInputElement>(null)
+  const [keyTesting, setKeyTesting] = useState(false)
+  const [keyStatus, setKeyStatus] = useState<{ ok: boolean; message: string } | null>(null)
+
+  async function saveAndTestKey() {
+    const key = keyDraft.trim()
+    onApiKey(key)
+    setKeyStatus(null)
+    if (!key) return
+    setKeyTesting(true)
+    try {
+      setKeyStatus(await validateGeminiKey(key))
+    } finally {
+      setKeyTesting(false)
+    }
+  }
 
   useEffect(() => {
     getStockModels(health.mode).then(setStockModels).catch(() => {})
-  }, [health.mode])
+    // if the backend claims a Gemini key, verify it actually works
+    if (health.mode === 'backend' && health.geminiOnServer) {
+      fetch('/api/gemini-check')
+        .then((r) => r.json())
+        .then((s) => { if (!s.ok) setKeyStatus(s) })
+        .catch(() => {})
+    }
+  }, [health.mode, health.geminiOnServer])
 
   const activeSlug = ETHNICITY_SLUGS[profile.ethnicity] ?? 'asian'
   const activeStockPhoto = stockModels[activeSlug] ?? null
@@ -130,22 +153,40 @@ export function TryOnStudio({
       </div>
 
       {health.geminiOnServer ? (
-        <div className="keybar" style={{ background: '#e2f5e9', borderColor: '#bfe8cd', color: 'var(--green)' }}>
-          ✓ Google AI try-on enabled on the backend — renders are generated server-side and stored in Supabase.
-        </div>
+        keyStatus && !keyStatus.ok ? (
+          <div className="keybar" style={{ background: '#fdeceb', borderColor: '#f5c6c1', color: '#c0392b' }}>
+            ✗ Backend Gemini key problem: {keyStatus.message}
+          </div>
+        ) : (
+          <div className="keybar" style={{ background: '#e2f5e9', borderColor: '#bfe8cd', color: 'var(--green)' }}>
+            ✓ Google AI try-on enabled on the backend — renders are generated server-side and stored in Supabase.
+          </div>
+        )
       ) : (
         <div className="keybar">
-          <span>🔑 Google Gemini API key (optional — without it the studio runs in demo mode):</span>
+          <span>
+            🔑 Gemini API key from{' '}
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">
+              aistudio.google.com/apikey
+            </a>{' '}
+            (not a Cloud Vision key — optional, demo mode works without it):
+          </span>
           <input
             type="password"
             placeholder="AIza…"
             value={keyDraft}
             onChange={(e) => setKeyDraft(e.target.value)}
           />
-          <button className="btn btn-dark" onClick={() => onApiKey(keyDraft.trim())}>
-            {apiKey ? 'Update key' : 'Save key'}
+          <button className="btn btn-dark" onClick={saveAndTestKey} disabled={keyTesting}>
+            {keyTesting ? <span className="spin" /> : null}
+            {apiKey ? 'Update & test key' : 'Save & test key'}
           </button>
-          {apiKey && <span style={{ color: 'var(--green)' }}>✓ AI try-on enabled (in-browser)</span>}
+          {keyStatus && (
+            <span style={{ color: keyStatus.ok ? 'var(--green)' : '#c0392b', flexBasis: '100%' }}>
+              {keyStatus.ok ? '✓ ' : '✗ '}
+              {keyStatus.message}
+            </span>
+          )}
         </div>
       )}
 

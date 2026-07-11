@@ -11,6 +11,35 @@ export interface TryOnResult {
   isDemo: boolean
 }
 
+/**
+ * Check a Gemini API key and return a human-readable verdict. Catches the
+ * classic mistakes: Google Cloud / Vision keys (invalid here), disabled
+ * billing, model access, key restrictions.
+ */
+export async function validateGeminiKey(key: string): Promise<{ ok: boolean; message: string }> {
+  if (!key) return { ok: false, message: 'No key entered' }
+  try {
+    const res = await fetch(`${GEMINI_BASE}/${IMAGE_MODEL}?key=${encodeURIComponent(key)}`)
+    if (res.ok) return { ok: true, message: `Key valid — ${IMAGE_MODEL} available ✓` }
+    const body = await res.json().catch(() => null)
+    const detail = body?.error?.message ?? (await res.text().catch(() => '')) ?? ''
+    let hint = ''
+    if (res.status === 400 || /API key not valid/i.test(detail)) {
+      hint =
+        ' — this usually means the key is not a Gemini API key. Create one at aistudio.google.com/apikey (a Google Cloud Vision key will not work).'
+    } else if (res.status === 403) {
+      hint = ' — the key exists but is blocked (API restrictions or the Generative Language API is not enabled for it).'
+    } else if (res.status === 404) {
+      hint = ` — the key works but has no access to ${IMAGE_MODEL}.`
+    } else if (res.status === 429) {
+      hint = ' — quota exhausted; wait a minute or enable billing on the key.'
+    }
+    return { ok: false, message: `Google says (${res.status}): ${detail.slice(0, 200)}${hint}` }
+  } catch (e) {
+    return { ok: false, message: `Could not reach Google: ${e instanceof Error ? e.message : String(e)}` }
+  }
+}
+
 function modelDescription(p: ModelProfile): string {
   const bmi = p.weightKg / Math.pow(p.heightCm / 100, 2)
   const build = bmi < 19 ? 'slim' : bmi < 25 ? 'average' : bmi < 30 ? 'curvy / broad' : 'plus-size'
