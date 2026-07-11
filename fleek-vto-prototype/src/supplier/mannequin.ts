@@ -27,7 +27,7 @@ const SKIN: Record<string, { skin: string; shade: string; hair: string }> = {
   Black: { skin: '#6b4a35', shade: '#57392a', hair: '#120d0a' },
   White: { skin: '#f0d0b7', shade: '#ddb99e', hair: '#5a3d23' },
   Asian: { skin: '#eac39e', shade: '#d9ab82', hair: '#1d1712' },
-  'Indian / Brown': { skin: '#c68b59', shade: '#b07747', hair: '#170f0a' },
+  'South Asian (Indian)': { skin: '#c68b59', shade: '#b07747', hair: '#170f0a' },
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {

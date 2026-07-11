@@ -24,7 +24,7 @@ const MALE_SETS: Record<string, Partial<Record<ModelSize, string>>> = {
     L: `${CDN}/white-male-l.jpg`,
     XL: `${CDN}/white-male-xl.jpg`,
   },
-  'Indian / Brown': {
+  'South Asian (Indian)': {
     S: `${CDN}/indian-male-s.jpg`,
     M: `${CDN}/indian-male-m.jpg`,
     L: `${CDN}/indian-male-l.jpg`,

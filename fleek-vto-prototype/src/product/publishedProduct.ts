@@ -20,7 +20,7 @@ const DEMO_TO_ETHNICITY: Record<Demographic, string> = {
   asian: 'Asian',
   white: 'White',
   black: 'Black',
-  'south-asian': 'Indian / Brown',
+  'south-asian': 'South Asian (Indian)',
 }
 
 const DEMOGRAPHICS: Demographic[] = ['asian', 'white', 'black', 'south-asian']

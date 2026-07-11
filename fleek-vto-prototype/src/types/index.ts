@@ -7,7 +7,7 @@ export const DEMOGRAPHIC_LABELS: Record<Demographic, string> = {
   asian: 'Asian',
   white: 'White',
   black: 'Black',
-  'south-asian': 'Indian / Brown',
+  'south-asian': 'South Asian (Indian)',
 };
 
 export const SIZE_LABELS: Record<SizeCode, string> = {

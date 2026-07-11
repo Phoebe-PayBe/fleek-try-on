@@ -69,8 +69,8 @@ STORAGE_PUBLIC_PREFIX = f"{config.SUPABASE_URL}/storage/v1/object/public/{config
 ETHNICITY_TO_SLUG = {
     "Black": "black",
     "White": "white",
+    "South Asian (Indian)": "indian-brown",
     "Asian": "asian",
-    "Indian / Brown": "indian-brown",
 }
 
 
