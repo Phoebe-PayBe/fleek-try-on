@@ -3,7 +3,7 @@
 import base64
 import json
 import re
-from typing import Any
+from typing import Any, Optional, Tuple
 
 import httpx
 
@@ -42,10 +42,10 @@ def _inline_part(data: bytes, mime: str) -> dict[str, Any]:
 async def generate_tryon(
     garment: dict[str, Any],
     profile: dict[str, Any],
-    item_image: tuple[bytes, str] | None,
-    template_image: tuple[bytes, str] | None,
-    stock_model_image: tuple[bytes, str] | None = None,
-) -> tuple[bytes, str]:
+    item_image: Optional[Tuple[bytes, str]],
+    template_image: Optional[Tuple[bytes, str]],
+    stock_model_image: Optional[Tuple[bytes, str]] = None,
+) -> Tuple[bytes, str]:
     """Returns (image_bytes, mime_type). Raises RuntimeError with a readable message."""
     if not config.GEMINI_API_KEY:
         raise RuntimeError("no-api-key")
@@ -102,8 +102,8 @@ async def generate_tryon(
 
 async def generate_summary(
     garment: dict[str, Any],
-    item_image: tuple[bytes, str] | None,
-    template_image: tuple[bytes, str] | None,
+    item_image: Optional[Tuple[bytes, str]],
+    template_image: Optional[Tuple[bytes, str]],
 ) -> dict[str, str]:
     if not config.GEMINI_API_KEY:
         return _fallback_summary(garment)

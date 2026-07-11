@@ -1,13 +1,13 @@
 """Thin async wrapper over Supabase PostgREST + Storage REST APIs."""
 
-from typing import Any
+from typing import Any, Optional, Tuple
 
 import httpx
 
 import config
 
 
-def _headers(extra: dict[str, str] | None = None) -> dict[str, str]:
+def _headers(extra: Optional[dict] = None) -> dict:
     h = {
         "apikey": config.SUPABASE_KEY,
         "Authorization": f"Bearer {config.SUPABASE_KEY}",
@@ -80,7 +80,7 @@ async def list_objects(prefix: str) -> list[dict]:
         return r.json()
 
 
-async def fetch_bytes(url: str) -> tuple[bytes, str]:
+async def fetch_bytes(url: str) -> Tuple[bytes, str]:
     """Download an image (e.g. a stored garment photo) for AI calls."""
     async with httpx.AsyncClient(timeout=60) as client:
         r = await client.get(url)

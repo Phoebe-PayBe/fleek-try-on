@@ -8,7 +8,7 @@ Run:  uvicorn main:app --reload --port 8000
 
 import base64
 import time
-from typing import Any
+from typing import Any, Dict, Optional, Tuple
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,12 +38,12 @@ class GarmentIn(BaseModel):
     upcycled_source: str = ""
     wholesale_price: str = ""
     quantity: str = ""
-    template_url: str | None = None
-    item_url: str | None = None
-    tryon_url: str | None = None
+    template_url: Optional[str] = None
+    item_url: Optional[str] = None
+    tryon_url: Optional[str] = None
     tryon_is_demo: bool = False
     model_profile: dict[str, Any] = {}
-    summary: dict[str, Any] | None = None
+    summary: Optional[Dict[str, Any]] = None
     status: str = "draft"
 
 
@@ -114,9 +114,9 @@ async def gemini_check() -> dict[str, Any]:
 
 
 @app.get("/api/stock-models")
-async def stock_models() -> dict[str, str | None]:
+async def stock_models() -> Dict[str, Optional[str]]:
     """Map of demographic slug → public URL of its stock model photo (or null)."""
-    result: dict[str, str | None] = {slug: None for slug in STOCK_SLUGS}
+    result: Dict[str, Optional[str]] = {slug: None for slug in STOCK_SLUGS}
     try:
         objects = await sb.list_objects("stock-models/")
     except Exception:
@@ -184,7 +184,7 @@ async def delete_garment(garment_id: str) -> dict[str, bool]:
         raise HTTPException(502, f"Supabase error: {e}")
 
 
-def _decode_data_url(data_url: str) -> tuple[bytes, str, str]:
+def _decode_data_url(data_url: str) -> Tuple[bytes, str, str]:
     try:
         head, b64 = data_url.split(",", 1)
         mime = head.split(":", 1)[1].split(";", 1)[0]
@@ -215,7 +215,7 @@ async def _load_garment(garment_id: str) -> dict[str, Any]:
     return rows[0]
 
 
-async def _image_pair(garment: dict[str, Any]) -> tuple[tuple[bytes, str] | None, tuple[bytes, str] | None]:
+async def _image_pair(garment: dict) -> Tuple[Optional[Tuple[bytes, str]], Optional[Tuple[bytes, str]]]:
     item = await sb.fetch_bytes(garment["item_url"]) if garment.get("item_url") else None
     template = await sb.fetch_bytes(garment["template_url"]) if garment.get("template_url") else None
     return item, template
@@ -233,7 +233,7 @@ async def tryon(garment_id: str, body: TryOnIn) -> dict[str, Any]:
         raise HTTPException(400, "Garment has no images to work from")
 
     # use the uploaded stock model photo for the requested demographic as the base
-    stock: tuple[bytes, str] | None = None
+    stock: Optional[Tuple[bytes, str]] = None
     slug = ETHNICITY_TO_SLUG.get(body.model_profile.get("ethnicity", ""))
     if slug:
         stock_url = (await stock_models()).get(slug)
