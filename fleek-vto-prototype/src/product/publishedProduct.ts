@@ -11,7 +11,7 @@
 import type { Demographic, Product, SizeCode, VtoMatrix } from '../types'
 import { MOCK_PRODUCT } from '../mocks/product'
 import { VTO_MATRIX } from '../mocks/vtoMatrix'
-import { detectHealth, listGarments } from '../supplier/api'
+import { listGarments } from '../supplier/api'
 import type { Garment } from '../supplier/types'
 
 /** Product page demographic → supplier ethnicity label. */
@@ -74,16 +74,39 @@ function buildLiveRenders(garment: Garment): Record<string, string> {
 
 function toProduct(garment: Garment): Product {
   const price = parsePrice(garment.wholesalePrice, MOCK_PRODUCT.pricePerPiece)
+  const qty = Math.max(1, Math.round(parsePrice(garment.quantity, 10)))
+  const s = garment.summary
+  const description = [
+    garment.upcycledSource,
+    s?.materials && `Materials: ${s.materials}`,
+    s?.care && `Care: ${s.care}`,
+    s?.esg && `Sustainability: ${s.esg}`,
+    s?.provenance && `Fabric provenance: ${s.provenance}`,
+    s?.feel && `Feel: ${s.feel}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n')
+  // only this garment's own photos — no mock imagery on live listings
+  const images = [
+    garment.itemImage && { id: 'item', url: garment.itemImage, alt: garment.name || 'Garment' },
+    garment.templateImage && { id: 'template', url: garment.templateImage, alt: 'Technical spec sheet' },
+  ].filter(Boolean) as Product['standardImages']
   return {
     ...MOCK_PRODUCT,
     id: garment.id,
     title: garment.name || MOCK_PRODUCT.title,
     pricePerPiece: price,
+    bundlePrice: Math.round(price * qty * 10) / 10,
+    originalPrice: Math.round(price * 1.6 * 10) / 10,
+    discountPct: 25,
+    quantity: qty,
+    department: 'Unisex',
+    brands: ['Upcycled rework'],
+    grade: 'Rework A',
+    seller: { ...MOCK_PRODUCT.seller, name: 'Reworked London', country: 'UK' },
     category: garment.category || MOCK_PRODUCT.category,
-    description: garment.upcycledSource || MOCK_PRODUCT.description,
-    standardImages: garment.itemImage
-      ? [{ id: 'item', url: garment.itemImage, alt: garment.name || 'Garment' }, ...MOCK_PRODUCT.standardImages]
-      : MOCK_PRODUCT.standardImages,
+    description: description || MOCK_PRODUCT.description,
+    standardImages: images.length ? images : MOCK_PRODUCT.standardImages,
     availableDemographics: DEMOGRAPHICS,
     availableSizes: SIZES,
     vtoMatrix: buildMatrix(),
@@ -98,12 +121,15 @@ function toProduct(garment: Garment): Product {
 export async function loadPublishedProduct(): Promise<Product | null> {
   let garments: Garment[]
   try {
-    // Backend mode reads the shared Supabase catalogue (publishes from any
-    // machine); offline mode falls back to this browser's local store.
-    const health = await detectHealth()
-    garments = await listGarments(health.mode)
+    // Shared Supabase catalogue first (publishes from any machine); local
+    // store as a fallback for offline demos.
+    garments = await listGarments('backend')
   } catch {
-    return null
+    try {
+      garments = await listGarments('local')
+    } catch {
+      return null
+    }
   }
   const published = garments
     .filter(

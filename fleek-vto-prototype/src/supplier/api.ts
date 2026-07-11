@@ -23,7 +23,7 @@ export interface Health {
 export async function detectHealth(): Promise<Health> {
   try {
     const ctrl = new AbortController()
-    const t = setTimeout(() => ctrl.abort(), 2500)
+    const t = setTimeout(() => ctrl.abort(), 12000)
     const res = await fetch(`${API}/health`, { signal: ctrl.signal })
     clearTimeout(t)
     if (!res.ok) throw new Error('bad status')
