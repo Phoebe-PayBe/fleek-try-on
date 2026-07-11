@@ -80,7 +80,8 @@ export function TryOnStudio({
   }
 
   function publish() {
-    patch({ status: 'published' })
+    const next = patch({ status: 'published' })
+    onPersist(next).catch(() => {})
     setPublishedNow(true)
   }
 

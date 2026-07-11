@@ -27,8 +27,25 @@ export default function SupplierApp() {
   const [ready, setReady] = useState(false)
 
   const debounces = useRef<Map<string, number>>(new Map())
+  // Persists for the same garment run strictly in order — a slow image upload
+  // must never land after (and overwrite) a later, faster save.
+  const queues = useRef<Map<string, Promise<unknown>>>(new Map())
   const healthRef = useRef(health)
   healthRef.current = health
+
+  function enqueuePersist(g: Garment): Promise<Garment> {
+    const prev = queues.current.get(g.id) ?? Promise.resolve()
+    const run = prev
+      .catch(() => {})
+      .then(() => persistGarment(healthRef.current.mode, g))
+      .then((stored) => {
+        // swap any data-URL images for their stored URLs
+        setGarments((cur) => cur.map((x) => (x.id === g.id ? { ...x, ...stored } : x)))
+        return stored
+      })
+    queues.current.set(g.id, run.catch(() => {}))
+    return run
+  }
 
   useEffect(() => {
     ;(async () => {
@@ -58,12 +75,7 @@ export default function SupplierApp() {
     debounces.current.set(
       g.id,
       window.setTimeout(() => {
-        persistGarment(healthRef.current.mode, g)
-          .then((stored) => {
-            // swap any data-URL images for their stored URLs
-            setGarments((cur) => cur.map((x) => (x.id === g.id ? { ...x, ...stored } : x)))
-          })
-          .catch((e) => console.warn('persist failed', e))
+        enqueuePersist(g).catch((e) => console.warn('persist failed', e))
       }, 700),
     )
   }
@@ -72,9 +84,7 @@ export default function SupplierApp() {
   async function persistNow(g: Garment): Promise<Garment> {
     const prev = debounces.current.get(g.id)
     if (prev) window.clearTimeout(prev)
-    const stored = await persistGarment(healthRef.current.mode, g)
-    setGarments((cur) => cur.map((x) => (x.id === g.id ? { ...x, ...stored } : x)))
-    return stored
+    return enqueuePersist(g)
   }
 
   function createGarment(): Garment {
