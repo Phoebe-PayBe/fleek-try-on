@@ -41,6 +41,15 @@ const FEMALE_SETS: Record<string, Partial<Record<ModelSize, string>>> = {
   },
   Black: {
     S: `${CDN}/black-female-s.jpg`,
+    M: `${CDN}/black-female-m.jpg`,
+    L: `${CDN}/black-female-l.jpg`,
+    XL: `${CDN}/black-female-xl.jpg`,
+  },
+  White: {
+    S: `${CDN}/white-female-s.jpg`,
+    M: `${CDN}/white-female-m.jpg`,
+    L: `${CDN}/white-female-l.jpg`,
+    XL: `${CDN}/white-female-xl.jpg`,
   },
 }
 
