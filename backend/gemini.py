@@ -9,7 +9,7 @@ import httpx
 
 import config
 
-BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+BASE = config.GEMINI_API_BASE
 
 
 def _model_description(profile: dict[str, Any]) -> str:
@@ -76,7 +76,7 @@ async def generate_tryon(
         r = await client.post(
             f"{BASE}/{config.GEMINI_IMAGE_MODEL}:generateContent",
             params={"key": config.GEMINI_API_KEY},
-            json={"contents": [{"parts": parts}]},
+            json={"contents": [{"role": "user", "parts": parts}]},
         )
     if r.status_code != 200:
         raise RuntimeError(f"Gemini image API error {r.status_code}: {r.text[:300]}")
@@ -121,7 +121,7 @@ async def generate_summary(
             f"{BASE}/{config.GEMINI_TEXT_MODEL}:generateContent",
             params={"key": config.GEMINI_API_KEY},
             json={
-                "contents": [{"parts": parts}],
+                "contents": [{"role": "user", "parts": parts}],
                 "generationConfig": {"responseMimeType": "application/json"},
             },
         )

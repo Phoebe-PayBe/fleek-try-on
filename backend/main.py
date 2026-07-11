@@ -88,15 +88,17 @@ async def gemini_check() -> dict[str, Any]:
     import httpx
 
     try:
-        async with httpx.AsyncClient(timeout=20) as client:
-            r = await client.get(
-                f"https://generativelanguage.googleapis.com/v1beta/models/{config.GEMINI_IMAGE_MODEL}",
+        async with httpx.AsyncClient(timeout=30) as client:
+            # tiny generateContent works on both AI Studio and Vertex express keys
+            r = await client.post(
+                f"{config.GEMINI_API_BASE}/{config.GEMINI_TEXT_MODEL}:generateContent",
                 params={"key": config.GEMINI_API_KEY},
+                json={"contents": [{"role": "user", "parts": [{"text": "Say OK"}]}]},
             )
     except Exception as e:
         return {"ok": False, "message": f"Could not reach Google: {e}"}
     if r.status_code == 200:
-        return {"ok": True, "message": f"Key valid — {config.GEMINI_IMAGE_MODEL} available"}
+        return {"ok": True, "message": f"Key valid via {config.GEMINI_API_BASE.split('/')[2]}"}
     detail = ""
     try:
         detail = r.json().get("error", {}).get("message", "")

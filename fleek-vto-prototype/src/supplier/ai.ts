@@ -2,9 +2,16 @@ import type { AiSummary, Garment, ModelProfile } from './types'
 import { asDataUrl, dataUrlToInline } from './imageUtils'
 import { renderDemoTryOn } from './mannequin'
 
-const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
 const IMAGE_MODEL = 'gemini-2.5-flash-image'
 const TEXT_MODEL = 'gemini-2.5-flash'
+
+/** AI Studio keys (AIza…) use the Gemini API; Vertex AI express keys (AQ.…)
+ * use the aiplatform endpoint. Same request/response schema on both. */
+function geminiBase(key: string): string {
+  return key.startsWith('AQ.')
+    ? 'https://aiplatform.googleapis.com/v1/publishers/google/models'
+    : 'https://generativelanguage.googleapis.com/v1beta/models'
+}
 
 export interface TryOnResult {
   image: string
@@ -19,8 +26,13 @@ export interface TryOnResult {
 export async function validateGeminiKey(key: string): Promise<{ ok: boolean; message: string }> {
   if (!key) return { ok: false, message: 'No key entered' }
   try {
-    const res = await fetch(`${GEMINI_BASE}/${IMAGE_MODEL}?key=${encodeURIComponent(key)}`)
-    if (res.ok) return { ok: true, message: `Key valid — ${IMAGE_MODEL} available ✓` }
+    // tiny generateContent works for both AI Studio (AIza…) and Vertex (AQ.…) keys
+    const res = await fetch(`${geminiBase(key)}/${TEXT_MODEL}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'Say OK' }] }] }),
+    })
+    if (res.ok) return { ok: true, message: `Key valid via ${new URL(geminiBase(key)).host} ✓` }
     const body = await res.json().catch(() => null)
     const detail = body?.error?.message ?? (await res.text().catch(() => '')) ?? ''
     let hint = ''
@@ -90,10 +102,10 @@ export async function generateTryOn(
     parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.templateImage)) })
   }
 
-  const res = await fetch(`${GEMINI_BASE}/${IMAGE_MODEL}:generateContent?key=${apiKey}`, {
+  const res = await fetch(`${geminiBase(apiKey)}/${IMAGE_MODEL}:generateContent?key=${apiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts }] }),
+    body: JSON.stringify({ contents: [{ role: 'user', parts }] }),
   })
   if (!res.ok) {
     throw new Error(`Gemini image API error ${res.status}: ${(await res.text()).slice(0, 300)}`)
@@ -133,11 +145,11 @@ export async function generateSummary(garment: Garment, apiKey: string): Promise
   if (garment.itemImage) parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.itemImage)) })
   if (garment.templateImage) parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.templateImage)) })
 
-  const res = await fetch(`${GEMINI_BASE}/${TEXT_MODEL}:generateContent?key=${apiKey}`, {
+  const res = await fetch(`${geminiBase(apiKey)}/${TEXT_MODEL}:generateContent?key=${apiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ parts }],
+      contents: [{ role: 'user', parts }],
       generationConfig: { responseMimeType: 'application/json' },
     }),
   })

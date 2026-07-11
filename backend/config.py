@@ -28,3 +28,11 @@ GARMENTS_TABLE = "garments"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_IMAGE_MODEL = os.getenv("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
 GEMINI_TEXT_MODEL = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.5-flash")
+
+# AI Studio keys (AIza…) use the Gemini API; Vertex AI express keys (AQ.…)
+# use the aiplatform endpoint. Same request/response schema on both.
+GEMINI_API_BASE = os.getenv("GEMINI_API_BASE") or (
+    "https://aiplatform.googleapis.com/v1/publishers/google/models"
+    if GEMINI_API_KEY.startswith("AQ.")
+    else "https://generativelanguage.googleapis.com/v1beta/models"
+)
