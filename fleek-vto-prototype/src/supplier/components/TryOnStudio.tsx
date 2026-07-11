@@ -151,21 +151,33 @@ export function TryOnStudio({
     }
   }
 
+  const [publishing, setPublishing] = useState(false)
+
   async function publish() {
-    const next = { ...g, status: 'published' as Garment['status'] }
-    setG(next)
-    setPublishedNow(true)
-    onSave(next)
-    // Write through immediately (not via the debounce) so the buyer product
-    // page sees the published render right away, even on an instant tab switch.
+    setError('')
+    setPublishing(true)
     try {
+      let next = { ...g }
+      // buyers always get a summary — auto-generate one if the supplier hasn't
+      if (!next.summary) {
+        const stored = await onPersist(next)
+        next = { ...next, ...stored, summary: await runSummary(health, stored, apiKey) }
+      }
+      next = { ...next, status: 'published' as Garment['status'] }
+      setG(next)
+      onSave(next)
+      setPublishedNow(true)
+      // Write through immediately (not via the debounce) so the buyer product
+      // page sees the published render right away, even on an instant tab switch.
       await onPersist(next)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setPublishing(false)
     }
   }
 
-  const canPublish = Boolean(g.tryOnImage && g.summary)
+  const canPublish = Boolean(g.tryOnImage)
   const aiEnabled = health.geminiOnServer || Boolean(apiKey)
 
   return (
@@ -389,10 +401,11 @@ export function TryOnStudio({
               className="btn btn-dark btn-lg"
               style={{ width: '100%', justifyContent: 'center' }}
               onClick={publish}
-              disabled={!canPublish}
-              title={canPublish ? '' : 'Generate a try-on and a buyer summary first'}
+              disabled={!canPublish || publishing}
+              title={canPublish ? '' : 'Generate a try-on first'}
             >
-              🚀 Publish to marketplace
+              {publishing ? <span className="spin" /> : '🚀'}
+              {publishing ? 'Publishing…' : 'Publish to marketplace'}
             </button>
           )}
         </div>
