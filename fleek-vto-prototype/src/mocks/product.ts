@@ -32,17 +32,17 @@ export const MOCK_PRODUCT: Product = {
   standardImages: [
     {
       id: 'std-1',
-      url: 'https://placehold.co/600x600/d8dcc7/1a1a1a?text=Front+View',
+      url: '/standard-gallery/front.jpg',
       alt: 'Upcycle rework sweatshirt — front view',
     },
     {
       id: 'std-2',
-      url: 'https://placehold.co/600x600/c7d2d8/1a1a1a?text=Size+Chart',
+      url: '/standard-gallery/side-chart.webp',
       alt: 'Upcycle rework sweatshirt — size chart',
     },
     {
       id: 'std-3',
-      url: 'https://placehold.co/600x600/1a1a1a/ffffff?text=Video',
+      url: '/standard-gallery/video.jpg',
       alt: 'Upcycle rework sweatshirt — video thumbnail',
     },
   ],

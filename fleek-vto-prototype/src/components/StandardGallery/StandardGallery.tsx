@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import type { ProductImage } from '../../types';
 import styles from './StandardGallery.module.css';
 
@@ -10,6 +10,14 @@ interface StandardGalleryProps {
 export default function StandardGallery({ images }: StandardGalleryProps) {
   const [activeId, setActiveId] = useState(images[0]?.id);
   const active = images.find((img) => img.id === activeId) ?? images[0];
+  const fallbackSrc = 'https://placehold.co/600x600/cccccc/333333?text=Missing+Image';
+
+  const handleImageError = (event: SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = event.currentTarget;
+    if (target.src !== fallbackSrc) {
+      target.src = fallbackSrc;
+    }
+  };
 
   return (
     <div className={styles.gallery}>
@@ -22,12 +30,12 @@ export default function StandardGallery({ images }: StandardGalleryProps) {
             onClick={() => setActiveId(img.id)}
             aria-label={`View ${img.alt}`}
           >
-            <img src={img.url} alt={img.alt} />
+            <img src={img.url} alt={img.alt} onError={handleImageError} />
           </button>
         ))}
       </div>
       <div className={styles.main}>
-        <img src={active.url} alt={active.alt} />
+        <img src={active.url} alt={active.alt} onError={handleImageError} />
       </div>
     </div>
   );
