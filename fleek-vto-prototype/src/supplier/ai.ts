@@ -100,7 +100,7 @@ export async function generateTryOn(
           (bgUrl
             ? `Place the model in the environment shown in the LAST attached photo (an interior space) — match its lighting and perspective. `
             : `Keep the studio background and lighting natural, whole outfit visible head to toe. `) +
-          `Whole outfit visible head to toe. No text, no watermark, single model only.`
+          `Whole outfit visible head to toe. Vertical portrait framing (3:4), recompose the scene to fill the portrait frame — no letterboxing. No text, no watermark, single model only.`
         : `Photorealistic full-body e-commerce fashion photograph. A ${modelDescription(profile)} ` +
           `is wearing EXACTLY the garment shown in the attached product photo — reproduce its colours, ` +
           `fabric texture, seams, prints and proportions faithfully. ` +
@@ -111,8 +111,8 @@ export async function generateTryOn(
           (bgUrl
             ? `Set the scene in the environment shown in the LAST attached photo (an interior space) — match its lighting and perspective. `
             : `Neutral warm studio background, soft daylight. `) +
-          `Natural relaxed pose, whole outfit visible head to toe. ` +
-          `No text, no watermark, single model only.`,
+          `Natural relaxed pose, whole outfit visible head to toe. Vertical portrait framing (3:4), ` +
+          `recompose the scene to fill the portrait frame — no letterboxing. No text, no watermark, single model only.`,
     },
   ]
   if (modelPhoto) {
@@ -131,7 +131,10 @@ export async function generateTryOn(
   const res = await fetch(`${geminiBase(apiKey)}/${IMAGE_MODEL}:generateContent?key=${apiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ role: 'user', parts }] }),
+    body: JSON.stringify({
+      contents: [{ role: 'user', parts }],
+      generationConfig: { imageConfig: { aspectRatio: '3:4' } },
+    }),
   })
   if (!res.ok) {
     throw new Error(`Gemini image API error ${res.status}: ${(await res.text()).slice(0, 300)}`)

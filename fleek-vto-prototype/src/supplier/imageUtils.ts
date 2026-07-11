@@ -86,3 +86,29 @@ async function fetchAsDataUrl(url: string, timeoutMs: number): Promise<string> {
 export async function asDataUrl(src: string): Promise<string> {
   return src.startsWith('data:') ? src : pathToDataUrl(src)
 }
+
+/** Centre-crop an image to a portrait ratio (default 3:4) — backdrop scenes
+ * must match the portrait try-on frame so renders aren't letterboxed. */
+export function cropToPortrait(dataUrl: string, ratio = 3 / 4, maxH = 1600): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const srcRatio = img.naturalWidth / img.naturalHeight
+      let sw = img.naturalWidth
+      let sh = img.naturalHeight
+      if (srcRatio > ratio) sw = Math.round(sh * ratio)
+      else sh = Math.round(sw / ratio)
+      const sx = Math.round((img.naturalWidth - sw) / 2)
+      const sy = Math.round((img.naturalHeight - sh) / 2)
+      const h = Math.min(maxH, sh)
+      const w = Math.round(h * ratio)
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      canvas.getContext('2d')!.drawImage(img, sx, sy, sw, sh, 0, 0, w, h)
+      resolve(canvas.toDataURL('image/jpeg', 0.85))
+    }
+    img.onerror = () => reject(new Error('Could not crop image'))
+    img.src = dataUrl
+  })
+}

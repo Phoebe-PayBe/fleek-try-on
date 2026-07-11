@@ -5,7 +5,7 @@ import { modelPhotoFor } from '../models'
 import type { BackgroundOption, Health } from '../api'
 import { getBackgrounds, getStockModels, runSummary, runTryOn, uploadBackground, uploadStockModel } from '../api'
 import { validateGeminiKey } from '../ai'
-import { fileToDataUrl } from '../imageUtils'
+import { cropToPortrait, fileToDataUrl } from '../imageUtils'
 
 export function TryOnStudio({
   garment,
@@ -53,7 +53,7 @@ export function TryOnStudio({
     setError('')
     setBgUploading(true)
     try {
-      const added = await uploadBackground(name, await fileToDataUrl(file, 1600))
+      const added = await uploadBackground(name, await cropToPortrait(await fileToDataUrl(file, 2000)))
       setBackgrounds((cur) => [...cur, added])
       setProfile((p) => ({ ...p, background: added.id, backgroundUrl: added.url }))
     } catch (e) {

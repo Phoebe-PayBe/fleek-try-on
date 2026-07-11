@@ -83,7 +83,8 @@ async def generate_tryon(
         prompt += "Neutral warm studio background, soft daylight. "
     prompt += (
         "Natural relaxed pose, whole outfit visible head to toe. "
-        "No text, no watermark, single model only."
+        "Vertical portrait framing (3:4), recompose the scene to fill the portrait frame — "
+        "no letterboxing. No text, no watermark, single model only."
     )
 
     parts: list[dict[str, Any]] = [{"text": prompt}]
@@ -100,7 +101,10 @@ async def generate_tryon(
         r = await client.post(
             f"{BASE}/{config.GEMINI_IMAGE_MODEL}:generateContent",
             params={"key": config.GEMINI_API_KEY},
-            json={"contents": [{"role": "user", "parts": parts}]},
+            json={
+                "contents": [{"role": "user", "parts": parts}],
+                "generationConfig": {"imageConfig": {"aspectRatio": "3:4"}},
+            },
         )
     if r.status_code != 200:
         raise RuntimeError(f"Gemini image API error {r.status_code}: {r.text[:300]}")
