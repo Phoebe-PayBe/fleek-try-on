@@ -2,41 +2,45 @@ import type { ModelProfile, ModelSize } from './types'
 
 /**
  * Real full-body model photos we can dress the garment onto (male sets shot
- * for Asian, White and Indian / Brown; copied from materials/ into
- * public/models). Demographics without a set fall back to a stock photo
- * uploaded in the studio, then to the drawn demo figure. Asian XL reuses the
- * L photo until an XL shoot exists.
+ * for Asian, White and Indian / Brown; female sets for Asian S–XL and
+ * Black S). Served from Supabase storage so deployments stay lightweight.
+ * Demographics without a set fall back to a stock photo uploaded in the
+ * studio, then to the drawn demo figure. Missing sizes reuse the closest
+ * shot size.
  */
-const MALE_SETS: Record<string, Record<ModelSize, string>> = {
+const CDN =
+  'https://pcyiyxlnmqobowdsgmtl.supabase.co/storage/v1/object/public/garment-images/model-library'
+
+const MALE_SETS: Record<string, Partial<Record<ModelSize, string>>> = {
   Asian: {
-    S: '/models/asian-male-s.png',
-    M: '/models/asian-male-m.png',
-    L: '/models/asian-male-l.png',
-    XL: '/models/asian-male-l.png',
+    S: `${CDN}/asian-male-s.jpg`,
+    M: `${CDN}/asian-male-m.jpg`,
+    L: `${CDN}/asian-male-l.jpg`,
+    XL: `${CDN}/asian-male-l.jpg`,
   },
   White: {
-    S: '/models/white-male-s.png',
-    M: '/models/white-male-m.png',
-    L: '/models/white-male-l.png',
-    XL: '/models/white-male-xl.png',
+    S: `${CDN}/white-male-s.jpg`,
+    M: `${CDN}/white-male-m.jpg`,
+    L: `${CDN}/white-male-l.jpg`,
+    XL: `${CDN}/white-male-xl.jpg`,
   },
   'Indian / Brown': {
-    S: '/models/indian-male-s.png',
-    M: '/models/indian-male-m.png',
-    L: '/models/indian-male-l.png',
-    XL: '/models/indian-male-xl.png',
+    S: `${CDN}/indian-male-s.jpg`,
+    M: `${CDN}/indian-male-m.jpg`,
+    L: `${CDN}/indian-male-l.jpg`,
+    XL: `${CDN}/indian-male-xl.jpg`,
   },
 }
 
 const FEMALE_SETS: Record<string, Partial<Record<ModelSize, string>>> = {
   Asian: {
-    S: '/models/asian-female-s.png',
-    M: '/models/asian-female-m.png',
-    L: '/models/asian-female-l.png',
-    XL: '/models/asian-female-xl.png',
+    S: `${CDN}/asian-female-s.jpg`,
+    M: `${CDN}/asian-female-m.jpg`,
+    L: `${CDN}/asian-female-l.jpg`,
+    XL: `${CDN}/asian-female-xl.jpg`,
   },
   Black: {
-    S: '/models/black-female-s.png',
+    S: `${CDN}/black-female-s.jpg`,
   },
 }
 

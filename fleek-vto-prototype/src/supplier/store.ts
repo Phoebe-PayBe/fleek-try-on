@@ -84,7 +84,8 @@ function seedGarment(): Garment {
     upcycledSource: 'Vintage Levi’s denim off-cuts patch-worked into a new hooded bomber',
     wholesalePrice: '£38.00 / unit',
     quantity: '12 units',
-    templateImage: '/samples/template-shirt.jpg',
+    templateImage:
+      'https://pcyiyxlnmqobowdsgmtl.supabase.co/storage/v1/object/public/garment-images/seed-pearl-shirt/template-1783772829.jpg',
     itemImage: '/standard-gallery/front.jpg',
     tryOnImage: null,
     tryOnIsDemo: false,

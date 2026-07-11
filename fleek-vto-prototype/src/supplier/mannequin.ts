@@ -57,13 +57,17 @@ export async function renderDemoTryOn(
   const ctx = canvas.getContext('2d')!
 
   // Priority: stock photo uploaded for this demographic in the studio,
-  // then a bundled model photo, then the drawn figure.
-  let photo = modelPhotoFor(profile)
-  if (stockModelPhoto) {
+  // then a shot model photo, then the drawn figure. Remote photos are
+  // inlined as data URLs (via the backend proxy when needed) so the canvas
+  // isn't tainted by cross-origin images.
+  let photo: string | null = null
+  for (const candidate of [stockModelPhoto, modelPhotoFor(profile)]) {
+    if (!candidate) continue
     try {
-      photo = await asDataUrl(stockModelPhoto)
+      photo = await asDataUrl(candidate)
+      break
     } catch {
-      /* keep bundled/drawn fallback */
+      /* try the next candidate */
     }
   }
   if (photo) {
