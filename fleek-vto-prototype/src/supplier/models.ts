@@ -12,6 +12,12 @@ const CDN =
   'https://pcyiyxlnmqobowdsgmtl.supabase.co/storage/v1/object/public/garment-images/model-library'
 
 const MALE_SETS: Record<string, Partial<Record<ModelSize, string>>> = {
+  Black: {
+    S: `${CDN}/black-male-s.jpg`,
+    M: `${CDN}/black-male-m.jpg`,
+    L: `${CDN}/black-male-l.jpg`,
+    XL: `${CDN}/black-male-xl.jpg`,
+  },
   Asian: {
     S: `${CDN}/asian-male-s.jpg`,
     M: `${CDN}/asian-male-m.jpg`,

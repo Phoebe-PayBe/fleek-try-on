@@ -115,10 +115,10 @@ function toProduct(garment: Garment): Product {
 }
 
 /**
- * Most recently published garment that has at least one generated render,
- * as a product-page `Product`. Returns null when nothing is published.
+ * All published garments with at least one render, newest first, as
+ * product-page `Product`s. Empty when nothing is published.
  */
-export async function loadPublishedProduct(): Promise<Product | null> {
+export async function loadPublishedProducts(): Promise<Product[]> {
   let garments: Garment[]
   try {
     // Shared Supabase catalogue first (publishes from any machine); local
@@ -128,7 +128,7 @@ export async function loadPublishedProduct(): Promise<Product | null> {
     try {
       garments = await listGarments('local')
     } catch {
-      return null
+      return []
     }
   }
   const published = garments
@@ -138,5 +138,11 @@ export async function loadPublishedProduct(): Promise<Product | null> {
         (g.tryOnImage || (g.tryOnRenders && Object.keys(g.tryOnRenders).length > 0)),
     )
     .sort((a, b) => b.createdAt - a.createdAt)
-  return published.length ? toProduct(published[0]) : null
+  return published.map(toProduct)
+}
+
+/** Most recently published garment, or null. */
+export async function loadPublishedProduct(): Promise<Product | null> {
+  const all = await loadPublishedProducts()
+  return all[0] ?? null
 }

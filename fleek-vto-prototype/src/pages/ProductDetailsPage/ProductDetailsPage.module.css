@@ -32,3 +32,59 @@
   display: flex;
   flex-direction: column;
 }
+
+/* marketplace rail: all published garments */
+.marketRail {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 14px;
+  margin-bottom: 10px;
+}
+
+.marketCard {
+  flex: 0 0 auto;
+  width: 132px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.marketCard:hover {
+  transform: translateY(-2px);
+}
+
+.marketCardActive {
+  border: 2px solid var(--ink);
+}
+
+.marketCard img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.marketCardTitle {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.marketCardPrice {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
