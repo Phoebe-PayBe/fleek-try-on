@@ -56,6 +56,21 @@ class TryOnIn(BaseModel):
     model_profile: dict[str, Any]
 
 
+class StockModelIn(BaseModel):
+    data_url: str
+
+
+# One stock model photo per demographic; slugs match the frontend's
+# ETHNICITY_SLUGS map (Black / White / Asian / Indian-Brown).
+STOCK_SLUGS = ("black", "white", "asian", "indian-brown")
+ETHNICITY_TO_SLUG = {
+    "Black": "black",
+    "White": "white",
+    "Asian": "asian",
+    "Indian / Brown": "indian-brown",
+}
+
+
 @app.get("/api/health")
 async def health() -> dict[str, Any]:
     return {
@@ -63,6 +78,38 @@ async def health() -> dict[str, Any]:
         "supabase": config.SUPABASE_URL,
         "gemini": bool(config.GEMINI_API_KEY),
     }
+
+
+@app.get("/api/stock-models")
+async def stock_models() -> dict[str, str | None]:
+    """Map of demographic slug → public URL of its stock model photo (or null)."""
+    result: dict[str, str | None] = {slug: None for slug in STOCK_SLUGS}
+    try:
+        objects = await sb.list_objects("stock-models/")
+    except Exception:
+        return result
+    for obj in objects:
+        name = obj.get("name", "")  # e.g. "black-1783772934.jpg"
+        for slug in STOCK_SLUGS:
+            if name.startswith(f"{slug}-") and result[slug] is None:
+                result[slug] = (
+                    f"{config.SUPABASE_URL}/storage/v1/object/public/"
+                    f"{config.STORAGE_BUCKET}/stock-models/{name}"
+                )
+    return result
+
+
+@app.post("/api/stock-models/{slug}")
+async def upload_stock_model(slug: str, body: StockModelIn) -> dict[str, str]:
+    if slug not in STOCK_SLUGS:
+        raise HTTPException(400, f"slug must be one of {STOCK_SLUGS}")
+    data, mime, ext = _decode_data_url(body.data_url)
+    path = f"stock-models/{slug}-{int(time.time())}.{ext}"
+    try:
+        url = await sb.upload_image(path, data, mime)
+        return {"url": url}
+    except Exception as e:
+        raise HTTPException(502, f"Storage error: {e}")
 
 
 @app.get("/api/proxy-image")
@@ -151,8 +198,20 @@ async def tryon(garment_id: str, body: TryOnIn) -> dict[str, Any]:
     item, template = await _image_pair(garment)
     if not item and not template:
         raise HTTPException(400, "Garment has no images to work from")
+
+    # use the uploaded stock model photo for the requested demographic as the base
+    stock: tuple[bytes, str] | None = None
+    slug = ETHNICITY_TO_SLUG.get(body.model_profile.get("ethnicity", ""))
+    if slug:
+        stock_url = (await stock_models()).get(slug)
+        if stock_url:
+            try:
+                stock = await sb.fetch_bytes(stock_url)
+            except Exception:
+                stock = None
+
     try:
-        img, mime = await gemini.generate_tryon(garment, body.model_profile, item, template)
+        img, mime = await gemini.generate_tryon(garment, body.model_profile, item, template, stock)
     except RuntimeError as e:
         raise HTTPException(502, str(e))
     ext = "png" if mime == "image/png" else "jpg"

@@ -7,7 +7,7 @@
  */
 
 import type { AiSummary, Garment, ModelProfile } from './types'
-import { DEFAULT_MODEL } from './types'
+import { DEFAULT_MODEL, ETHNICITY_SLUGS } from './types'
 import * as local from './store'
 import * as clientAi from './ai'
 import { renderDemoTryOn } from './mannequin'
@@ -140,6 +140,7 @@ export async function runTryOn(
   garment: Garment,
   profile: ModelProfile,
   clientKey: string,
+  stockModelPhoto: string | null = null,
 ): Promise<{ image: string; isDemo: boolean }> {
   if (health.mode === 'backend' && health.geminiOnServer) {
     const res = await fetch(`${API}/garments/${garment.id}/tryon`, {
@@ -151,8 +152,45 @@ export async function runTryOn(
     const j = await res.json()
     if (!j.demo) return { image: j.url, isDemo: false }
   }
-  if (clientKey) return clientAi.generateTryOn(garment, profile, clientKey)
-  return { image: await renderDemoTryOn(garment, profile), isDemo: true }
+  if (clientKey) return clientAi.generateTryOn(garment, profile, clientKey, stockModelPhoto)
+  return { image: await renderDemoTryOn(garment, profile, stockModelPhoto), isDemo: true }
+}
+
+/* ---------- stock model photos (one per demographic) ---------- */
+
+/** Map of ethnicity slug → photo URL/data URL (null when not uploaded yet). */
+export async function getStockModels(mode: Health['mode']): Promise<Record<string, string | null>> {
+  const result: Record<string, string | null> = {}
+  if (mode === 'backend') {
+    try {
+      const res = await fetch(`${API}/stock-models`)
+      if (res.ok) return await res.json()
+    } catch {
+      /* fall through to local */
+    }
+  }
+  for (const slug of Object.values(ETHNICITY_SLUGS)) {
+    result[slug] = await local.getStockModel(slug)
+  }
+  return result
+}
+
+export async function uploadStockModel(
+  mode: Health['mode'],
+  slug: string,
+  dataUrl: string,
+): Promise<string> {
+  if (mode === 'backend') {
+    const res = await fetch(`${API}/stock-models/${slug}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data_url: dataUrl }),
+    })
+    if (!res.ok) throw new Error(`Stock model upload failed: ${(await res.text()).slice(0, 200)}`)
+    return (await res.json()).url
+  }
+  await local.setStockModel(slug, dataUrl)
+  return dataUrl
 }
 
 export async function runSummary(

@@ -45,14 +45,15 @@ export interface Garment {
   createdAt: number
 }
 
-export const ETHNICITIES = [
-  'Asian',
-  'Black',
-  'White',
-  'South Asian',
-  'Hispanic / Latino',
-  'Middle Eastern',
-] as const
+export const ETHNICITIES = ['Black', 'White', 'Asian', 'Indian / Brown'] as const
+
+/** URL-safe ids used for stock-model storage paths. */
+export const ETHNICITY_SLUGS: Record<string, string> = {
+  Black: 'black',
+  White: 'white',
+  Asian: 'asian',
+  'Indian / Brown': 'indian-brown',
+}
 
 export const GENDERS = ['Female', 'Male', 'Non-binary'] as const
 

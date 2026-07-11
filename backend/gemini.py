@@ -32,19 +32,29 @@ async def generate_tryon(
     profile: dict[str, Any],
     item_image: tuple[bytes, str] | None,
     template_image: tuple[bytes, str] | None,
+    stock_model_image: tuple[bytes, str] | None = None,
 ) -> tuple[bytes, str]:
     """Returns (image_bytes, mime_type). Raises RuntimeError with a readable message."""
     if not config.GEMINI_API_KEY:
         raise RuntimeError("no-api-key")
 
-    prompt = (
-        f"Photorealistic full-body e-commerce fashion photograph. A {_model_description(profile)} "
-        "is wearing EXACTLY the garment shown in the attached product photo — reproduce its colours, "
-        "fabric texture, seams, prints and proportions faithfully. "
-    )
+    prompt = "Photorealistic full-body e-commerce fashion photograph. "
+    if stock_model_image:
+        prompt += (
+            "Dress the model shown in the FIRST attached photo (our stock model — keep their "
+            "identity, face, body and pose exactly as photographed) in EXACTLY the garment shown "
+            "in the next attached product photo — reproduce its colours, fabric texture, seams, "
+            "prints and proportions faithfully. "
+        )
+    else:
+        prompt += (
+            f"A {_model_description(profile)} is wearing EXACTLY the garment shown in the attached "
+            "product photo — reproduce its colours, fabric texture, seams, prints and proportions "
+            "faithfully. "
+        )
     if template_image:
         prompt += (
-            "One attached image is the garment's technical spec sheet (paper template); "
+            "The last attached image is the garment's technical spec sheet (paper template); "
             "use it to get the cut, collar, pockets and proportions right. "
         )
     prompt += (
@@ -55,6 +65,8 @@ async def generate_tryon(
     )
 
     parts: list[dict[str, Any]] = [{"text": prompt}]
+    if stock_model_image:
+        parts.append(_inline_part(*stock_model_image))
     if item_image:
         parts.append(_inline_part(*item_image))
     if template_image:

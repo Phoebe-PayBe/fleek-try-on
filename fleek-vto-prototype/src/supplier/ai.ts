@@ -26,25 +26,34 @@ export async function generateTryOn(
   garment: Garment,
   profile: ModelProfile,
   apiKey: string,
+  stockModelPhoto: string | null = null,
 ): Promise<TryOnResult> {
   if (!apiKey) {
-    return { image: await renderDemoTryOn(garment, profile), isDemo: true }
+    return { image: await renderDemoTryOn(garment, profile, stockModelPhoto), isDemo: true }
   }
 
   const parts: unknown[] = [
     {
       text:
-        `Photorealistic full-body e-commerce fashion photograph. A ${modelDescription(profile)} ` +
-        `is wearing EXACTLY the garment shown in the attached product photo — reproduce its colours, ` +
-        `fabric texture, seams, prints and proportions faithfully. ` +
+        `Photorealistic full-body e-commerce fashion photograph. ` +
+        (stockModelPhoto
+          ? `Dress the model shown in the FIRST attached photo (our stock model — keep their identity, ` +
+            `face, body and pose exactly as photographed) in EXACTLY the garment shown in the next ` +
+            `attached product photo — reproduce its colours, fabric texture, seams, prints and ` +
+            `proportions faithfully. `
+          : `A ${modelDescription(profile)} is wearing EXACTLY the garment shown in the attached ` +
+            `product photo — reproduce its colours, fabric texture, seams, prints and proportions faithfully. `) +
         (garment.templateImage
-          ? 'The second attached image is the garment\'s technical spec sheet (paper template); use it to get the cut, collar, pockets and proportions right. '
+          ? 'The last attached image is the garment\'s technical spec sheet (paper template); use it to get the cut, collar, pockets and proportions right. '
           : '') +
         `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
         `Neutral warm studio background, soft daylight, natural relaxed pose, whole outfit visible head to toe. ` +
         `No text, no watermark, single model only.`,
     },
   ]
+  if (stockModelPhoto) {
+    parts.push({ inline_data: dataUrlToInline(await asDataUrl(stockModelPhoto)) })
+  }
   if (garment.itemImage) {
     parts.push({ inline_data: dataUrlToInline(await asDataUrl(garment.itemImage)) })
   }

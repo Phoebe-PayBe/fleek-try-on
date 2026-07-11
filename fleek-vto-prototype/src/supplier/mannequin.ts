@@ -9,15 +9,17 @@ import { asDataUrl } from './imageUtils'
  */
 
 const SKIN: Record<string, { skin: string; shade: string; hair: string }> = {
-  Asian: { skin: '#eac39e', shade: '#d9ab82', hair: '#1d1712' },
   Black: { skin: '#6b4a35', shade: '#57392a', hair: '#120d0a' },
   White: { skin: '#f0d0b7', shade: '#ddb99e', hair: '#5a3d23' },
-  'South Asian': { skin: '#c68b59', shade: '#b07747', hair: '#170f0a' },
-  'Hispanic / Latino': { skin: '#d9a374', shade: '#c68f60', hair: '#241610' },
-  'Middle Eastern': { skin: '#d9ae86', shade: '#c69a70', hair: '#1c120c' },
+  Asian: { skin: '#eac39e', shade: '#d9ab82', hair: '#1d1712' },
+  'Indian / Brown': { skin: '#c68b59', shade: '#b07747', hair: '#170f0a' },
 }
 
-export async function renderDemoTryOn(garment: Garment, profile: ModelProfile): Promise<string> {
+export async function renderDemoTryOn(
+  garment: Garment,
+  profile: ModelProfile,
+  stockModelPhoto?: string | null,
+): Promise<string> {
   const { skin, shade, hair } = SKIN[profile.ethnicity] ?? SKIN.Asian
 
   // SVG rendered via <img> can't fetch external resources, so inline the
@@ -28,6 +30,17 @@ export async function renderDemoTryOn(garment: Garment, profile: ModelProfile): 
       garmentData = await asDataUrl(garment.itemImage)
     } catch {
       garmentData = null
+    }
+  }
+
+  // With an uploaded stock model photo for this demographic, composite the
+  // garment over it instead of drawing the stylised figure.
+  if (stockModelPhoto) {
+    try {
+      const stockData = await asDataUrl(stockModelPhoto)
+      return await renderOnStockPhoto(stockData, garmentData, garment, profile)
+    } catch {
+      // fall through to the drawn figure
     }
   }
 
@@ -109,6 +122,84 @@ export async function renderDemoTryOn(garment: Garment, profile: ModelProfile): 
   // Rasterise so the result behaves like a normal generated photo (and
   // embedded garment data URLs survive publishing / export).
   return svgToPng(svg, W, H)
+}
+
+/** Demo composite: stock model photo as the base, garment draped over the
+ * torso area with a soft shadow, plus the demo badge + demographic caption. */
+async function renderOnStockPhoto(
+  stockData: string,
+  garmentData: string | null,
+  garment: Garment,
+  profile: ModelProfile,
+): Promise<string> {
+  const W = 640
+  const H = 800
+  const stock = await loadImage(stockData)
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')!
+
+  // cover-fit the stock photo
+  const scale = Math.max(W / stock.width, H / stock.height)
+  const sw = stock.width * scale
+  const sh = stock.height * scale
+  ctx.drawImage(stock, (W - sw) / 2, (H - sh) / 2, sw, sh)
+
+  if (garmentData) {
+    const g = await loadImage(garmentData)
+    const isBottom = garment.category === 'Trousers' || garment.category === 'Skirts'
+    // rough torso/leg placement on a typical full-body stock shot
+    const gW = W * (isBottom ? 0.4 : 0.46)
+    const gH = (g.height / g.width) * gW
+    const gX = (W - gW) / 2
+    const gY = H * (isBottom ? 0.45 : 0.18)
+    ctx.save()
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'
+    ctx.shadowBlur = 22
+    ctx.shadowOffsetY = 8
+    ctx.globalAlpha = 0.97
+    ctx.drawImage(g, gX, gY, gW, gH)
+    ctx.restore()
+  }
+
+  // badge + caption
+  ctx.fillStyle = '#111'
+  roundRect(ctx, 16, 16, 196, 30, 15)
+  ctx.fill()
+  ctx.fillStyle = '#ffd643'
+  ctx.font = "700 13px Montserrat, sans-serif"
+  ctx.fillText('✦ DEMO PREVIEW MODE', 30, 36)
+  ctx.fillStyle = 'rgba(0,0,0,0.55)'
+  roundRect(ctx, 12, H - 42, 330, 28, 14)
+  ctx.fill()
+  ctx.fillStyle = '#fff'
+  ctx.font = '600 13px Montserrat, sans-serif'
+  ctx.fillText(
+    `${profile.gender} · ${profile.ethnicity} · ${profile.heightCm} cm · ${profile.weightKg} kg`,
+    26,
+    H - 23,
+  )
+  return canvas.toDataURL('image/jpeg', 0.9)
+}
+
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error('image load failed'))
+    img.src = src
+  })
 }
 
 function svgToPng(svg: string, w: number, h: number): Promise<string> {

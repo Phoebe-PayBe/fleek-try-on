@@ -68,6 +68,18 @@ async def upload_image(path: str, data: bytes, content_type: str) -> str:
     return f"{config.SUPABASE_URL}/storage/v1/object/public/{config.STORAGE_BUCKET}/{path}"
 
 
+async def list_objects(prefix: str) -> list[dict]:
+    """List objects in the bucket under a prefix (e.g. 'stock-models/')."""
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.post(
+            f"{config.SUPABASE_URL}/storage/v1/object/list/{config.STORAGE_BUCKET}",
+            headers=_headers({"Content-Type": "application/json"}),
+            json={"prefix": prefix, "limit": 100, "sortBy": {"column": "updated_at", "order": "desc"}},
+        )
+        r.raise_for_status()
+        return r.json()
+
+
 async def fetch_bytes(url: str) -> tuple[bytes, str]:
     """Download an image (e.g. a stored garment photo) for AI calls."""
     async with httpx.AsyncClient(timeout=60) as client:

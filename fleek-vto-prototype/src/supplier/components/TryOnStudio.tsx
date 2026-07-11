@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Garment, ModelProfile } from '../types'
-import { ETHNICITIES, GENDERS } from '../types'
+import { ETHNICITIES, ETHNICITY_SLUGS, GENDERS } from '../types'
 import type { Health } from '../api'
-import { runSummary, runTryOn } from '../api'
+import { getStockModels, runSummary, runTryOn, uploadStockModel } from '../api'
+import { fileToDataUrl } from '../imageUtils'
 
 export function TryOnStudio({
   garment,
@@ -30,6 +31,31 @@ export function TryOnStudio({
   const [error, setError] = useState('')
   const [publishedNow, setPublishedNow] = useState(false)
   const [keyDraft, setKeyDraft] = useState(apiKey)
+  const [stockModels, setStockModels] = useState<Record<string, string | null>>({})
+  const [stockUploading, setStockUploading] = useState(false)
+  const stockInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    getStockModels(health.mode).then(setStockModels).catch(() => {})
+  }, [health.mode])
+
+  const activeSlug = ETHNICITY_SLUGS[profile.ethnicity] ?? 'asian'
+  const activeStockPhoto = stockModels[activeSlug] ?? null
+
+  async function handleStockUpload(file?: File | null) {
+    if (!file) return
+    setError('')
+    setStockUploading(true)
+    try {
+      const dataUrl = await fileToDataUrl(file, 1280)
+      const url = await uploadStockModel(health.mode, activeSlug, dataUrl)
+      setStockModels((cur) => ({ ...cur, [activeSlug]: url }))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setStockUploading(false)
+    }
+  }
 
   function patch(p: Partial<Garment>): Garment {
     const next = { ...g, ...p }
@@ -45,7 +71,7 @@ export function TryOnStudio({
       // make sure the DB copy has the latest images before the server reads it
       const stored = await onPersist(g)
       setG((cur) => ({ ...cur, ...stored }))
-      const result = await runTryOn(health, stored, profile, apiKey)
+      const result = await runTryOn(health, stored, profile, apiKey, activeStockPhoto)
       const next = {
         ...stored,
         tryOnImage: result.image,
@@ -141,6 +167,45 @@ export function TryOnStudio({
                   {e}
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Stock model — {profile.ethnicity}</label>
+            <div className="stock-model">
+              <div className="stock-thumb">
+                {activeStockPhoto ? (
+                  <img src={activeStockPhoto} alt={`${profile.ethnicity} stock model`} />
+                ) : (
+                  <span>No photo yet</span>
+                )}
+              </div>
+              <div className="stock-meta">
+                <p>
+                  {activeStockPhoto
+                    ? 'Used as the try-on base for this demographic.'
+                    : 'Upload a full-body stock model photo — the garment gets modelled onto it.'}
+                </p>
+                <input
+                  ref={stockInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    handleStockUpload(e.target.files?.[0])
+                    e.target.value = ''
+                  }}
+                />
+                <button
+                  className="btn btn-ghost"
+                  style={{ padding: '7px 14px', fontSize: 12 }}
+                  onClick={() => stockInputRef.current?.click()}
+                  disabled={stockUploading}
+                >
+                  {stockUploading ? <span className="spin" /> : '📸'}
+                  {activeStockPhoto ? 'Replace photo' : 'Upload photo'}
+                </button>
+              </div>
             </div>
           </div>
 

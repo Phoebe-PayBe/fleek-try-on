@@ -62,6 +62,16 @@ export async function setApiKey(key: string): Promise<void> {
   await tx('settings', 'readwrite', (s) => s.put(key, 'geminiApiKey'))
 }
 
+/** Offline-mode storage for per-demographic stock model photos. */
+export async function getStockModel(slug: string): Promise<string | null> {
+  const v = await tx<string | undefined>('settings', 'readonly', (s) => s.get(`stockModel:${slug}`))
+  return v ?? null
+}
+
+export async function setStockModel(slug: string, dataUrl: string): Promise<void> {
+  await tx('settings', 'readwrite', (s) => s.put(dataUrl, `stockModel:${slug}`))
+}
+
 function seedGarment(): Garment {
   return {
     id: 'seed-pearl-shirt',
