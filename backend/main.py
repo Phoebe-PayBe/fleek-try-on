@@ -276,16 +276,25 @@ async def tryon(garment_id: str, body: TryOnIn) -> dict[str, Any]:
     if not item and not template:
         raise HTTPException(400, "Garment has no images to work from")
 
-    # use the uploaded stock model photo for the requested demographic as the base
+    # Model photo base: the client resolves priority (uploaded stock photo,
+    # then bundled model-library shot) and sends its URL; fall back to the
+    # per-demographic uploaded stock photo. Only our storage may be fetched.
     stock: Optional[Tuple[bytes, str]] = None
-    slug = ETHNICITY_TO_SLUG.get(body.model_profile.get("ethnicity", ""))
-    if slug:
-        stock_url = (await stock_models()).get(slug)
-        if stock_url:
-            try:
-                stock = await sb.fetch_bytes(stock_url)
-            except Exception:
-                stock = None
+    model_photo_url = body.model_profile.get("modelPhotoUrl")
+    if model_photo_url and str(model_photo_url).startswith(STORAGE_PUBLIC_PREFIX):
+        try:
+            stock = await sb.fetch_bytes(model_photo_url)
+        except Exception:
+            stock = None
+    if stock is None:
+        slug = ETHNICITY_TO_SLUG.get(body.model_profile.get("ethnicity", ""))
+        if slug:
+            stock_url = (await stock_models()).get(slug)
+            if stock_url:
+                try:
+                    stock = await sb.fetch_bytes(stock_url)
+                except Exception:
+                    stock = None
 
     background: Optional[Tuple[bytes, str]] = None
     bg_url = body.model_profile.get("backgroundUrl")
@@ -304,9 +313,15 @@ async def tryon(garment_id: str, body: TryOnIn) -> dict[str, Any]:
         raise HTTPException(502, str(e))
     ext = "png" if mime == "image/png" else "jpg"
     url = await sb.upload_image(f"{garment_id}/tryon-{int(time.time())}.{ext}", img, mime)
+    # one render per ethnicity|gender|size combination — regenerating replaces
+    combo = "|".join(
+        str(body.model_profile.get(k, "")) for k in ("ethnicity", "gender", "size")
+    )
+    renders = dict(garment.get("tryon_renders") or {})
+    renders[combo] = url
     row = await sb.upsert_garment(
         {**_row_fields(garment), "tryon_url": url, "tryon_is_demo": False,
-         "model_profile": body.model_profile,
+         "model_profile": body.model_profile, "tryon_renders": renders,
          "status": garment["status"] if garment["status"] == "published" else "preview"}
     )
     return {"demo": False, "url": url, "garment": row}
@@ -328,6 +343,6 @@ def _row_fields(garment: dict[str, Any]) -> dict[str, Any]:
     """Strip PostgREST metadata down to writable columns."""
     keys = (
         "id name category size_range fabric upcycled_source wholesale_price quantity "
-        "template_url item_url tryon_url tryon_is_demo model_profile summary status"
+        "template_url item_url tryon_url tryon_is_demo tryon_renders model_profile summary status"
     ).split()
     return {k: garment.get(k) for k in keys}

@@ -98,7 +98,7 @@ export async function generateTryOn(
             : '') +
           `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
           (bgUrl
-            ? `Place the model in the environment shown in the LAST attached photo (an interior space) — match its lighting and perspective. `
+            ? `Place the model in the environment shown in the LAST attached photo (an interior space): match its lighting and perspective, stand them naturally in an open area of the floor at realistic scale — feet firmly on the ground, not overlapping furniture, walls or racks, with natural depth and a soft contact shadow. `
             : `Keep the studio background and lighting natural, whole outfit visible head to toe. `) +
           `Whole outfit visible head to toe. Vertical portrait framing (3:4), recompose the scene to fill the portrait frame — no letterboxing. No text, no watermark, single model only.`
         : `Photorealistic full-body e-commerce fashion photograph. A ${modelDescription(profile)} ` +
@@ -109,7 +109,7 @@ export async function generateTryOn(
             : '') +
           `The garment is "${garment.name}" (${garment.category}), fabric: ${garment.fabric || 'unknown'}. ` +
           (bgUrl
-            ? `Set the scene in the environment shown in the LAST attached photo (an interior space) — match its lighting and perspective. `
+            ? `Set the scene in the environment shown in the LAST attached photo (an interior space): match its lighting and perspective, stand the model naturally in an open area of the floor at realistic scale — feet firmly on the ground, not overlapping furniture, walls or racks, with natural depth and a soft contact shadow. `
             : `Neutral warm studio background, soft daylight. `) +
           `Natural relaxed pose, whole outfit visible head to toe. Vertical portrait framing (3:4), ` +
           `recompose the scene to fill the portrait frame — no letterboxing. No text, no watermark, single model only.`,

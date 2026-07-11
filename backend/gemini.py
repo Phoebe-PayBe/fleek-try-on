@@ -77,7 +77,9 @@ async def generate_tryon(
     if background_image:
         prompt += (
             "Place the model in the environment shown in the LAST attached photo (an interior "
-            "space) — match its lighting and perspective. "
+            "space): match its lighting and perspective, stand them naturally in an open area of "
+            "the floor at realistic scale — feet firmly on the ground, not overlapping furniture, "
+            "walls or racks, with natural depth and a soft contact shadow. "
         )
     else:
         prompt += "Neutral warm studio background, soft daylight. "

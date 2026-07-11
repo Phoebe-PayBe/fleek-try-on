@@ -114,7 +114,12 @@ export function TryOnStudio({
       // make sure the DB copy has the latest images before the server reads it
       const stored = await onPersist(g)
       setG((cur) => ({ ...cur, ...stored }))
-      const result = await runTryOn(health, stored, profile, apiKey, activeStockPhoto)
+      // tell the backend exactly which model photo the panel is showing
+      const effectiveProfile = {
+        ...profile,
+        modelPhotoUrl: activeStockPhoto ?? modelPhotoFor(profile),
+      }
+      const result = await runTryOn(health, stored, effectiveProfile, apiKey, activeStockPhoto)
       const next = {
         ...stored,
         tryOnImage: result.image,

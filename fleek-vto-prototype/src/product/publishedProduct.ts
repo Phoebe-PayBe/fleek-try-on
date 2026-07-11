@@ -12,7 +12,6 @@ import type { Demographic, Product, SizeCode, VtoMatrix } from '../types'
 import { MOCK_PRODUCT } from '../mocks/product'
 import { VTO_MATRIX } from '../mocks/vtoMatrix'
 import { detectHealth, listGarments } from '../supplier/api'
-import { renderKey } from '../supplier/types'
 import type { Garment } from '../supplier/types'
 
 /** Product page demographic → supplier ethnicity label. */
@@ -31,19 +30,46 @@ function parsePrice(raw: string, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback
 }
 
-/** Overlay a garment's generated renders onto a clone of the placeholder matrix. */
-function buildMatrix(garment: Garment): VtoMatrix {
+const ETHNICITY_TO_DEMO: Record<string, Demographic> = Object.fromEntries(
+  Object.entries(DEMO_TO_ETHNICITY).map(([demo, eth]) => [eth, demo as Demographic]),
+)
+
+/** The placeholder matrix supplies measurements per demographic + size. */
+function buildMatrix(): VtoMatrix {
   const matrix = {} as VtoMatrix
   for (const demo of DEMOGRAPHICS) {
-    matrix[demo] = {} as VtoMatrix[Demographic]
-    for (const size of SIZES) {
-      const base = VTO_MATRIX[demo][size]
-      const key = renderKey({ ethnicity: DEMO_TO_ETHNICITY[demo], size })
-      const render = garment.tryOnRenders?.[key]
-      matrix[demo][size] = render ? { ...base, imageUrl: render } : base
-    }
+    matrix[demo] = { ...VTO_MATRIX[demo] }
   }
   return matrix
+}
+
+/**
+ * Supplier render keys (`Ethnicity|Gender|Size`) → viewer keys
+ * (`demographic|Gender|Size`). Legacy two-part keys (pre-gender) map to both
+ * genders so old renders stay reachable.
+ */
+function buildLiveRenders(garment: Garment): Record<string, string> {
+  const out: Record<string, string> = {}
+  // Older garments (renders generated via the API before the combination map
+  // existed) still have a headline try-on — surface it under its profile combo.
+  if (garment.tryOnImage && Object.keys(garment.tryOnRenders ?? {}).length === 0) {
+    const p = garment.modelProfile
+    const demo = ETHNICITY_TO_DEMO[p?.ethnicity ?? '']
+    if (demo) out[`${demo}|${p.gender || 'Female'}|${p.size || 'M'}`] = garment.tryOnImage
+  }
+  for (const [key, url] of Object.entries(garment.tryOnRenders ?? {})) {
+    if (!url) continue
+    const parts = key.split('|')
+    const demo = ETHNICITY_TO_DEMO[parts[0]]
+    if (!demo) continue
+    if (parts.length === 3) {
+      out[`${demo}|${parts[1]}|${parts[2]}`] = url
+    } else if (parts.length === 2) {
+      out[`${demo}|Female|${parts[1]}`] = url
+      out[`${demo}|Male|${parts[1]}`] = url
+    }
+  }
+  return out
 }
 
 function toProduct(garment: Garment): Product {
@@ -60,7 +86,8 @@ function toProduct(garment: Garment): Product {
       : MOCK_PRODUCT.standardImages,
     availableDemographics: DEMOGRAPHICS,
     availableSizes: SIZES,
-    vtoMatrix: buildMatrix(garment),
+    vtoMatrix: buildMatrix(),
+    liveRenders: buildLiveRenders(garment),
   }
 }
 
@@ -79,7 +106,11 @@ export async function loadPublishedProduct(): Promise<Product | null> {
     return null
   }
   const published = garments
-    .filter((g) => g.status === 'published' && g.tryOnRenders && Object.keys(g.tryOnRenders).length > 0)
+    .filter(
+      (g) =>
+        g.status === 'published' &&
+        (g.tryOnImage || (g.tryOnRenders && Object.keys(g.tryOnRenders).length > 0)),
+    )
     .sort((a, b) => b.createdAt - a.createdAt)
   return published.length ? toProduct(published[0]) : null
 }

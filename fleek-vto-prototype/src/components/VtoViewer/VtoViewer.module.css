@@ -190,3 +190,42 @@
   color: #fff;
   border-color: #111;
 }
+
+/* live viewer: gender toggle + unavailable sizes */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.genderToggle {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.genderToggle:hover {
+  border-color: var(--ink);
+}
+
+.sizeChipDisabled {
+  position: relative;
+  color: #c2c2c8;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+.sizeChipDisabled::after {
+  content: '✕';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #d05050;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: inherit;
+}

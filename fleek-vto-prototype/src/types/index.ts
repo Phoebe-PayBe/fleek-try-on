@@ -67,4 +67,7 @@ export interface Product {
   availableDemographics: Demographic[];
   availableSizes: SizeCode[];
   vtoMatrix: VtoMatrix;
+  /** Live published renders keyed `demographic|gender|size` (supplier studio).
+   *  When present, the viewer only offers combinations that exist here. */
+  liveRenders?: Record<string, string>;
 }

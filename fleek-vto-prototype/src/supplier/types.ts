@@ -21,6 +21,9 @@ export interface ModelProfile {
   background?: string
   /** Public storage URL of the chosen backdrop image (null/absent = studio). */
   backgroundUrl?: string | null
+  /** Resolved model photo the studio previewed — the server uses this exact
+   * photo as the try-on base so the render matches the panel. */
+  modelPhotoUrl?: string | null
 }
 
 export interface AiSummary {
@@ -86,9 +89,10 @@ export function backgroundUrl(profile: Pick<ModelProfile, 'background' | 'backgr
 
 export const MODEL_SIZES: ModelSize[] = ['S', 'M', 'L', 'XL']
 
-/** Stable key for a demographic + size render cell. */
-export function renderKey(profile: Pick<ModelProfile, 'ethnicity' | 'size'>): string {
-  return `${profile.ethnicity}|${profile.size}`
+/** Stable key for a demographic + gender + size render cell — one render max
+ * per combination; regenerating the same combination replaces it. */
+export function renderKey(profile: Pick<ModelProfile, 'ethnicity' | 'gender' | 'size'>): string {
+  return `${profile.ethnicity}|${profile.gender}|${profile.size}`
 }
 
 export const CATEGORIES: Category[] = [
