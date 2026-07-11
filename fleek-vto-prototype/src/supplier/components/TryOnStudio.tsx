@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Garment, ModelProfile } from '../types'
-import { BACKGROUNDS, ETHNICITIES, ETHNICITY_SLUGS, GENDERS, MODEL_SIZES, renderKey } from '../types'
+import { ETHNICITIES, ETHNICITY_SLUGS, GENDERS, MODEL_SIZES, renderKey } from '../types'
 import { modelPhotoFor } from '../models'
-import type { Health } from '../api'
-import { getStockModels, runSummary, runTryOn, uploadStockModel } from '../api'
+import type { BackgroundOption, Health } from '../api'
+import { getBackgrounds, getStockModels, runSummary, runTryOn, uploadBackground, uploadStockModel } from '../api'
 import { validateGeminiKey } from '../ai'
 import { fileToDataUrl } from '../imageUtils'
 
@@ -42,8 +42,30 @@ export function TryOnStudio({
   const [keyTesting, setKeyTesting] = useState(false)
   const [keyStatus, setKeyStatus] = useState<{ ok: boolean; message: string } | null>(null)
 
+  const [backgrounds, setBackgrounds] = useState<BackgroundOption[]>([])
+  const [bgUploading, setBgUploading] = useState(false)
+  const bgInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleBgUpload(file?: File | null) {
+    if (!file) return
+    const name = prompt('Name this background (e.g. "Changing room"):', file.name.replace(/\.\w+$/, ''))
+    if (!name) return
+    setError('')
+    setBgUploading(true)
+    try {
+      const added = await uploadBackground(name, await fileToDataUrl(file, 1600))
+      setBackgrounds((cur) => [...cur, added])
+      setProfile((p) => ({ ...p, background: added.id, backgroundUrl: added.url }))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBgUploading(false)
+    }
+  }
+
   useEffect(() => {
     getStockModels(health.mode).then(setStockModels).catch(() => {})
+    getBackgrounds(health.mode).then(setBackgrounds).catch(() => {})
     // if the backend claims a Gemini key, verify it actually works
     if (health.mode === 'backend' && health.geminiOnServer) {
       fetch('/api/gemini-check')
@@ -253,15 +275,32 @@ export function TryOnStudio({
           <div className="field">
             <label>Background</label>
             <div className="seg">
-              {BACKGROUNDS.map((b) => (
+              {backgrounds.map((b) => (
                 <button
                   key={b.id}
                   className={(profile.background ?? 'default') === b.id ? 'on' : ''}
-                  onClick={() => setProfile({ ...profile, background: b.id })}
+                  onClick={() => setProfile({ ...profile, background: b.id, backgroundUrl: b.url })}
                 >
                   {b.label}
                 </button>
               ))}
+              {health.mode === 'backend' && (
+                <>
+                  <input
+                    ref={bgInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      handleBgUpload(e.target.files?.[0])
+                      e.target.value = ''
+                    }}
+                  />
+                  <button onClick={() => bgInputRef.current?.click()} disabled={bgUploading}>
+                    {bgUploading ? '…' : '+ Add'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
 

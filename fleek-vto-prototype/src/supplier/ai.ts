@@ -84,7 +84,7 @@ export async function generateTryOn(
   // bundled), dress that exact person; otherwise fall back to a text-described
   // model.
   const modelPhoto = stockModelPhoto ?? modelPhotoFor(profile)
-  const bgUrl = backgroundUrl(profile.background)
+  const bgUrl = backgroundUrl(profile)
 
   const parts: unknown[] = [
     {

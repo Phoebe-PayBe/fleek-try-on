@@ -7,6 +7,7 @@ Run:  uvicorn main:app --reload --port 8000
 """
 
 import base64
+import re
 import time
 from typing import Any, Dict, Optional, Tuple
 
@@ -64,13 +65,7 @@ class StockModelIn(BaseModel):
 # ETHNICITY_SLUGS map (Black / White / Asian / Indian-Brown).
 STOCK_SLUGS = ("black", "white", "asian", "indian-brown")
 
-# Try-on backdrop options ('default' = neutral studio, no reference image).
-BACKGROUND_URLS = {
-    "fleek-office": (
-        f"{config.SUPABASE_URL}/storage/v1/object/public/"
-        f"{config.STORAGE_BUCKET}/backgrounds/fleek-office.jpg"
-    ),
-}
+STORAGE_PUBLIC_PREFIX = f"{config.SUPABASE_URL}/storage/v1/object/public/{config.STORAGE_BUCKET}/"
 ETHNICITY_TO_SLUG = {
     "Black": "black",
     "White": "white",
@@ -149,6 +144,47 @@ async def upload_stock_model(slug: str, body: StockModelIn) -> dict[str, str]:
     try:
         url = await sb.upload_image(path, data, mime)
         return {"url": url}
+    except Exception as e:
+        raise HTTPException(502, f"Storage error: {e}")
+
+
+class BackgroundIn(BaseModel):
+    name: str
+    data_url: str
+
+
+@app.get("/api/backgrounds")
+async def list_backgrounds() -> list:
+    """Backdrop scenes stored under backgrounds/ (newest first per name)."""
+    try:
+        objects = await sb.list_objects("backgrounds/")
+    except Exception:
+        return []
+    result = []
+    for obj in objects:
+        name = obj.get("name", "")
+        if not name or name.startswith("."):
+            continue
+        base = name.rsplit(".", 1)[0]
+        label = base.rsplit("-", 1)[0] if base.rsplit("-", 1)[-1].isdigit() else base
+        result.append(
+            {
+                "id": base,
+                "label": label.replace("-", " ").strip().title(),
+                "url": f"{STORAGE_PUBLIC_PREFIX}backgrounds/{name}",
+            }
+        )
+    return result
+
+
+@app.post("/api/backgrounds")
+async def upload_background(body: BackgroundIn) -> dict:
+    slug = re.sub(r"[^a-z0-9]+", "-", body.name.lower()).strip("-") or "scene"
+    data, mime, ext = _decode_data_url(body.data_url)
+    path = f"backgrounds/{slug}-{int(time.time())}.{ext}"
+    try:
+        url = await sb.upload_image(path, data, mime)
+        return {"id": f"{slug}", "label": body.name, "url": url}
     except Exception as e:
         raise HTTPException(502, f"Storage error: {e}")
 
@@ -252,8 +288,9 @@ async def tryon(garment_id: str, body: TryOnIn) -> dict[str, Any]:
                 stock = None
 
     background: Optional[Tuple[bytes, str]] = None
-    bg_url = BACKGROUND_URLS.get(body.model_profile.get("background", ""))
-    if bg_url:
+    bg_url = body.model_profile.get("backgroundUrl")
+    # only our own public storage may be fetched (SSRF guard)
+    if bg_url and str(bg_url).startswith(STORAGE_PUBLIC_PREFIX):
         try:
             background = await sb.fetch_bytes(bg_url)
         except Exception:

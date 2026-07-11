@@ -7,7 +7,7 @@
  */
 
 import type { AiSummary, Garment, ModelProfile } from './types'
-import { DEFAULT_MODEL, ETHNICITY_SLUGS } from './types'
+import { BACKGROUNDS, DEFAULT_MODEL, ETHNICITY_SLUGS } from './types'
 import * as local from './store'
 import * as clientAi from './ai'
 import { renderDemoTryOn } from './mannequin'
@@ -207,6 +207,42 @@ export async function runSummary(
     return res.json()
   }
   return clientAi.generateSummary(garment, clientKey)
+}
+
+/* ---------- backdrop scenes ---------- */
+
+export interface BackgroundOption {
+  id: string
+  label: string
+  url: string | null
+}
+
+/** Built-ins plus everything uploaded to storage under backgrounds/. */
+export async function getBackgrounds(mode: Health['mode']): Promise<BackgroundOption[]> {
+  const options: BackgroundOption[] = BACKGROUNDS.map((b) => ({ ...b }))
+  if (mode === 'backend') {
+    try {
+      const res = await fetch(`${API}/backgrounds`)
+      if (res.ok) {
+        for (const b of (await res.json()) as BackgroundOption[]) {
+          if (!options.some((o) => o.url === b.url || o.id === b.id)) options.push(b)
+        }
+      }
+    } catch {
+      /* built-ins only */
+    }
+  }
+  return options
+}
+
+export async function uploadBackground(name: string, dataUrl: string): Promise<BackgroundOption> {
+  const res = await fetch(`${API}/backgrounds`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, data_url: dataUrl }),
+  })
+  if (!res.ok) throw new Error(`Background upload failed: ${(await res.text()).slice(0, 200)}`)
+  return res.json()
 }
 
 export { getApiKey, setApiKey, newId } from './store'

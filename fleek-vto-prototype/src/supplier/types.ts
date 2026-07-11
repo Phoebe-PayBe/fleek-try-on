@@ -19,6 +19,8 @@ export interface ModelProfile {
   size: ModelSize
   /** Background scene id (see BACKGROUNDS). Defaults to the studio backdrop. */
   background?: string
+  /** Public storage URL of the chosen backdrop image (null/absent = studio). */
+  backgroundUrl?: string | null
 }
 
 export interface AiSummary {
@@ -76,8 +78,10 @@ export const BACKGROUNDS = [
   },
 ] as const
 
-export function backgroundUrl(id?: string): string | null {
-  return BACKGROUNDS.find((b) => b.id === id)?.url ?? null
+/** Resolve the backdrop image for a profile: explicit URL first, then built-ins. */
+export function backgroundUrl(profile: Pick<ModelProfile, 'background' | 'backgroundUrl'>): string | null {
+  if (profile.backgroundUrl) return profile.backgroundUrl
+  return BACKGROUNDS.find((b) => b.id === profile.background)?.url ?? null
 }
 
 export const MODEL_SIZES: ModelSize[] = ['S', 'M', 'L', 'XL']

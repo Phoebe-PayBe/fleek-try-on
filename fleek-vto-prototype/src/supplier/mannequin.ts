@@ -74,7 +74,7 @@ export async function renderDemoTryOn(
   // Custom background behind the drawn figure (model photos fill the whole
   // frame, so the backdrop only shows on the drawn-figure path).
   let bgDrawn = false
-  const bgUrl = backgroundUrl(profile.background)
+  const bgUrl = backgroundUrl(profile)
   if (!photo && bgUrl) {
     try {
       const bg = await loadImage(await asDataUrl(bgUrl))
