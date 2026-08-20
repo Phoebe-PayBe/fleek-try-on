@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bliss in the Park — Mauritian food &amp; live music, South Park Gardens</title>
+<style>
+  @font-face { font-family: Inter; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 600;
+    src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 800;
+    src: url('../../assets/fonts/inter-latin-800-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/playfair-display-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/playfair-display-latin-700-normal.woff2') format('woff2'); font-display: block; }
+
+  /* Their own palette: the green of the Bliss roundel, the terracotta of the
+     Friday posters, on the posters' warm off-white. */
+  :root {
+    --paper: #F7F3EA;
+    --green: #24402F;
+    --terracotta: #C4452A;
+    --ink: #22201C;
+    --muted: #6B655C;
+    --line: #E2DACB;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 18px; background: var(--green); color: #F3EFE4;
+  }
+  .badge {
+    display: flex; align-items: center; gap: 9px;
+  }
+  .roundel {
+    width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #B9C7B4;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 6.5px; letter-spacing: 1px; line-height: 1.25; text-align: center;
+    font-weight: 700; color: #E7EFE3;
+  }
+  .badge-name { font-size: 13px; font-weight: 700; letter-spacing: 2.4px; }
+  .bar .where { font-size: 10.5px; opacity: 0.75; letter-spacing: 0.3px; }
+
+  .hero { position: relative; }
+  .hero img { width: 100%; height: 300px; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(20,30,22,0.45) 0%, rgba(20,30,22,0.14) 38%, rgba(20,30,22,0.92) 100%);
+  }
+  .hero .copy { position: absolute; left: 18px; right: 18px; bottom: 16px; color: #FDFBF6; }
+  .kicker {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #F0C9B6; margin-bottom: 8px;
+  }
+  h1 { font-size: 33px; line-height: 1.06; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+  h1 em { font-style: italic; color: #F3B49A; }
+
+  .ticks {
+    display: flex; gap: 6px; padding: 12px 18px 0; flex-wrap: wrap;
+  }
+  .tick {
+    font-size: 11px; font-weight: 600; color: var(--green);
+    background: #EAE6D9; border-radius: 999px; padding: 6px 11px;
+  }
+
+  .cta { display: flex; gap: 9px; padding: 14px 18px 4px; }
+  .btn {
+    flex: 1; text-align: center; padding: 13px 8px; border-radius: 10px;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+  }
+  .btn-primary { background: var(--terracotta); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--green); border: 1.5px solid var(--line); }
+
+  section { padding: 22px 18px 4px; }
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.2px;
+  }
+  .lead { font-size: 12.5px; color: var(--muted); margin: 0 0 14px; line-height: 1.55; }
+
+  .dates { display: flex; flex-direction: column; gap: 8px; }
+  .date {
+    display: flex; align-items: center; gap: 12px; background: #fff;
+    border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px;
+  }
+  .date .when { text-align: center; min-width: 42px; }
+  .date .day { font-size: 17px; font-weight: 800; line-height: 1; color: var(--terracotta); }
+  .date .mon { font-size: 9.5px; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+  .date .what { font-size: 12.5px; line-height: 1.45; }
+  .date .what b { font-weight: 700; }
+  .date .what span { color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grid img { width: 100%; height: 116px; object-fit: cover; border-radius: 12px; display: block; }
+
+  .menu { list-style: none; margin: 0; padding: 0; }
+  .menu li {
+    display: flex; align-items: baseline; gap: 8px; padding: 9px 0;
+    border-bottom: 1px dashed var(--line); font-size: 13px;
+  }
+  .menu .name { font-weight: 600; }
+  .menu .tag { font-size: 9.5px; font-weight: 700; color: var(--green); letter-spacing: 0.5px; }
+  .menu .fill { flex: 1; }
+  .menu .price { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .menu .desc { font-size: 11.5px; color: var(--muted); padding: 0 0 9px; border-bottom: 1px dashed var(--line); margin-top: -4px; line-height: 1.5; }
+
+  .order {
+    background: var(--green); color: #EFEDE3; border-radius: 14px;
+    padding: 16px 17px; font-size: 12.5px; line-height: 1.6;
+  }
+  .order h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; margin: 0 0 6px; color: #fff; }
+  .order .step { display: flex; gap: 9px; margin-top: 9px; }
+  .order .n {
+    width: 18px; height: 18px; border-radius: 50%; background: var(--terracotta); color: #fff;
+    font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .order .note { margin-top: 12px; font-size: 11px; opacity: 0.72; }
+
+  .find {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 15px 17px; font-size: 12.5px; line-height: 1.7; color: var(--muted);
+  }
+  .find strong { color: var(--ink); }
+  footer { padding: 20px 18px 30px; text-align: center; font-size: 10.5px; color: #9C9488; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="badge">
+    <div class="roundel">BLISS<br>IN THE PARK</div>
+    <div class="badge-name">BLISS IN THE PARK</div>
+  </div>
+  <div class="where">SW19 8PN</div>
+</div>
+
+<div class="hero">
+  <img src="img/park-evening.jpg" alt="Friday evening in South Park Gardens">
+  <div class="veil"></div>
+  <div class="copy">
+    <div class="kicker">Fridays · South Park Gardens</div>
+    <h1 class="serif">Mauritian cuisine &amp; <em>live music</em>, out in the park.</h1>
+  </div>
+</div>
+
+<div class="ticks">
+  <div class="tick">Food from 5.30pm</div>
+  <div class="tick">Music from 6pm</div>
+  <div class="tick">Licensed bar</div>
+  <div class="tick">Halal options</div>
+</div>
+
+<div class="cta">
+  <a class="btn btn-primary" href="#order">Pre-order Friday</a>
+  <a class="btn btn-ghost" href="#find">Find the park</a>
+</div>
+
+<section>
+  <h2>What's on</h2>
+  <p class="lead">Live music every Friday — please bring a little change to support the musicians.</p>
+  <div class="dates">
+    <div class="date">
+      <div class="when"><div class="day">28</div><div class="mon">Aug</div></div>
+      <div class="what"><b>Live music &amp; Mauritian street food</b><br><span>From 5.30pm · music from 6pm</span></div>
+    </div>
+    <div class="date">
+      <div class="when"><div class="day">04</div><div class="mon">Sep</div></div>
+      <div class="what"><b>Live music &amp; Mauritian street food</b><br><span>From 5.30pm · music from 6pm</span></div>
+    </div>
+    <div class="date">
+      <div class="when"><div class="day">11</div><div class="mon">Sep</div></div>
+      <div class="what"><b>Live music + FLOW community drumming</b><br><span>From 5.30pm · music from 6pm</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="grid">
+    <img src="img/roti-bowl.jpg" alt="Curry chicken roti bowl">
+    <img src="img/prawns.jpg" alt="Grilled tiger prawns">
+  </div>
+</section>
+
+<section>
+  <h2>Friday menu</h2>
+  <p class="lead">Cooked fresh on the night. Pre-order by Tuesday so we can shop for it.</p>
+  <ul class="menu">
+    <li><span class="name">A Taste of Mauritius Platter</span><span class="tag">VE</span><span class="fill"></span><span class="price">£28</span></li>
+    <li class="desc">Serves 2 — gateau piment (chilli cakes), butter bean samosas, aubergine fritters, taro root fritters and tomato chutney on toast, with our homemade chilli sauces.</li>
+    <li><span class="name">Boneless Curry Chicken Roti Bowl</span><span class="tag">HALAL</span><span class="fill"></span><span class="price">£14</span></li>
+    <li><span class="name">Grilled Tiger Prawns (x3)</span><span class="tag">GF</span><span class="fill"></span><span class="price">£22</span></li>
+    <li class="desc">With Mauritian potato salad and sweetcorn ribs.</li>
+    <li><span class="name">Mixed Squash Gratin</span><span class="tag">V</span><span class="fill"></span><span class="price">£16</span></li>
+    <li class="desc">Crusty baguette and a fresh leafy green salad.</li>
+    <li><span class="name">Dhal Puri, Butterbean &amp; Veg Pickle</span><span class="fill"></span><span class="price">£5</span></li>
+    <li><span class="name">Shrimp Samosas (x2)</span><span class="fill"></span><span class="price">£7.50</span></li>
+    <li><span class="name">Steamed Dumplings (x5) in broth</span><span class="fill"></span><span class="price">£9</span></li>
+    <li><span class="name">Green Mango Side Salad</span><span class="tag">VE</span><span class="fill"></span><span class="price">£8</span></li>
+  </ul>
+</section>
+
+<section id="order">
+  <div class="order">
+    <h3>Pre-order for Friday</h3>
+    Pick your dishes here and pay by card — no WhatsApp back-and-forth, no chasing.
+    <div class="step"><div class="n">1</div><div>Choose your dishes and the Friday you're coming.</div></div>
+    <div class="step"><div class="n">2</div><div>Pay securely online — we'll confirm by text.</div></div>
+    <div class="step"><div class="n">3</div><div>Collect at the stall from 5.30pm, hot and ready.</div></div>
+    <div class="note">Orders close Tuesday. Prefer to message? WhatsApp 07712 109799.</div>
+  </div>
+</section>
+
+<section>
+  <h2>The rest of the week</h2>
+  <p class="lead">The kiosk is open daily for coffee, pastries and cold drinks — and we take pre-orders for our Creole seafood boil: lobster, crab, tiger prawns, mussels, corn on the cob and sweet potato, packed hot.</p>
+  <div class="grid">
+    <img src="img/pastries.jpg" alt="Croissants and coffee">
+    <img src="img/park-evening.jpg" alt="South Park Gardens">
+  </div>
+</section>
+
+<section id="find">
+  <h2>Find us</h2>
+  <div class="find">
+    <strong>Bliss in the Park</strong><br>
+    South Park Gardens, Wimbledon<br>
+    London SW19 8PN<br><br>
+    <strong>Kiosk</strong> daily from 9am<br>
+    <strong>Friday nights</strong> food 5.30pm, music 6pm<br><br>
+    Five minutes from Wimbledon station. Dogs, buggies and picnic blankets all welcome.
+  </div>
+</section>
+
+<footer>© Bliss in the Park · South Park Gardens, Wimbledon SW19 8PN</footer>
+
+</body>
+</html>

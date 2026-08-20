@@ -5,10 +5,13 @@
   "addressName": "Coco & Nut Coffee",
   "addressLines": ["c/o Hybrid Fitness", "82a Plough Lane", "London SW17 0BN"],
   "headline": "Coco &amp; Nut - we made you a website.",
+  "note": [
+    "Phoebe and I found you on Google - great coffee tucked inside Hybrid Fitness on Plough Lane - but you haven&rsquo;t got a website. So we built you one, <strong style=\"color:#1D0802;\">free</strong>, using your Google photos, menu and reviews.",
+    "It&rsquo;s yours to look at, no catch. A proper site helps you <strong style=\"color:#1D0802;\">appear higher on Google</strong> (and ChatGPT) when people search &ldquo;coffee near Plough Lane&rdquo;, and brings in people who aren&rsquo;t gym members yet.",
+    "Scan the code to see it. Love it? It&rsquo;s £30 a month to keep, cancel anytime."
+  ],
   "url": "https://rowbo.dev/coco-and-nut",
   "urlDisplay": "rowbo.dev/coco-and-nut",
   "price": "£30",
-  "senders": "Tom &amp; Phoebe",
-  "venue": "Hybrid Fitness on Plough Lane",
-  "searchPhrase": "coffee near Plough Lane"
+  "senders": "Tom &amp; Phoebe"
 }

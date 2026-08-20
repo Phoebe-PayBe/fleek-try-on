@@ -2,7 +2,8 @@
 //
 // Design values (colours, type, spacing, radii, shadows) are carried over from
 // the rowbo postcard design canvas export (Main.dc.html / Back.dc.html) so the
-// printed card matches the mockup exactly.
+// printed card matches the mockup exactly. Everything recipient-specific comes
+// from a card's config.json.
 
 export const W = 800;
 export const H = 560;
@@ -14,10 +15,13 @@ const HAIRLINE = '#E5D8C4';
 const DISPLAY = `'TASA Orbiter','Helvetica Neue',system-ui,sans-serif`;
 const BODY = `Inter, system-ui, -apple-system, sans-serif`;
 
+// Paths are written relative to a card's dist/ folder, where the artboards render.
+const ASSETS = '../../assets';
+
 // Inter is bundled so the render is identical on any machine (no system fonts
 // are assumed). 'TASA Orbiter' stays first in the display stack: if the printer
 // or designer has the licensed face installed, it wins.
-export const fontFaces = (base = '../assets/fonts') => [400, 600, 700, 800]
+export const fontFaces = (base = `${ASSETS}/fonts`) => [400, 600, 700, 800]
   .map(w => `  @font-face { font-family: Inter; font-style: normal; font-weight: ${w};
     src: url('${base}/inter-latin-${w}-normal.woff2') format('woff2'); font-display: block; }`)
   .join('\n');
@@ -49,7 +53,7 @@ export function front(cfg, qrSvg) {
   return shell(`
   <!-- LEFT: headline + CTA -->
   <div style="flex: 1.18; display: flex; flex-direction: column; justify-content: center;">
-    <div style="font-family:${DISPLAY}; font-size: 37px; line-height: 1.03; font-weight: 800; letter-spacing: -0.5px;">${cfg.headline}</div>
+    <div style="font-family:${DISPLAY}; font-size: ${cfg.headlineSize ?? 37}px; line-height: 1.03; font-weight: 800; letter-spacing: -0.5px;">${cfg.headline}</div>
 
     <div style="margin-top: 48px; display: flex; align-items: center; gap: 14px;">
 ${qrTile(qrSvg, { size: 76, radius: 11, pad: 6 })}
@@ -58,7 +62,7 @@ ${qrTile(qrSvg, { size: 76, radius: 11, pad: 6 })}
         <div style="font-size:13px; color:#626262;">Free to look &middot; yours to keep for ${cfg.price}/mo</div>
       </div>
     </div>
-    <div style="margin-top:18px;"><img src="../assets/rowbo-logo.png" style="height:18px; display:block;"></div>
+    <div style="margin-top:18px;"><img src="${ASSETS}/rowbo-logo.png" style="height:18px; display:block;"></div>
   </div>
 
   <!-- RIGHT: phone mockup -->
@@ -72,27 +76,28 @@ ${qrTile(qrSvg, { size: 76, radius: 11, pad: 6 })}
 }
 
 export function back(cfg, qrSvg) {
-  const addressBlock = cfg.addressLines && cfg.addressLines.length
+  // Blank ruled lines when a card has no printed address (config.addressLines: []).
+  const addressBlock = cfg.addressLines?.length
     ? `      <div style="font-size:15px; color:${INK}; font-weight:600;">${cfg.addressName}</div>
 ${cfg.addressLines.map(l => `      <div style="font-size:14px; color:#3a2e26;">${l}</div>`).join('\n')}`
     : `      <div style="font-size:15px; color:${INK}; font-weight:600;">${cfg.addressName}</div>
 ${[0, 1, 2, 3].map(() => `      <div style="height:1px; background:${HAIRLINE};"></div>`).join('\n')}`;
 
+  const note = cfg.note
+    .map(p => `      ${p}`)
+    .join('\n      <div style="height: 9px;"></div>\n');
+
   return shell(`
   <!-- LEFT: the note -->
   <div style="flex: 1.28; display: flex; flex-direction: column;">
     <div style="margin-bottom: 18px;">
-      <img src="../assets/rowbo-logo.png" style="height: 24px; display: block;">
+      <img src="${ASSETS}/rowbo-logo.png" style="height: 24px; display: block;">
     </div>
 
     <div style="font-family:${DISPLAY}; font-size: 23px; font-weight: 800; letter-spacing:-0.3px; margin-bottom:10px;">${cfg.greeting}</div>
 
-    <div style="font-size: 14.5px; line-height: 1.62; color: #3a2e26;">
-      Phoebe and I found you on Google - great coffee tucked inside ${cfg.venue} - but you haven&rsquo;t got a website. So we built you one, <strong style="color:${INK};">free</strong>, using your Google photos, menu and reviews.
-      <div style="height: 9px;"></div>
-      It&rsquo;s yours to look at, no catch. A proper site helps you <strong style="color:${INK};">appear higher on Google</strong> (and ChatGPT) when people search &ldquo;${cfg.searchPhrase}&rdquo;, and brings in people who aren&rsquo;t gym members yet.
-      <div style="height: 9px;"></div>
-      Scan the code to see it. Love it? It&rsquo;s ${cfg.price} a month to keep, cancel anytime.
+    <div style="font-size: ${cfg.noteSize ?? 14.5}px; line-height: 1.62; color: #3a2e26;">
+${note}
     </div>
 
     <div style="margin-top: 14px; font-family:${DISPLAY}; font-size: 15px; font-weight:700; color: ${INK};">- ${cfg.senders} &middot; <span style="color:${ORANGE};">rowbo.dev</span></div>

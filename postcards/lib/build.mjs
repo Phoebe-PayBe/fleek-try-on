@@ -1,9 +1,9 @@
-// Builds the Coco & Nut postcard: real QR code, mock-site screenshot for the
-// phone mockup, both artboards as HTML + PNG, and a print-ready A6 PDF.
+// Builds one postcard: real QR code, mock-site screenshot for the phone
+// mockup, both artboards as HTML + PNG, and a print-ready A6 PDF.
 //
-//   npm install && node build.mjs
+//   npm install && node lib/build.mjs <card>      e.g. bliss-in-the-park
 //
-// Outputs land in dist/.
+// Outputs land in <card>/dist/.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -12,11 +12,17 @@ import QRCode from 'qrcode';
 import { chromium } from 'playwright';
 import { front, back, fontFaces, W, H } from './template.mjs';
 
-const root = dirname(fileURLToPath(import.meta.url));
-const dist = join(root, 'dist');
+const slug = process.argv[2];
+if (!slug) {
+  console.error('usage: node lib/build.mjs <card>   (e.g. bliss-in-the-park)');
+  process.exit(1);
+}
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const card = join(root, slug);
+const dist = join(card, 'dist');
 mkdirSync(dist, { recursive: true });
 
-const cfg = JSON.parse(readFileSync(join(root, 'config.json'), 'utf8'));
+const cfg = JSON.parse(readFileSync(join(card, 'config.json'), 'utf8'));
 
 // --- print geometry -------------------------------------------------------
 // A6 landscape (148 x 105 mm) plus 3 mm bleed on every edge.
@@ -56,7 +62,7 @@ const phone = await browser.newPage({
   viewport: { width: 390, height: 844 },
   deviceScaleFactor: 3,
 });
-await phone.goto(`file://${join(root, 'site', 'index.html')}`);
+await phone.goto(`file://${join(card, 'site', 'index.html')}`);
 await phone.evaluate(() => document.fonts.ready);
 await phone.screenshot({ path: join(dist, 'site-mobile.jpg'), quality: 92, type: 'jpeg' });
 await phone.close();
@@ -67,17 +73,17 @@ const backHtml = back(cfg, qrSvg);
 writeFileSync(join(dist, 'front.html'), frontHtml);
 writeFileSync(join(dist, 'back.html'), backHtml);
 
-const card = await browser.newPage({
+const artPage = await browser.newPage({
   viewport: { width: W, height: H },
   deviceScaleFactor: 3, // 2400 x 1680 px ≈ 400 dpi at A6
 });
 for (const [name, html] of [['front', frontHtml], ['back', backHtml]]) {
-  await card.goto(`file://${join(dist, `${name}.html`)}`);
-  await card.evaluate(() => document.fonts.ready);
-  await card.screenshot({ path: join(dist, `${name}.png`) });
+  await artPage.goto(`file://${join(dist, `${name}.html`)}`);
+  await artPage.evaluate(() => document.fonts.ready);
+  await artPage.screenshot({ path: join(dist, `${name}.png`) });
   void html;
 }
-await card.close();
+await artPage.close();
 
 // 3. Print PDF: two pages, A6 + bleed, artwork scaled to cover.
 const artboard = html => html.split('<body>')[1].split('</body>')[0];
@@ -103,7 +109,7 @@ const printPage = await browser.newPage();
 await printPage.goto(`file://${join(dist, 'print.html')}`);
 await printPage.evaluate(() => document.fonts.ready);
 await printPage.pdf({
-  path: join(dist, 'coco-and-nut-postcard-print.pdf'),
+  path: join(dist, `${slug}-postcard-print.pdf`),
   width: `${PAGE_W_MM}mm`,
   height: `${PAGE_H_MM}mm`,
   printBackground: true,
@@ -112,4 +118,4 @@ await printPage.pdf({
 await printPage.close();
 
 await browser.close();
-console.log(`Built dist/ — QR -> ${cfg.url}, page ${PAGE_W_MM}x${PAGE_H_MM}mm (A6 + ${BLEED_MM}mm bleed)`);
+console.log(`Built ${slug}/dist — QR -> ${cfg.url}, page ${PAGE_W_MM}x${PAGE_H_MM}mm (A6 + ${BLEED_MM}mm bleed)`);

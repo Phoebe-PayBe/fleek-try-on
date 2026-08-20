@@ -2,15 +2,20 @@
 // dist/back.png), not out of the source SVG — so a layout change that shrinks
 // or clips a code is caught before the card goes to print.
 //
-//   node verify-qr.mjs
+//   node lib/verify-qr.mjs <card>
 
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { chromium } from 'playwright';
 
-const root = dirname(fileURLToPath(import.meta.url));
-const cfg = JSON.parse(readFileSync(join(root, 'config.json'), 'utf8'));
+const slug = process.argv[2];
+if (!slug) {
+  console.error('usage: node lib/verify-qr.mjs <card>   (e.g. bliss-in-the-park)');
+  process.exit(1);
+}
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const cfg = JSON.parse(readFileSync(join(root, slug, 'config.json'), 'utf8'));
 const jsQrSource = readFileSync(
   join(root, 'node_modules', 'jsqr', 'dist', 'jsQR.js'), 'utf8');
 
@@ -21,7 +26,7 @@ await page.addScriptTag({ content: jsQrSource });
 
 let failed = false;
 for (const side of ['front', 'back']) {
-  const png = readFileSync(join(root, 'dist', `${side}.png`)).toString('base64');
+  const png = readFileSync(join(root, slug, 'dist', `${side}.png`)).toString('base64');
   const result = await page.evaluate(async (dataUrl) => {
     const img = new Image();
     img.src = dataUrl;
