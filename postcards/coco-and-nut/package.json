@@ -1,0 +1,14 @@
+{
+  "name": "coco-and-nut-postcard",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "verify": "node verify-qr.mjs"
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0",
+    "playwright": "^1.56.1",
+    "qrcode": "^1.5.4"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "business": "Coco & Nut Coffee",
+  "businessFull": "Coco and Nut Coffee Wimbledon",
+  "greeting": "Hi Coco & Nut,",
+  "addressName": "Coco & Nut Coffee",
+  "addressLines": ["c/o Hybrid Fitness", "82a Plough Lane", "London SW17 0BN"],
+  "headline": "Coco &amp; Nut - we made you a website.",
+  "url": "https://rowbo.dev/coco-and-nut",
+  "urlDisplay": "rowbo.dev/coco-and-nut",
+  "price": "£30",
+  "senders": "Tom &amp; Phoebe",
+  "venue": "Hybrid Fitness on Plough Lane",
+  "searchPhrase": "coffee near Plough Lane"
+}

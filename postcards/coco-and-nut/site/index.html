@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coco &amp; Nut Coffee — Plough Lane, Wimbledon</title>
+<style>
+  @font-face { font-family: Inter; font-style: normal; font-weight: 400;
+    src: url('../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 600;
+    src: url('../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 700;
+    src: url('../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 800;
+    src: url('../assets/fonts/inter-latin-800-normal.woff2') format('woff2'); font-display: block; }
+  :root {
+    --cream: #FBF5EC;
+    --espresso: #241611;
+    --ink: #1D0802;
+    --clay: #C4643C;
+    --muted: #6E5B50;
+    --line: #E8DAC6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    background: rgba(251,245,236,0.92);
+  }
+  .wordmark {
+    font-family: 'TASA Orbiter', 'Helvetica Neue', system-ui, sans-serif;
+    font-size: 17px; font-weight: 800; letter-spacing: -0.4px;
+  }
+  .wordmark em { font-style: normal; color: var(--clay); }
+  .open {
+    font-size: 11px; font-weight: 600; color: #2E7D4F;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #2E7D4F; }
+
+  .hero { padding: 26px 20px 22px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.4px;
+    text-transform: uppercase; color: var(--clay); margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'TASA Orbiter', 'Helvetica Neue', system-ui, sans-serif;
+    font-size: 34px; line-height: 1.04; letter-spacing: -1px;
+    font-weight: 800; margin: 0 0 12px;
+  }
+  .sub { font-size: 14px; line-height: 1.55; color: var(--muted); margin: 0 0 18px; }
+  .cta { display: flex; gap: 10px; }
+  .btn {
+    flex: 1; text-align: center; padding: 13px 10px; border-radius: 12px;
+    font-size: 13.5px; font-weight: 700; text-decoration: none;
+  }
+  .btn-primary { background: var(--espresso); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+
+  .shots { display: grid; grid-template-columns: 1.35fr 1fr; gap: 8px; padding: 0 20px; }
+  .shot {
+    border-radius: 14px; height: 132px; position: relative; overflow: hidden;
+    display: flex; align-items: flex-end; padding: 10px;
+  }
+  .shot span {
+    font-size: 10.5px; font-weight: 700; color: #fff; letter-spacing: 0.2px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+  }
+  .shot-a { background: radial-gradient(120% 100% at 30% 20%, #6F4A34 0%, #2E1C14 100%); }
+  .shot-b { background: radial-gradient(120% 100% at 70% 10%, #C4643C 0%, #7A3A20 100%); }
+  .shot .glyph { position: absolute; right: -8px; top: 8px; opacity: 0.5; }
+
+  .rating {
+    display: flex; align-items: center; gap: 8px; justify-content: center;
+    padding: 18px 20px 4px; font-size: 12.5px; color: var(--muted);
+  }
+  .stars { color: #E8A33D; letter-spacing: 1px; font-size: 13px; }
+
+  section { padding: 22px 20px; }
+  h2 {
+    font-family: 'TASA Orbiter', 'Helvetica Neue', system-ui, sans-serif;
+    font-size: 19px; font-weight: 800; letter-spacing: -0.3px; margin: 0 0 14px;
+  }
+  .menu { list-style: none; margin: 0; padding: 0; }
+  .menu li {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px;
+  }
+  .menu .name { font-weight: 600; }
+  .menu .fill { flex: 1; }
+  .menu .price { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .info {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px 18px; font-size: 13px; line-height: 1.7; color: var(--muted);
+  }
+  .info strong { color: var(--ink); }
+  footer {
+    padding: 18px 20px 28px; font-size: 11px; color: #9A8877; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="wordmark">coco <em>&amp;</em> nut</div>
+  <div class="open"><span class="dot"></span>Open from 7am</div>
+</div>
+
+<div class="hero">
+  <div class="eyebrow">Plough Lane · Wimbledon</div>
+  <h1>Speciality coffee, inside the gym.</h1>
+  <p class="sub">Proper flat whites, fresh sandwiches and warm cinnamon doughnuts — tucked inside Hybrid Fitness on Plough Lane. Open from 7am, no membership needed.</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="#menu">See the menu</a>
+    <a class="btn btn-ghost" href="#find">Get directions</a>
+  </div>
+</div>
+
+<div class="shots">
+  <div class="shot shot-a">
+    <svg class="glyph" width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="#FBF5EC" stroke-width="1.1">
+      <path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/>
+      <path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16"/>
+      <path d="M7 4.5c0 1-1 1-1 2M10.5 4c0 1-1 1-1 2M14 4.5c0 1-1 1-1 2"/>
+    </svg>
+    <span>Batch &amp; espresso</span>
+  </div>
+  <div class="shot shot-b">
+    <svg class="glyph" width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#FBF5EC" stroke-width="1.1">
+      <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6"/>
+    </svg>
+    <span>Doughnuts</span>
+  </div>
+</div>
+
+<div class="rating">
+  <span class="stars">★★★★★</span> 4.6 on Google · 49 reviews
+</div>
+
+<section id="menu">
+  <h2>On the counter today</h2>
+  <ul class="menu">
+    <li><span class="name">Flat white</span><span class="fill"></span><span class="price">£3.40</span></li>
+    <li><span class="name">Filter / batch brew</span><span class="fill"></span><span class="price">£2.80</span></li>
+    <li><span class="name">Iced latte</span><span class="fill"></span><span class="price">£3.90</span></li>
+    <li><span class="name">Protein shake</span><span class="fill"></span><span class="price">£5.50</span></li>
+    <li><span class="name">Coco &amp; Nut sandwich</span><span class="fill"></span><span class="price">£6.50</span></li>
+    <li><span class="name">Cinnamon doughnut</span><span class="fill"></span><span class="price">£2.90</span></li>
+    <li><span class="name">Butter croissant</span><span class="fill"></span><span class="price">£2.60</span></li>
+  </ul>
+</section>
+
+<section id="find">
+  <h2>Find us</h2>
+  <div class="info">
+    <strong>Coco &amp; Nut Coffee</strong><br>
+    Inside Hybrid Fitness, 82a Plough Lane<br>
+    London SW17 0BN<br><br>
+    <strong>Mon–Fri</strong> 7am – 5pm<br>
+    <strong>Sat–Sun</strong> 8am – 4pm<br><br>
+    Two minutes from Plough Lane, walk-ins welcome — you don't need to be a member.
+  </div>
+</section>
+
+<footer>© Coco &amp; Nut Coffee · Wimbledon, London</footer>
+
+</body>
+</html>

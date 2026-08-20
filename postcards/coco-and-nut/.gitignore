@@ -1,0 +1,4 @@
+node_modules/
+
+# print deliverables are committed on purpose (root .gitignore excludes dist/)
+!dist/
