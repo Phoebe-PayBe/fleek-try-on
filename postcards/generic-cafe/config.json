@@ -1,0 +1,43 @@
+{
+  "business": "Generic cafe handout",
+  "businessFull": "Hand-out card for independent cafes with no website",
+  "variant": "handout",
+  "greeting": "Hey - we made you a website.",
+  "headline": "Hey - we made you a website.",
+  "subhead": "Not a mockup, not a pitch deck. A real caf&eacute; site you can look at on your phone right now.",
+  "scanLine": "Scan to see it live",
+  "claimLine": "Scan to see the demo &rarr;",
+  "note": [
+    "We&rsquo;re Tom and Phoebe. We build websites for independent caf&eacute;s - the kind of place that already has the coffee, the regulars and the reviews, but nothing to send people to.",
+    "Scan the code and you&rsquo;ll see a full caf&eacute; site: menu, hours, photos, order-ahead. Yours would be the same, <strong style=\"color:#16233F;\">built with your name, your photos and your prices</strong> - and we build it before you pay a penny.",
+    "Like it? It&rsquo;s £30 a month, cancel anytime. Don&rsquo;t? Keep the card, no hard feelings."
+  ],
+  "noteSize": 14.2,
+  "panel": {
+    "title": "What you get for £30/mo",
+    "items": [
+      "A site built for you in 48 hours - we do the writing and the setup",
+      "Found on Google and ChatGPT when people search for coffee near you",
+      "Menu, opening hours, photos and directions, always up to date",
+      "Order-ahead and bookings, without the DMs",
+      "Changes whenever you want them - just message us",
+      "Your own domain, hosting and updates included"
+    ],
+    "footnote": "No contract, no setup fee, cancel anytime.<br>See it first at rowbo.dev/cafe"
+  },
+  "theme": {
+    "paper": "#FCF9F3",
+    "ink": "#16233F",
+    "accent": "#C8102E",
+    "body": "#42506B",
+    "hairline": "#DEE2EA",
+    "qrBorder": "#DDE2EB",
+    "logo": "rowbo-logo-navy.png",
+    "phoneBezel": "#16233F",
+    "phoneShadow": "rgba(22,35,63,0.30)"
+  },
+  "url": "https://rowbo.dev/cafe",
+  "urlDisplay": "rowbo.dev/cafe",
+  "price": "£30",
+  "senders": "Tom &amp; Phoebe"
+}

@@ -41,7 +41,7 @@ const rawQr = await QRCode.toString(cfg.url, {
   type: 'svg',
   margin: 0,
   errorCorrectionLevel: 'M',
-  color: { dark: '#1D0802', light: '#ffffff' },
+  color: { dark: cfg.theme?.ink ?? '#1D0802', light: '#ffffff' },
 });
 const qrSvg = rawQr
   .replace(/<\?xml[^>]*\?>/, '')
@@ -86,16 +86,17 @@ for (const [name, html] of [['front', frontHtml], ['back', backHtml]]) {
 await artPage.close();
 
 // 3. Print PDF: two pages, A6 + bleed, artwork scaled to cover.
+const PAPER = cfg.theme?.paper ?? '#FBF5EC';
 const artboard = html => html.split('<body>')[1].split('</body>')[0];
 const printHtml = `<!doctype html>
 <html><head><meta charset="utf-8"><style>
 ${fontFaces()}
   @page { size: ${PAGE_W_MM}mm ${PAGE_H_MM}mm; margin: 0; }
-  html, body { margin: 0; padding: 0; background: #FBF5EC; }
+  html, body { margin: 0; padding: 0; background: ${PAPER}; }
   .page {
     width: ${PAGE_W_MM}mm; height: ${PAGE_H_MM}mm; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
-    background: #FBF5EC; break-after: page;
+    background: ${PAPER}; break-after: page;
   }
   .page:last-child { break-after: auto; }
   .art { transform: scale(${SCALE.toFixed(5)}); transform-origin: center center; flex: 0 0 auto; }
@@ -116,6 +117,51 @@ await printPage.pdf({
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
 });
 await printPage.close();
+
+// 4. Handouts also get a 4-up A4 sheet, for running off a batch on an office
+// printer. An A6 is exactly a quarter of an A4, so the cards tile with no
+// waste and the cut lines are the two halves of the sheet.
+if (cfg.variant === 'handout') {
+  const A4_W_MM = 297, A4_H_MM = 210;          // A4 landscape
+  const CELL_W_MM = A4_W_MM / 2, CELL_H_MM = A4_H_MM / 2;
+  const CELL_SCALE = Math.max((CELL_W_MM * MM) / W, (CELL_H_MM * MM) / H);
+  const cell = html => `<div class="cell"><div class="art">${artboard(html)}</div></div>`;
+
+  const sheetHtml = `<!doctype html>
+<html><head><meta charset="utf-8"><style>
+${fontFaces()}
+  @page { size: ${A4_W_MM}mm ${A4_H_MM}mm; margin: 0; }
+  html, body { margin: 0; padding: 0; background: ${PAPER}; }
+  .sheet {
+    width: ${A4_W_MM}mm; height: ${A4_H_MM}mm; display: grid;
+    grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    background: ${PAPER}; break-after: page;
+  }
+  .sheet:last-child { break-after: auto; }
+  .cell {
+    width: ${CELL_W_MM}mm; height: ${CELL_H_MM}mm; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .art { transform: scale(${CELL_SCALE.toFixed(5)}); transform-origin: center center; flex: 0 0 auto; }
+</style></head><body>
+  <div class="sheet">${cell(frontHtml).repeat(4)}</div>
+  <div class="sheet">${cell(backHtml).repeat(4)}</div>
+</body></html>`;
+  writeFileSync(join(dist, 'sheet-a4-4up.html'), sheetHtml);
+
+  const sheetPage = await browser.newPage();
+  await sheetPage.goto(`file://${join(dist, 'sheet-a4-4up.html')}`);
+  await sheetPage.evaluate(() => document.fonts.ready);
+  await sheetPage.pdf({
+    path: join(dist, `${slug}-a4-4up.pdf`),
+    width: `${A4_W_MM}mm`,
+    height: `${A4_H_MM}mm`,
+    printBackground: true,
+    margin: { top: '0', right: '0', bottom: '0', left: '0' },
+  });
+  await sheetPage.close();
+  console.log('Also built the 4-up A4 sheet (duplex, flip on SHORT edge; cut in quarters).');
+}
 
 await browser.close();
 console.log(`Built ${slug}/dist — QR -> ${cfg.url}, page ${PAGE_W_MM}x${PAGE_H_MM}mm (A6 + ${BLEED_MM}mm bleed)`);

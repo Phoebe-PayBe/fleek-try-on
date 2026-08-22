@@ -14,17 +14,33 @@ radii and shadows.
 | --- | --- | --- |
 | `coco-and-nut/` | Coco and Nut Coffee, inside Hybrid Fitness, 82a Plough Ln SW17 0BN | Speciality coffee in a gym — no site, so non-members never find it |
 | `bliss-in-the-park/` | Bliss in the Park, South Park Gardens SW19 8PN | Mauritian food + live music Fridays; Facebook-only, WhatsApp pre-orders |
+| `generic-cafe/` | Nobody in particular — a handout for any independent cafe | Generic demo site at `rowbo.dev/cafe`, handed over in person |
+
+Cards come in two shapes, set by `variant` in config:
+
+- **`mailer`** (default) — postage box and address panel on the back, for post.
+- **`handout`** — no address; the back's right-hand side sells instead
+  ("what you get for £30/mo"), and the build also produces a 4-up A4 sheet.
 
 ## Layout
 
 ```
-lib/          template.mjs (the two artboards), build.mjs, verify-qr.mjs, optimise-images.mjs
+lib/          template.mjs (the artboards), build.mjs, verify-qr.mjs,
+              optimise-images.mjs, recolour-logo.mjs
 assets/       rowbo logo + bundled fonts, shared by every card
 <card>/
   config.json   name, greeting, address, headline, note copy, URL, price
   site/         the mock mobile site shown in the phone mockup
   dist/         generated — artwork and the print PDF
 ```
+
+## Palette
+
+Posted cards use the design canvas palette (cream, ink brown, orange). A card
+can override any of it with `theme` in its config — `generic-cafe` runs cream
+white, navy and red, with a navy version of the logo made by
+`node lib/recolour-logo.mjs rowbo-logo.png rowbo-logo-navy.png "#16233F"`.
+The QR ink follows `theme.ink`, so it stays legible in the card's own colour.
 
 ## Build
 
@@ -49,6 +65,7 @@ repo as 8 MB PNGs.
 | `dist/<card>-postcard-print.pdf` | **Send this to the printer.** 2 pages (front, back), A6 landscape + 3 mm bleed (154 × 111 mm). |
 | `dist/front.png` / `back.png` | 2400 × 1680 previews (~400 dpi at A6). |
 | `dist/site-mobile.jpg` | Screenshot of the mock site, used in the phone mockup. |
+| `dist/<card>-a4-4up.pdf` | Handouts only: four cards to an A4 landscape sheet. Print duplex, **flip on short edge**, then cut the sheet in quarters — an A6 is exactly a quarter of an A4, so there's nothing to trim. |
 | `dist/*.html`, `dist/qr.svg` | The artboards and the QR on its own, for hand-editing. |
 
 ## Adding a card
@@ -64,13 +81,14 @@ if the phone on the postcard looks like *their* site rather than a template.
 
 - **The URLs are placeholders.** `rowbo.dev/<card>` has to exist and serve the
   real site before the cards are posted; the QR encodes it verbatim.
-- **Check who you're addressing.** Both cards currently greet the business, not
-  a person — a first name lifts response rates on cold post noticeably.
-- **Photography.** `bliss-in-the-park` uses AI-generated placeholder imagery
-  (Higgsfield / nano-banana): a park evening, a curry roti bowl, prawns,
-  pastries. They stand in for the real thing and should be swapped for the
-  business's own photos before the site goes live — a generated dish is not
-  their dish, and shouldn't be presented as it on a live site.
+- **Check who you're addressing.** The two posted cards greet the business, not
+  a person — a first name lifts response rates on cold post noticeably. (The
+  handout is deliberately generic: it opens "Hey - we made you a website.")
+- **Photography.** `bliss-in-the-park` and `generic-cafe` use AI-generated
+  imagery (Higgsfield / nano-banana). On `generic-cafe` that's fine as-is —
+  the demo isn't claiming to be anyone's shop. On a card made for a specific
+  business, swap in their own photos before the site goes live: a generated
+  dish is not their dish and shouldn't be presented as it.
 - **Prices and dates** are transcribed from public posts and posters. Worth a
   glance before print in case they've moved on.
 - `TASA Orbiter` isn't bundled (licensed font). Renders fall back to the bundled
