@@ -37,7 +37,7 @@ Cards come in two shapes, set by `variant` in config:
 ```
 lib/          template.mjs (the artboards), build.mjs, verify-qr.mjs,
               optimise-images.mjs, recolour-logo.mjs
-assets/       rowbo logo + bundled fonts, shared by every card
+assets/       rowbo logo artwork + brand fonts, shared by every card
 <card>/
   config.json   name, greeting, address, headline, note copy, URL, price
   site/         the mock mobile site shown in the phone mockup
@@ -109,6 +109,18 @@ if the phone on the postcard looks like *their* site rather than a template.
   dish is not their dish and shouldn't be presented as it.
 - **Prices and dates** are transcribed from public posts and posters. Worth a
   glance before print in case they've moved on.
-- `TASA Orbiter` isn't bundled (licensed font). Renders fall back to the bundled
-  Inter; install the real face before final artwork if you want the headline
-  exactly as the canvas shows it.
+## Fonts and logo
+
+Both faces come from the rowbo font pack and are bundled as woff2 in
+`assets/fonts`, so a render is identical anywhere and no system font is
+assumed:
+
+- **TASA Orbiter** (SemiBold / Bold / ExtraBold) — headlines, the scan line,
+  the panel title, the sign-off.
+- **Inter** (400 / 600 / 700 / 800) — body copy, bullets, small print.
+
+Logo artwork is the official pack (`Logomark` lockup):
+`rowbo-logo.png` is the brand default (orange mark, ink wordmark) and is what
+the two posted cards use; `rowbo-logo-orange.png` and `rowbo-logo-navy.png`
+are single-colour versions made from it by `lib/recolour-logo.mjs`, and the
+handouts run the orange one. `rowbo-logo.svg` is there for anything vector.

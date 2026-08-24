@@ -37,11 +37,7 @@
   "senders": "Tom &amp; Phoebe",
   "priceLine": false,
   "greetingSize": 27,
-  "headlineSize": 29,
-  "frontSplit": [
-    1.2,
-    0.8
-  ],
+  "headlineSize": 35,
   "noteGap": 30,
   "signatureGap": 46
 }

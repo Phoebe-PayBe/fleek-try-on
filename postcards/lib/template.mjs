@@ -32,13 +32,15 @@ const DEFAULT_THEME = {
 
 const theme = cfg => ({ ...DEFAULT_THEME, ...(cfg.theme ?? {}) });
 
-// Inter is bundled so the render is identical on any machine (no system fonts
-// are assumed). 'TASA Orbiter' stays first in the display stack: if the printer
-// or designer has the licensed face installed, it wins.
-export const fontFaces = (base = `${ASSETS}/fonts`) => [400, 600, 700, 800]
-  .map(w => `  @font-face { font-family: Inter; font-style: normal; font-weight: ${w};
-    src: url('${base}/inter-latin-${w}-normal.woff2') format('woff2'); font-display: block; }`)
-  .join('\n');
+// Both brand faces are bundled from the rowbo font pack — TASA Orbiter for
+// display, Inter for text — so a render is identical on any machine and no
+// system font is assumed.
+export const fontFaces = (base = `${ASSETS}/fonts`) => [
+  ...[400, 600, 700, 800].map(w => `  @font-face { font-family: Inter; font-style: normal; font-weight: ${w};
+    src: url('${base}/inter-latin-${w}-normal.woff2') format('woff2'); font-display: block; }`),
+  ...[600, 700, 800].map(w => `  @font-face { font-family: 'TASA Orbiter'; font-style: normal; font-weight: ${w};
+    src: url('${base}/tasa-orbiter-${w}.woff2') format('woff2'); font-display: block; }`),
+].join('\n');
 
 // Optional photo background (the handout's cover): the image is blurred and
 // veiled so it reads as frosted glass and the type stays legible. The veil is
