@@ -7,7 +7,8 @@
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "Upload your menu and photos to see your live preview instantly. <strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+    "Upload your menu and photos to see your live preview instantly.",
+    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
   ],
   "noteSize": 15,
   "panel": {
@@ -16,7 +17,7 @@
       "We handle hosting, updates and menu edits for you.",
       "Take direct orders and bookings without third-party commission fees.",
       "Optimised to help local customers find you on Google Maps.",
-      "Cancel anytime: no setup fees, no contracts, and you keep your domain."
+      "Cancel anytime: no setup fees, no contracts."
     ]
   },
   "theme": {
