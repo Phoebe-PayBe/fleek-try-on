@@ -1,9 +1,13 @@
 {
   "business": "Bliss in the Park",
-  "businessFull": "Bliss in the Park — South Park Gardens, Wimbledon",
+  "businessFull": "Bliss in the Park at South Park Gardens, Wimbledon",
   "greeting": "Hi Bliss,",
   "addressName": "Bliss in the Park",
-  "addressLines": ["South Park Gardens", "Wimbledon", "London SW19 8PN"],
+  "addressLines": [
+    "South Park Gardens",
+    "Wimbledon",
+    "London SW19 8PN"
+  ],
   "headline": "Bliss in the Park - we made you a website.",
   "note": [
     "Phoebe and I found your Friday nights on Facebook - Mauritian food, live music, the bar in the park - but there&rsquo;s no website behind it. So we built you one, <strong style=\"color:#1D0802;\">free</strong>, from your own posts, menus and photos.",
