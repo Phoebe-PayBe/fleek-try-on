@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plumbing &amp; Heating — local, same-day call-outs</title>
+<style>
+  @font-face { font-family: Inter; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 600;
+    src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 800;
+    src: url('../../assets/fonts/inter-latin-800-normal.woff2') format('woff2'); font-display: block; }
+
+  /* Trade site: navy, white and a safety amber. Phone number above everything,
+     because that is the button people actually press. Deliberately generic. */
+  :root {
+    --paper: #F4F7FB;
+    --navy: #0F2440;
+    --navy-2: #16345B;
+    --amber: #FFB020;
+    --ink: #16202F;
+    --muted: #66748A;
+    --line: #DEE5EF;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .callbar {
+    background: var(--amber); color: #241A00; text-align: center;
+    padding: 8px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.2px;
+  }
+  .bar {
+    background: var(--navy); padding: 13px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .word { font-size: 14px; font-weight: 800; letter-spacing: 1.6px; color: #fff; line-height: 1.25; }
+  .word small { display: block; font-size: 9px; font-weight: 600; letter-spacing: 2.4px; color: var(--amber); }
+  .phone { font-size: 13px; font-weight: 800; color: #fff; }
+
+  .hero { position: relative; }
+  .hero img { width: 100%; height: 340px; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(9,20,36,0.55) 0%, rgba(9,20,36,0.35) 45%, rgba(9,20,36,0.92) 100%);
+  }
+  .hero .copy { position: absolute; left: 20px; right: 20px; bottom: 20px; }
+  .eyebrow {
+    font-size: 10px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 9px;
+  }
+  h1 {
+    font-size: 33px; line-height: 1.06; font-weight: 800; letter-spacing: -0.8px;
+    color: #fff; margin: 0 0 16px;
+  }
+  .btn {
+    display: inline-block; text-decoration: none; font-size: 13px; font-weight: 800;
+    padding: 14px 22px; border-radius: 6px; letter-spacing: 0.2px;
+  }
+  .btn-amber { background: var(--amber); color: #241A00; }
+  .btn-white { background: #fff; color: var(--navy); }
+  .btn-outline { border: 1.5px solid rgba(255,255,255,0.45); color: #fff; }
+  .hero .r { display: flex; gap: 9px; }
+  .hero .r .btn { flex: 1; text-align: center; padding: 13px 6px; }
+
+  .badges {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    padding: 16px 20px 0;
+  }
+  .badge {
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 8px; text-align: center;
+  }
+  .badge .t { font-size: 11.5px; font-weight: 800; line-height: 1.3; }
+  .badge .s { font-size: 9.5px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+
+  section { padding: 26px 20px 6px; }
+  h2 { font-size: 23px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 4px; }
+  .lead { font-size: 13px; line-height: 1.6; color: var(--muted); margin: 0 0 16px; }
+
+  .jobs { list-style: none; margin: 0; padding: 0; }
+  .jobs li {
+    display: flex; align-items: baseline; gap: 10px; background: #fff;
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 13px 14px; margin-bottom: 8px; font-size: 13.5px;
+  }
+  .jobs .name { font-weight: 700; }
+  .jobs .fill { flex: 1; }
+  .jobs .price { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .jobs .sub { display: block; font-size: 11.5px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 4px; }
+  .tiles img { width: 100%; height: 118px; object-fit: cover; border-radius: 8px; display: block; }
+
+  .quote {
+    margin: 26px 20px 0; background: var(--navy); border-radius: 10px;
+    padding: 24px 20px 22px; color: #D5DEEB;
+  }
+  .quote h3 { margin: 0 0 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+  .quote p { margin: 0 0 16px; font-size: 12.5px; line-height: 1.6; }
+  .quote .r { display: flex; gap: 9px; }
+  .quote .r .btn { flex: 1; text-align: center; padding: 13px 6px; }
+
+  .areas { font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .areas strong { color: var(--ink); }
+  .hours div {
+    display: flex; justify-content: space-between; font-size: 13px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .hours span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  footer {
+    margin-top: 26px; background: var(--navy); color: #8494AA;
+    text-align: center; padding: 22px 20px 28px; font-size: 11px; line-height: 1.7;
+  }
+  footer .w { color: #fff; font-weight: 800; letter-spacing: 1.6px; font-size: 13px; display: block; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div class="callbar">24/7 emergency call-out · 07700 900 118</div>
+
+<div class="bar">
+  <div class="word">PLUMBING &amp; HEATING<small>GAS SAFE REGISTERED</small></div>
+  <div class="phone">Call</div>
+</div>
+
+<div class="hero">
+  <img src="img/boiler.jpg" alt="On the job">
+  <div class="veil"></div>
+  <div class="copy">
+    <div class="eyebrow">Local · Same day where we can</div>
+    <h1>Leak, breakdown<br>or no hot water?</h1>
+    <div class="r">
+      <a class="btn btn-amber" href="#">Call now</a>
+      <a class="btn btn-outline" href="#quote">Get a quote</a>
+    </div>
+  </div>
+</div>
+
+<div class="badges">
+  <div class="badge"><div class="t">Gas Safe</div><div class="s">Registered engineer</div></div>
+  <div class="badge"><div class="t">12 months</div><div class="s">Guarantee on work</div></div>
+  <div class="badge"><div class="t">No call-out</div><div class="s">Fee on quoted jobs</div></div>
+</div>
+
+<section>
+  <h2>What we do</h2>
+  <p class="lead">Straight prices, agreed before we start. No VAT surprises.</p>
+  <ul class="jobs">
+    <li><span class="name">Emergency call-out<span class="sub">First hour, parts extra</span></span><span class="fill"></span><span class="price">£85</span></li>
+    <li><span class="name">Boiler service<span class="sub">Full check and certificate</span></span><span class="fill"></span><span class="price">£90</span></li>
+    <li><span class="name">Leak repair<span class="sub">Taps, pipework, toilets</span></span><span class="fill"></span><span class="price">from £75</span></li>
+    <li><span class="name">Bathroom install<span class="sub">Free survey and fixed quote</span></span><span class="fill"></span><span class="price">quoted</span></li>
+  </ul>
+  <div class="tiles">
+    <img src="img/pipes.jpg" alt="Pipework">
+    <img src="img/bathroom.jpg" alt="Bathroom install">
+  </div>
+</section>
+
+<div class="quote" id="quote">
+  <h3>Send a photo, get a price</h3>
+  <p>Snap the problem, tell us your postcode, and we'll come back with a price and the next free slot — usually within the hour.</p>
+  <div class="r">
+    <a class="btn btn-amber" href="#">Request a quote</a>
+    <a class="btn btn-outline" href="#">WhatsApp us</a>
+  </div>
+</div>
+
+<section>
+  <h2>Where we work</h2>
+  <div class="areas">
+    <strong>Within 10 miles of the workshop</strong><br>
+    Domestic and small commercial · Landlord certificates<br>
+    Out-of-hours cover every night and weekend
+  </div>
+  <div class="hours" style="margin-top:14px;">
+    <div><span>Monday – Friday</span><span>07:30 – 18:00</span></div>
+    <div><span>Saturday</span><span>08:00 – 14:00</span></div>
+    <div><span>Emergencies</span><span>24 hours</span></div>
+  </div>
+</section>
+
+<footer>
+  <span class="w">PLUMBING &amp; HEATING</span>
+  A demo site by rowbo.dev — yours would carry your name.
+</footer>
+
+</body>
+</html>

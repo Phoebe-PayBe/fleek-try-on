@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Gym — strength, classes and coaching</title>
+<style>
+  @font-face { font-family: Inter; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 600;
+    src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 800;
+    src: url('../../assets/fonts/inter-latin-800-normal.woff2') format('woff2'); font-display: block; }
+
+  /* Hard, dark, uppercase — the register a strength gym expects. Deliberately
+     generic so anyone can picture their own name in the header. */
+  :root {
+    --paper: #F3F4F6;
+    --char: #14161A;
+    --char-2: #1D2026;
+    --lime: #D7F205;
+    --ink: #14161A;
+    --muted: #7C828C;
+    --line: #E3E5E9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bar {
+    background: var(--char); padding: 15px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .word { font-size: 16px; font-weight: 800; letter-spacing: 4px; color: #fff; }
+  .word span { color: var(--lime); }
+  .burger { display: flex; flex-direction: column; gap: 5px; }
+  .burger span { width: 24px; height: 2px; background: #fff; border-radius: 2px; }
+
+  .hero { position: relative; }
+  .hero img { width: 100%; height: 400px; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(10,11,13,0.35) 0%, rgba(10,11,13,0.15) 40%, rgba(10,11,13,0.88) 100%);
+  }
+  .hero .copy { position: absolute; left: 20px; right: 20px; bottom: 22px; }
+  .eyebrow {
+    font-size: 10px; font-weight: 800; letter-spacing: 2.6px; text-transform: uppercase;
+    color: var(--lime); margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 40px; line-height: 0.98; font-weight: 800; letter-spacing: -1.2px;
+    text-transform: uppercase; color: #fff; margin: 0 0 18px;
+  }
+  .btn {
+    display: inline-block; text-decoration: none; font-size: 12.5px; font-weight: 800;
+    letter-spacing: 1.6px; text-transform: uppercase; padding: 14px 26px; border-radius: 3px;
+  }
+  .btn-lime { background: var(--lime); color: var(--char); }
+  .btn-light { background: #fff; color: var(--char); }
+  .btn-outline { border: 1.5px solid rgba(255,255,255,0.4); color: #fff; }
+
+  section { padding: 30px 20px 6px; }
+  h2 {
+    font-size: 25px; font-weight: 800; letter-spacing: -0.6px; text-transform: uppercase;
+    margin: 0 0 4px; color: var(--ink);
+  }
+  .lead { font-size: 13px; line-height: 1.6; color: var(--muted); margin: 0 0 18px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .tile { position: relative; border-radius: 6px; overflow: hidden; }
+  .tile img { width: 100%; height: 112px; object-fit: cover; display: block; }
+  .tile .cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 8px 8px;
+    background: linear-gradient(180deg, rgba(10,11,13,0) 0%, rgba(10,11,13,0.85) 100%);
+    color: #fff; font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px;
+    text-transform: uppercase; text-align: center;
+  }
+
+  .rows { margin-top: 4px; }
+  .row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  .row .time {
+    font-size: 12px; font-weight: 800; color: var(--ink);
+    font-variant-numeric: tabular-nums; min-width: 52px;
+  }
+  .row .what { flex: 1; font-size: 13.5px; font-weight: 600; }
+  .row .who { font-size: 11.5px; color: var(--muted); }
+
+  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 6px; }
+  .plan { border: 1.5px solid var(--line); border-radius: 8px; padding: 15px 14px; background: #fff; }
+  .plan.dark { background: var(--char); border-color: var(--char); }
+  .plan .n { font-size: 11px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); }
+  .plan.dark .n { color: var(--lime); }
+  .plan .p { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-top: 6px; }
+  .plan.dark .p { color: #fff; }
+  .plan .p small { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+  .plan .d { font-size: 11.5px; line-height: 1.5; color: var(--muted); margin-top: 6px; }
+  .plan.dark .d { color: #9AA1AC; }
+
+  .strip {
+    margin: 26px 20px 0; background: var(--char); border-radius: 8px; padding: 24px 20px 22px;
+  }
+  .strip h3 {
+    margin: 0 0 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+    text-transform: uppercase; color: #fff;
+  }
+  .strip p { margin: 0 0 16px; font-size: 12.5px; line-height: 1.6; color: #9AA1AC; }
+  .strip .r { display: flex; gap: 9px; }
+  .strip .r .btn { flex: 1; text-align: center; padding: 13px 6px; letter-spacing: 1.2px; }
+
+  .hours div {
+    display: flex; justify-content: space-between; font-size: 13px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .hours span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .where { font-size: 13px; line-height: 1.75; color: var(--muted); margin-top: 16px; }
+  .where strong { color: var(--ink); }
+
+  footer {
+    margin-top: 26px; background: var(--char); color: #7C828C;
+    text-align: center; padding: 22px 20px 28px; font-size: 11px; line-height: 1.7;
+  }
+  footer .w { color: #fff; font-weight: 800; letter-spacing: 4px; font-size: 13px; display: block; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="word">THE<span>GYM</span></div>
+  <div class="burger"><span></span><span></span><span></span></div>
+</div>
+
+<div class="hero">
+  <img src="img/floor.jpg" alt="The gym floor">
+  <div class="veil"></div>
+  <div class="copy">
+    <div class="eyebrow">Open 5am – 10pm · 7 days</div>
+    <h1>Train hard.<br>Feel good.</h1>
+    <a class="btn btn-lime" href="#timetable">See the timetable</a>
+  </div>
+</div>
+
+<section>
+  <div class="tiles">
+    <div class="tile"><img src="img/weights.jpg" alt="Free weights"><div class="cap">Free weights</div></div>
+    <div class="tile"><img src="img/class.jpg" alt="Classes"><div class="cap">Classes</div></div>
+    <div class="tile"><img src="img/coaching.jpg" alt="Coaching"><div class="cap">Coaching</div></div>
+  </div>
+</section>
+
+<section id="timetable">
+  <h2>This week</h2>
+  <p class="lead">Classes are included with membership — book your spot in the app.</p>
+  <div class="rows">
+    <div class="row"><div class="time">06:15</div><div class="what">Strength &amp; Conditioning<div class="who">45 min · Dan</div></div></div>
+    <div class="row"><div class="time">09:30</div><div class="what">Kettlebell Circuit<div class="who">45 min · Priya</div></div></div>
+    <div class="row"><div class="time">12:10</div><div class="what">Express HIIT<div class="who">30 min · Dan</div></div></div>
+    <div class="row"><div class="time">18:00</div><div class="what">Barbell Club<div class="who">60 min · Marcus</div></div></div>
+    <div class="row"><div class="time">19:15</div><div class="what">Mobility &amp; Stretch<div class="who">45 min · Priya</div></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Membership</h2>
+  <p class="lead">No joining fee. Cancel with a month's notice.</p>
+  <div class="plans">
+    <div class="plan">
+      <div class="n">Off-peak</div>
+      <div class="p">£29<small>/mo</small></div>
+      <div class="d">Weekdays before 4pm, all equipment.</div>
+    </div>
+    <div class="plan dark">
+      <div class="n">Full</div>
+      <div class="p">£42<small>/mo</small></div>
+      <div class="d">Any time, all classes included.</div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <h3>First session free</h3>
+  <p>Come in for a walk round and a session on us — no card, no sales pitch.</p>
+  <div class="r">
+    <a class="btn btn-lime" href="#">Book a class</a>
+    <a class="btn btn-outline" href="#">Free trial</a>
+  </div>
+</div>
+
+<section>
+  <h2>Find us</h2>
+  <div class="hours">
+    <div><span>Monday – Friday</span><span>05:00 – 22:00</span></div>
+    <div><span>Saturday</span><span>07:00 – 20:00</span></div>
+    <div><span>Sunday</span><span>08:00 – 18:00</span></div>
+  </div>
+  <div class="where">
+    <strong>Unit 4, Station Road</strong><br>
+    Free parking · Showers · Lockers<br>
+    Staffed 6am – 8pm daily
+  </div>
+</section>
+
+<footer>
+  <span class="w">THE GYM</span>
+  A demo site by rowbo.dev — yours would carry your name.
+</footer>
+
+</body>
+</html>

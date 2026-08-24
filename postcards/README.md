@@ -14,7 +14,15 @@ radii and shadows.
 | --- | --- | --- |
 | `coco-and-nut/` | Coco and Nut Coffee, inside Hybrid Fitness, 82a Plough Ln SW17 0BN | Speciality coffee in a gym — no site, so non-members never find it |
 | `bliss-in-the-park/` | Bliss in the Park, South Park Gardens SW19 8PN | Mauritian food + live music Fridays; Facebook-only, WhatsApp pre-orders |
-| `generic-cafe/` | Nobody in particular — a handout for any independent cafe | Generic demo site at `rowbo.dev/cafe`, handed over in person |
+| `generic-cafe/` | Any independent cafe | Demo site at `rowbo.dev/cafe`, handed over in person |
+| `gym/` | Gyms and studios | Demo at `rowbo.dev/gym` — timetable, membership, class booking |
+| `barber/` | Barbers and hairdressers | Demo at `rowbo.dev/barber` — price list and chair booking |
+| `nails/` | Nail salons | Demo at `rowbo.dev/nails` — treatment list and booking |
+| `plumber/` | Plumbers and tradespeople | Demo at `rowbo.dev/plumber` — call-out prices, quote requests |
+
+The five handouts share a cover and a back; only the trade word in the note
+("your timetable" / "your price list" / …), one panel bullet and the demo site
+behind the QR change between them.
 
 Cards come in two shapes, set by `variant` in config:
 
@@ -93,9 +101,9 @@ if the phone on the postcard looks like *their* site rather than a template.
 - **Check who you're addressing.** The two posted cards greet the business, not
   a person — a first name lifts response rates on cold post noticeably. (The
   handout is deliberately generic: it opens "Hey - we made you a website.")
-- **Photography.** `bliss-in-the-park` and `generic-cafe` use AI-generated
-  imagery (Higgsfield / nano-banana). On `generic-cafe` that's fine as-is —
-  the demo isn't claiming to be anyone's shop. On a card made for a specific
+- **Photography.** `bliss-in-the-park` and every handout use AI-generated
+  imagery (Higgsfield / nano-banana). On the handouts that's fine as-is —
+  those demos aren't claiming to be anyone's shop. On a card made for a specific
   business, swap in their own photos before the site goes live: a generated
   dish is not their dish and shouldn't be presented as it.
 - **Prices and dates** are transcribed from public posts and posters. Worth a

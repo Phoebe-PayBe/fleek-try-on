@@ -1,0 +1,47 @@
+{
+  "business": "Generic gym handout",
+  "businessFull": "Hand-out card for independent gyms and studios with no website",
+  "variant": "handout",
+  "greeting": "",
+  "headline": "Hey,<br>we made you a website.",
+  "scanLine": "Scan to see it live",
+  "claimLine": "Scan to test the live demo &rarr;",
+  "note": [
+    "Upload your timetable and photos to see your live preview instantly.",
+    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+  ],
+  "noteSize": 16,
+  "panel": {
+    "title": "Included for £30/mo",
+    "items": [
+      "Hosting, updates and timetable edits",
+      "Direct sign-ups and class bookings, no commission",
+      "AI search optimisation",
+      "Cancel anytime, no setup fees or contracts"
+    ]
+  },
+  "theme": {
+    "paper": "#FCF9F3",
+    "ink": "#16233F",
+    "accent": "#FA4500",
+    "body": "#42506B",
+    "hairline": "#DEE2EA",
+    "qrBorder": "#DDE2EB",
+    "logo": "rowbo-logo-orange.png",
+    "phoneBezel": "#16233F",
+    "phoneShadow": "rgba(22,35,63,0.30)"
+  },
+  "url": "https://rowbo.dev/gym",
+  "urlDisplay": "rowbo.dev/gym",
+  "price": "£30",
+  "senders": "Tom &amp; Phoebe",
+  "priceLine": false,
+  "greetingSize": 27,
+  "headlineSize": 29,
+  "frontSplit": [
+    1.2,
+    0.8
+  ],
+  "noteGap": 30,
+  "signatureGap": 46
+}

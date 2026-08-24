@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Nail Studio — gel, BIAB and pedicures</title>
+<style>
+  @font-face { font-family: Inter; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 600;
+    src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/playfair-display-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/playfair-display-latin-700-normal.woff2') format('woff2'); font-display: block; }
+
+  /* Soft blush and plum, generous white space — the register a nail studio
+     expects. Deliberately generic so anyone can picture their own name. */
+  :root {
+    --paper: #FCF6F4;
+    --card: #F4E7E3;
+    --plum: #4A2B37;
+    --rose: #C58472;
+    --ink: #38262B;
+    --muted: #907B80;
+    --line: #EEE0DC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bar {
+    background: var(--paper); padding: 18px 20px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .word {
+    font-family: 'Playfair Display', Georgia, serif; font-size: 17px;
+    letter-spacing: 3.6px; color: var(--plum);
+  }
+  .burger { display: flex; flex-direction: column; gap: 5px; }
+  .burger span { width: 22px; height: 1.4px; background: var(--plum); border-radius: 2px; }
+
+  .hero { position: relative; }
+  .hero img { width: 100%; height: 396px; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(48,26,33,0.22) 0%, rgba(48,26,33,0.12) 38%, rgba(48,26,33,0.90) 100%);
+  }
+  .hero .copy { position: absolute; left: 22px; right: 22px; bottom: 22px; }
+  .eyebrow {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 2.6px; text-transform: uppercase;
+    color: #F0CFC5; margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 36px; line-height: 1.08; color: #FFF9F7; margin: 0 0 18px;
+  }
+  h1 em { font-style: italic; color: #F2CFC4; }
+  .btn {
+    display: inline-block; text-decoration: none; font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px; padding: 12px 28px; border-radius: 999px;
+  }
+  .btn-plum { background: var(--plum); color: #FBEFEB; }
+  .btn-cream { background: #FBEFEB; color: var(--plum); }
+  .btn-outline { border: 1px solid rgba(251,239,235,0.5); color: #FBEFEB; }
+
+  section { padding: 34px 20px 6px; }
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 27px; margin: 0 0 4px; text-align: center; color: var(--plum);
+  }
+  .sub {
+    text-align: center; font-size: 9.5px; font-weight: 700; letter-spacing: 2.4px;
+    text-transform: uppercase; color: var(--rose); margin: 0 0 20px;
+  }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tile { background: var(--card); border-radius: 14px; overflow: hidden; }
+  .tile img { width: 100%; height: 104px; object-fit: cover; display: block; }
+  .tile .cap {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 12.5px; text-align: center; padding: 11px 4px 13px; color: var(--plum);
+  }
+
+  .list { list-style: none; margin: 22px 0 0; padding: 0; }
+  .list li {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+  }
+  .list .name { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; }
+  .list .mins { display: block; font-family: Inter, sans-serif; font-size: 11px; color: var(--muted); }
+  .list .fill { flex: 1; border-bottom: 1px dotted #E3D2CD; }
+  .list .price { font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .book {
+    margin: 30px 20px 0; background: var(--plum); border-radius: 16px;
+    padding: 26px 22px 24px; text-align: center; color: #F1DFDA;
+  }
+  .book h3 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 24px; margin: 0 0 8px; color: #FFF9F7;
+  }
+  .book p { font-size: 12.5px; line-height: 1.65; color: #CBB0B7; margin: 0 0 18px; }
+  .book .r { display: flex; gap: 10px; }
+  .book .r .btn { flex: 1; padding: 12px 6px; font-size: 14px; }
+
+  .hours div {
+    display: flex; justify-content: space-between; font-size: 13.5px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .hours span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .where { text-align: center; font-size: 13.5px; line-height: 1.8; color: var(--muted); margin-top: 18px; }
+  .where strong { color: var(--ink); }
+
+  footer {
+    margin-top: 28px; background: var(--card); color: var(--muted);
+    text-align: center; padding: 24px 20px 30px; font-size: 11px; line-height: 1.8;
+  }
+  footer .w {
+    font-family: 'Playfair Display', Georgia, serif; color: var(--plum);
+    font-size: 15px; letter-spacing: 3.4px; display: block; margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="word">THE NAIL STUDIO</div>
+  <div class="burger"><span></span><span></span><span></span></div>
+</div>
+
+<div class="hero">
+  <img src="img/hands.jpg" alt="In the studio">
+  <div class="veil"></div>
+  <div class="copy">
+    <div class="eyebrow">Appointments &amp; walk-ins</div>
+    <h1>Nails you'll<br><em>keep looking at.</em></h1>
+    <a class="btn btn-cream" href="#book">Book an appointment</a>
+  </div>
+</div>
+
+<section>
+  <h2>Treatments</h2>
+  <div class="sub">Gel · BIAB · Pedicures</div>
+  <div class="tiles">
+    <div class="tile"><img src="img/gel.jpg" alt="Gel manicure"><div class="cap">Gel</div></div>
+    <div class="tile"><img src="img/polish.jpg" alt="Colour"><div class="cap">Colour</div></div>
+    <div class="tile"><img src="img/art.jpg" alt="Nail art"><div class="cap">Nail art</div></div>
+  </div>
+
+  <ul class="list">
+    <li><span class="name">Gel manicure<span class="mins">45 min</span></span><span class="fill"></span><span class="price">£30</span></li>
+    <li><span class="name">BIAB overlay<span class="mins">60 min</span></span><span class="fill"></span><span class="price">£40</span></li>
+    <li><span class="name">Full set, acrylic<span class="mins">75 min</span></span><span class="fill"></span><span class="price">£45</span></li>
+    <li><span class="name">Infill<span class="mins">50 min</span></span><span class="fill"></span><span class="price">£32</span></li>
+    <li><span class="name">Luxury pedicure<span class="mins">55 min</span></span><span class="fill"></span><span class="price">£38</span></li>
+    <li><span class="name">Nail art<span class="mins">per nail</span></span><span class="fill"></span><span class="price">from £3</span></li>
+  </ul>
+</section>
+
+<div class="book" id="book">
+  <h3>Book in seconds</h3>
+  <p>Pick your treatment, your technician and a time that works. A reminder lands the day before.</p>
+  <div class="r">
+    <a class="btn btn-cream" href="#">Book online</a>
+    <a class="btn btn-outline" href="#">Message us</a>
+  </div>
+</div>
+
+<section>
+  <h2>Find us</h2>
+  <div class="sub">Open six days</div>
+  <div class="hours">
+    <div><span>Monday – Friday</span><span>09:30 – 19:00</span></div>
+    <div><span>Saturday</span><span>09:00 – 18:00</span></div>
+    <div><span>Sunday</span><span>Closed</span></div>
+  </div>
+  <div class="where">
+    <strong>12 Market Street</strong><br>
+    Gift vouchers available · Card only
+  </div>
+</section>
+
+<footer>
+  <span class="w">THE NAIL STUDIO</span>
+  A demo site by rowbo.dev — yours would carry your name.
+</footer>
+
+</body>
+</html>

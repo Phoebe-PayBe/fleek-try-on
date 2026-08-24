@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Barbers — cuts, beards and hot towel shaves</title>
+<style>
+  @font-face { font-family: Inter; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 600;
+    src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: Inter; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/playfair-display-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/playfair-display-latin-700-normal.woff2') format('woff2'); font-display: block; }
+
+  /* Traditional barbershop: near-black, bottle green and brass on warm cream.
+     Deliberately generic — anyone can picture their own name in the header. */
+  :root {
+    --paper: #F6F2E9;
+    --card: #EDE7D9;
+    --coal: #16150F;
+    --green: #1E3229;
+    --brass: #C08A3E;
+    --ink: #1E1C16;
+    --muted: #7C7466;
+    --line: #E2DACA;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+  .bar {
+    background: var(--coal); padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mark { display: flex; align-items: center; gap: 10px; }
+  .pole {
+    width: 13px; height: 30px; border-radius: 7px; border: 1px solid #6B6558;
+    background: repeating-linear-gradient(150deg, #F6F2E9 0 4px, #B23A2E 4px 8px, #F6F2E9 8px 12px, #2C4A8A 12px 16px);
+  }
+  .word {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 16px; letter-spacing: 3.4px; color: #F6F2E9;
+  }
+  .burger { display: flex; flex-direction: column; gap: 5px; }
+  .burger span { width: 23px; height: 1.6px; background: #F6F2E9; border-radius: 2px; }
+
+  .hero { position: relative; }
+  .hero img { width: 100%; height: 400px; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(15,13,9,0.34) 0%, rgba(15,13,9,0.20) 38%, rgba(15,13,9,0.93) 100%);
+  }
+  .hero .copy { position: absolute; left: 22px; right: 22px; bottom: 22px; }
+  .eyebrow {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 2.6px; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 38px; line-height: 1.06; color: #FBF8F1; margin: 0 0 18px;
+  }
+  .btn {
+    display: inline-block; text-decoration: none; font-size: 12px; font-weight: 700;
+    letter-spacing: 1.8px; text-transform: uppercase; padding: 13px 26px; border-radius: 2px;
+  }
+  .btn-brass { background: var(--brass); color: #17150F; }
+  .btn-outline { border: 1px solid rgba(246,242,233,0.45); color: #FBF8F1; }
+  .btn-coal { background: var(--coal); color: #F6F2E9; }
+
+  section { padding: 32px 20px 6px; }
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 27px; margin: 0 0 4px; text-align: center;
+  }
+  .sub {
+    text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 2.4px;
+    text-transform: uppercase; color: var(--brass); margin: 0 0 20px;
+  }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .tile { background: var(--card); border-radius: 4px; overflow: hidden; }
+  .tile img { width: 100%; height: 104px; object-fit: cover; display: block; }
+  .tile .cap {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+    text-align: center; padding: 10px 4px 12px;
+  }
+
+  .list { list-style: none; margin: 22px 0 0; padding: 0; }
+  .list li {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+  }
+  .list .name { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; }
+  .list .fill { flex: 1; border-bottom: 1px dotted #D5CBB8; }
+  .list .price { font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .list .mins { display: block; font-size: 11px; color: var(--muted); font-family: Inter, sans-serif; }
+
+  .book {
+    margin: 30px 20px 0; background: var(--green); border-radius: 6px;
+    padding: 26px 22px 24px; text-align: center; color: #E8EFE9;
+  }
+  .book h3 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 24px; margin: 0 0 8px; color: #FBF8F1;
+  }
+  .book p { font-size: 12.5px; line-height: 1.65; color: #B9C7BC; margin: 0 0 18px; }
+  .book .r { display: flex; gap: 10px; }
+  .book .r .btn { flex: 1; padding: 13px 6px; letter-spacing: 1.2px; }
+
+  .hours div {
+    display: flex; justify-content: space-between; font-size: 13.5px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .hours span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .where { text-align: center; font-size: 13.5px; line-height: 1.8; color: var(--muted); margin-top: 18px; }
+  .where strong { color: var(--ink); }
+
+  footer {
+    margin-top: 28px; background: var(--coal); color: #8B8577;
+    text-align: center; padding: 24px 20px 28px; font-size: 11px; line-height: 1.8;
+  }
+  footer .w {
+    font-family: 'Playfair Display', Georgia, serif; color: #F6F2E9;
+    font-size: 15px; letter-spacing: 3.4px; display: block; margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="mark">
+    <div class="pole"></div>
+    <div class="word">THE BARBERS</div>
+  </div>
+  <div class="burger"><span></span><span></span><span></span></div>
+</div>
+
+<div class="hero">
+  <img src="img/shop.jpg" alt="In the chair">
+  <div class="veil"></div>
+  <div class="copy">
+    <div class="eyebrow">Walk in or book ahead</div>
+    <h1>Sharp cuts,<br>no fuss.</h1>
+    <a class="btn btn-brass" href="#book">Book a chair</a>
+  </div>
+</div>
+
+<section>
+  <h2>What we do</h2>
+  <div class="sub">Cuts · Beards · Shaves</div>
+  <div class="tiles">
+    <div class="tile"><img src="img/tools.jpg" alt="Cuts and fades"><div class="cap">Cuts &amp; fades</div></div>
+    <div class="tile"><img src="img/shave.jpg" alt="Hot towel shave"><div class="cap">Hot towel</div></div>
+    <div class="tile"><img src="img/chairs.jpg" alt="The shop"><div class="cap">The shop</div></div>
+  </div>
+
+  <ul class="list">
+    <li><span class="name">Haircut<span class="mins">30 min</span></span><span class="fill"></span><span class="price">£22</span></li>
+    <li><span class="name">Skin fade<span class="mins">40 min</span></span><span class="fill"></span><span class="price">£26</span></li>
+    <li><span class="name">Cut &amp; beard<span class="mins">45 min</span></span><span class="fill"></span><span class="price">£32</span></li>
+    <li><span class="name">Beard trim<span class="mins">20 min</span></span><span class="fill"></span><span class="price">£14</span></li>
+    <li><span class="name">Hot towel shave<span class="mins">30 min</span></span><span class="fill"></span><span class="price">£25</span></li>
+    <li><span class="name">Under 12s<span class="mins">30 min</span></span><span class="fill"></span><span class="price">£15</span></li>
+  </ul>
+</section>
+
+<div class="book" id="book">
+  <h3>Pick your barber</h3>
+  <p>Book the chair and the time that suits you. We'll text you the morning before.</p>
+  <div class="r">
+    <a class="btn btn-brass" href="#">Book online</a>
+    <a class="btn btn-outline" href="#">Call the shop</a>
+  </div>
+</div>
+
+<section>
+  <h2>Opening hours</h2>
+  <div class="sub">Closed Sundays</div>
+  <div class="hours">
+    <div><span>Tuesday – Friday</span><span>09:00 – 19:00</span></div>
+    <div><span>Saturday</span><span>08:00 – 17:00</span></div>
+    <div><span>Monday</span><span>Closed</span></div>
+  </div>
+  <div class="where">
+    <strong>48 High Street</strong><br>
+    Card and cash · Last cut 30 min before close
+  </div>
+</section>
+
+<footer>
+  <span class="w">THE BARBERS</span>
+  A demo site by rowbo.dev — yours would carry your name.
+</footer>
+
+</body>
+</html>
