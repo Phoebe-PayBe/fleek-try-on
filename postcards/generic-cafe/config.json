@@ -7,17 +7,17 @@
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "Paste a link from anywhere you&rsquo;re already listed and we&rsquo;ll pull in your photos, menu and opening hours.",
-    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+    "Paste your Google Maps, Instagram, or Deliveroo link.",
+    "We&rsquo;ll extract your menu, photos, and opening times, ready in 48 hours and <strong style=\"color:#16233F;\">free to build</strong>."
   ],
   "noteSize": 16,
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "Hosting, updates and menu edits",
-      "Direct orders and bookings, no commission",
-      "AI search optimisation",
-      "Cancel anytime, no setup fees or contracts"
+      "Direct WhatsApp orders and table bookings with zero commission",
+      "Recommended on Google and AI searches when locals ask where to eat",
+      "Menu and seasonal special updates done for you",
+      "Cancel anytime, keep your domain, no setup fee"
     ]
   },
   "theme": {
@@ -38,6 +38,6 @@
   "priceLine": false,
   "greetingSize": 27,
   "headlineSize": 35,
-  "noteGap": 30,
+  "noteGap": 22,
   "signatureGap": 46
 }

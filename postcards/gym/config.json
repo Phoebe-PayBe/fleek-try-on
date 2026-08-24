@@ -7,17 +7,17 @@
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "Paste a link from anywhere you&rsquo;re already listed and we&rsquo;ll pull in your photos, timetable and prices.",
-    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+    "Send your Instagram, Google Maps, or ClassPass profile.",
+    "We&rsquo;ll pull your timetable, pricing tiers, and photos into a high-converting site, <strong style=\"color:#16233F;\">free to build</strong>."
   ],
   "noteSize": 16,
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "Hosting, updates and timetable edits",
-      "Direct sign-ups and class bookings, no commission",
-      "AI search optimisation",
-      "Cancel anytime, no setup fees or contracts"
+      "Direct membership enquiries and class bookings via WhatsApp",
+      "Optimized to get recommended by Google and AI search",
+      "Timetable and trainer roster updates handled for you",
+      "Cancel anytime, keep your domain, no contracts"
     ]
   },
   "theme": {
@@ -38,6 +38,6 @@
   "priceLine": false,
   "greetingSize": 27,
   "headlineSize": 35,
-  "noteGap": 30,
+  "noteGap": 22,
   "signatureGap": 46
 }

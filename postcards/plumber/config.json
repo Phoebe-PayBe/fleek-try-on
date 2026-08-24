@@ -7,17 +7,17 @@
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "Paste a link from anywhere you&rsquo;re already listed and we&rsquo;ll pull in your photos, services and reviews.",
-    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+    "Send us a link to your Checkatrade, Google, or Facebook page.",
+    "We&rsquo;ll pull in your services, photos, and customer reviews to <strong style=\"color:#16233F;\">build your site for free</strong>."
   ],
   "noteSize": 16,
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "Hosting, updates and price changes",
-      "Quote requests straight to your phone",
-      "AI search optimisation",
-      "Cancel anytime, no setup fees or contracts"
+      "Quote requests sent straight to your WhatsApp",
+      "Recommended by ChatGPT and AI search for local emergency repairs",
+      "We handle all updates, hosting, and price changes",
+      "Cancel anytime, keep your domain, zero setup fees"
     ]
   },
   "theme": {
@@ -38,6 +38,6 @@
   "priceLine": false,
   "greetingSize": 27,
   "headlineSize": 35,
-  "noteGap": 30,
+  "noteGap": 22,
   "signatureGap": 46
 }

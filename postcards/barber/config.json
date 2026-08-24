@@ -7,17 +7,17 @@
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "Paste a link from anywhere you&rsquo;re already listed and we&rsquo;ll pull in your photos, price list and opening hours.",
-    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+    "Drop in your Instagram, Google Profile, or Treatwell link.",
+    "We&rsquo;ll pull your cuts, photos, price list, and hours automatically, and <strong style=\"color:#16233F;\">build your site for free</strong>."
   ],
   "noteSize": 16,
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "Hosting, updates and price list edits",
-      "Direct bookings, no commission",
-      "AI search optimisation",
-      "Cancel anytime, no setup fees or contracts"
+      "Direct WhatsApp bookings (keep 100% of your earnings)",
+      "Found easily on Google and AI search tools (ChatGPT, Siri)",
+      "Unlimited price list, photo, and staff updates",
+      "Cancel anytime, keep your domain, no contracts"
     ]
   },
   "theme": {
@@ -38,6 +38,6 @@
   "priceLine": false,
   "greetingSize": 27,
   "headlineSize": 35,
-  "noteGap": 30,
+  "noteGap": 22,
   "signatureGap": 46
 }

@@ -7,17 +7,17 @@
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "Paste a link from anywhere you&rsquo;re already listed and we&rsquo;ll pull in your photos, treatment list and opening hours.",
-    "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
+    "Share your Instagram, Treatwell, or Fresha page.",
+    "We&rsquo;ll turn your portfolio and price list into a polished website in 48 hours, <strong style=\"color:#16233F;\">free to build</strong>."
   ],
   "noteSize": 16,
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "Hosting, updates and treatment list edits",
-      "Direct bookings, no commission",
-      "AI search optimisation",
-      "Cancel anytime, no setup fees or contracts"
+      "Direct WhatsApp bookings with zero commission fees",
+      "Found easily when locals search on Google and AI apps",
+      "Unlimited treatment and price updates done for you",
+      "Cancel anytime, keep your domain, no lock-in"
     ]
   },
   "theme": {
@@ -38,6 +38,6 @@
   "priceLine": false,
   "greetingSize": 27,
   "headlineSize": 35,
-  "noteGap": 30,
+  "noteGap": 22,
   "signatureGap": 46
 }
