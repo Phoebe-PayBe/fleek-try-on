@@ -122,12 +122,12 @@ const panelSide = (cfg, t) => {
   return `
     <div style="background:${t.ink}; color:#fff; border-radius:14px; padding:22px 22px 20px; height:100%; box-sizing:border-box; display:flex; flex-direction:column;">
       <div style="font-family:${DISPLAY}; font-size:19px; font-weight:800; letter-spacing:-0.2px;">${p.title}</div>
-      <div style="margin-top:${p.items.length > 4 ? 16 : 30}px; flex:1; display:flex; flex-direction:column; justify-content:${p.items.length > 4 ? 'space-evenly' : 'flex-start'}; gap:${p.items.length > 4 ? 11 : 30}px;">
+      <div style="margin-top:${p.items.length > 4 ? 16 : 30}px; flex:1; display:flex; flex-direction:column; justify-content:${p.items.length > 4 ? 'space-evenly' : 'space-between'}; gap:${p.items.length > 4 ? 11 : 30}px;">
 ${p.items.map(item => `        <div style="display:flex; gap:9px; align-items:flex-start;">
           <div style="width:16px; height:16px; border-radius:50%; background:${t.accent}; flex-shrink:0; margin-top:1px; position:relative;">
             <div style="position:absolute; left:5px; top:3px; width:4px; height:7px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg);"></div>
           </div>
-          <div style="font-size:${p.items.length > 4 ? 12.8 : 14}px; line-height:1.55; color:#DCE0E8;">${item}</div>
+          <div style="font-size:${p.items.length > 4 ? 12.8 : 15}px; line-height:1.5; color:#DCE0E8;">${item}</div>
         </div>`).join('\n')}
       </div>
 ${p.footnote ? `      <div style="margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,0.16); font-size:12px; color:#C9CEDA; line-height:1.5;">${p.footnote}</div>` : ''}
@@ -147,7 +147,7 @@ export function back(cfg, qrSvg) {
     </div>
 
     <div style="${isHandout ? 'margin: auto 0;' : ''}">
-      <div style="font-family:${DISPLAY}; font-size: ${cfg.greetingSize ?? 23}px; line-height: 1.12; font-weight: 800; letter-spacing:-0.3px; margin-bottom:12px;">${cfg.greeting}</div>
+${cfg.greeting ? `      <div style="font-family:${DISPLAY}; font-size: ${cfg.greetingSize ?? 23}px; line-height: 1.12; font-weight: 800; letter-spacing:-0.3px; margin-bottom:12px;">${cfg.greeting}</div>` : ''}
 
       <div style="font-size: ${cfg.noteSize ?? 14.5}px; line-height: 1.62; color: ${t.body};">
 ${note}

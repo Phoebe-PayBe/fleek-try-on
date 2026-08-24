@@ -2,7 +2,7 @@
   "business": "Generic cafe handout",
   "businessFull": "Hand-out card for independent cafes with no website",
   "variant": "handout",
-  "greeting": "A website for your caf&eacute;,<br>ready in 10 minutes.",
+  "greeting": "",
   "headline": "Hey,<br>we made you a website.",
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
@@ -10,14 +10,14 @@
     "Upload your menu and photos to see your live preview instantly.",
     "<strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
   ],
-  "noteSize": 15,
+  "noteSize": 16,
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "We handle hosting, updates and menu edits for you.",
-      "Take direct orders and bookings without third-party commission fees.",
-      "Optimised to help local customers find you on Google Maps.",
-      "Cancel anytime: no setup fees, no contracts."
+      "Hosting, updates and menu edits",
+      "Direct orders and bookings, no commission",
+      "AI search optimisation",
+      "Cancel anytime, no setup fees or contracts"
     ]
   },
   "theme": {
@@ -42,6 +42,6 @@
     1.2,
     0.8
   ],
-  "noteGap": 34,
-  "signatureGap": 26
+  "noteGap": 30,
+  "signatureGap": 46
 }
