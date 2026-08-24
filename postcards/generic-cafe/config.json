@@ -2,12 +2,12 @@
   "business": "Generic cafe handout",
   "businessFull": "Hand-out card for independent cafes with no website",
   "variant": "handout",
-  "greeting": "A custom website<br>for your caf&eacute;.<br>Done in 24 hours.",
+  "greeting": "A website for your caf&eacute;,<br>ready in 10 minutes.",
   "headline": "Hey - We made you a website...",
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "No upfront cost. We build it with your menu, branding and photos <strong style=\"color:#16233F;\">before you pay a penny</strong>."
+    "Upload your menu and photos to see your live preview instantly. <strong style=\"color:#16233F;\">Build for free</strong>, then launch for just £30/mo."
   ],
   "noteSize": 15,
   "panel": {
