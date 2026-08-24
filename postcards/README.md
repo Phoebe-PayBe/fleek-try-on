@@ -20,7 +20,9 @@ Cards come in two shapes, set by `variant` in config:
 
 - **`mailer`** (default) — postage box and address panel on the back, for post.
 - **`handout`** — no address; the back's right-hand side sells instead
-  ("what you get for £30/mo"), and the build also produces a 4-up A4 sheet.
+  ("Included for £30/mo"), and the build also produces a 4-up A4 sheet. The
+  front carries only the headline and "Scan to see it live" (`priceLine: false`
+  drops the price sub-line), so the cover stays quiet.
 
 ## Layout
 
@@ -38,8 +40,9 @@ assets/       rowbo logo + bundled fonts, shared by every card
 
 Posted cards use the design canvas palette (cream, ink brown, orange). A card
 can override any of it with `theme` in its config — `generic-cafe` runs cream
-white, navy and red, with a navy version of the logo made by
-`node lib/recolour-logo.mjs rowbo-logo.png rowbo-logo-navy.png "#16233F"`.
+white paper and navy ink with rowbo orange as the only accent, on the card and
+in the demo site alike. `lib/recolour-logo.mjs` makes single-colour versions of
+the logo (`rowbo-logo-orange.png` is the mark *and* the wordmark in `#FA4500`).
 The QR ink follows `theme.ink`, so it stays legible in the card's own colour.
 
 ## Build

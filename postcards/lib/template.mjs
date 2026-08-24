@@ -75,8 +75,8 @@ ${cfg.subhead ? `
     <div style="margin-top: ${cfg.subhead ? 30 : 48}px; display: flex; align-items: center; gap: 14px;">
 ${qrTile(t, qrSvg, { size: 76, radius: 11, pad: 6 })}
       <div style="display:flex; flex-direction:column;">
-        <div style="font-family:${DISPLAY}; font-size:20px; font-weight:800; color:${t.accent}; letter-spacing:-0.3px;">${cfg.scanLine ?? 'Scan to see it live'}</div>
-        <div style="font-size:13px; color:#626262;">Free to look &middot; yours to keep for ${cfg.price}/mo</div>
+        <div style="font-family:${DISPLAY}; font-size:${cfg.scanLineSize ?? 20}px; font-weight:800; color:${t.accent}; letter-spacing:-0.3px;">${cfg.scanLine ?? 'Scan to see it live'}</div>
+${cfg.priceLine === false ? '' : `        <div style="font-size:13px; color:#626262;">Free to look &middot; yours to keep for ${cfg.price}/mo</div>`}
       </div>
     </div>
     <div style="margin-top:18px;"><img src="${ASSETS}/${t.logo}" style="height:18px; display:block;"></div>
@@ -114,15 +114,15 @@ const panelSide = (cfg, t) => {
   return `
     <div style="background:${t.ink}; color:#fff; border-radius:14px; padding:22px 22px 20px; height:100%; box-sizing:border-box; display:flex; flex-direction:column;">
       <div style="font-family:${DISPLAY}; font-size:19px; font-weight:800; letter-spacing:-0.2px;">${p.title}</div>
-      <div style="margin-top:16px; display:flex; flex-direction:column; gap:11px;">
+      <div style="margin-top:${p.items.length > 4 ? 16 : 20}px; flex:1; display:flex; flex-direction:column; justify-content:space-evenly; gap:${p.items.length > 4 ? 11 : 14}px;">
 ${p.items.map(item => `        <div style="display:flex; gap:9px; align-items:flex-start;">
           <div style="width:16px; height:16px; border-radius:50%; background:${t.accent}; flex-shrink:0; margin-top:1px; position:relative;">
             <div style="position:absolute; left:5px; top:3px; width:4px; height:7px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg);"></div>
           </div>
-          <div style="font-size:12.8px; line-height:1.45; color:#EFEDEA;">${item}</div>
+          <div style="font-size:${p.items.length > 4 ? 12.8 : 13.4}px; line-height:1.5; color:#DCE0E8;">${item}</div>
         </div>`).join('\n')}
       </div>
-      <div style="margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,0.16); font-size:12px; color:#C9CEDA; line-height:1.5;">${p.footnote}</div>
+${p.footnote ? `      <div style="margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,0.16); font-size:12px; color:#C9CEDA; line-height:1.5;">${p.footnote}</div>` : ''}
     </div>`;
 };
 
@@ -138,13 +138,15 @@ export function back(cfg, qrSvg) {
       <img src="${ASSETS}/${t.logo}" style="height: 24px; display: block;">
     </div>
 
-    <div style="font-family:${DISPLAY}; font-size: 23px; font-weight: 800; letter-spacing:-0.3px; margin-bottom:10px;">${cfg.greeting}</div>
+    <div style="${isHandout ? 'margin: auto 0;' : ''}">
+      <div style="font-family:${DISPLAY}; font-size: ${cfg.greetingSize ?? 23}px; line-height: 1.12; font-weight: 800; letter-spacing:-0.3px; margin-bottom:12px;">${cfg.greeting}</div>
 
-    <div style="font-size: ${cfg.noteSize ?? 14.5}px; line-height: 1.62; color: ${t.body};">
+      <div style="font-size: ${cfg.noteSize ?? 14.5}px; line-height: 1.62; color: ${t.body};">
 ${note}
-    </div>
+      </div>
 
-    <div style="margin-top: 14px; font-family:${DISPLAY}; font-size: 15px; font-weight:700; color: ${t.ink};">- ${cfg.senders} &middot; <span style="color:${t.accent};">rowbo.dev</span></div>
+      <div style="margin-top: 14px; font-family:${DISPLAY}; font-size: 15px; font-weight:700; color: ${t.ink};">- ${cfg.senders} &middot; <span style="color:${t.accent};">rowbo.dev</span></div>
+    </div>
 
     <div style="margin-top: auto; display: flex; align-items: center; gap: 12px;">
 ${qrTile(t, qrSvg, { size: 68, radius: 10, pad: 6 })}

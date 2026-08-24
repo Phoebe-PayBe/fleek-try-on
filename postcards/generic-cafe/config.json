@@ -2,42 +2,38 @@
   "business": "Generic cafe handout",
   "businessFull": "Hand-out card for independent cafes with no website",
   "variant": "handout",
-  "greeting": "Hey - we made you a website.",
-  "headline": "Hey - we made you a website.",
-  "subhead": "Not a mockup, not a pitch deck. A real caf&eacute; site you can look at on your phone right now.",
+  "greeting": "A custom website<br>for your caf&eacute;.<br>Done in 48 hours.",
+  "headline": "Hey - We made you a website...",
   "scanLine": "Scan to see it live",
-  "claimLine": "Scan to see the demo &rarr;",
+  "claimLine": "Scan to test the live demo &rarr;",
   "note": [
-    "We&rsquo;re Tom and Phoebe. We build websites for independent caf&eacute;s - the kind of place that already has the coffee, the regulars and the reviews, but nothing to send people to.",
-    "Scan the code and you&rsquo;ll see a full caf&eacute; site: menu, hours, photos, order-ahead. Yours would be the same, <strong style=\"color:#16233F;\">built with your name, your photos and your prices</strong> - and we build it before you pay a penny.",
-    "Like it? It&rsquo;s £30 a month, cancel anytime. Don&rsquo;t? Keep the card, no hard feelings."
+    "No upfront cost. We build it with your menu, branding and photos <strong style=\"color:#16233F;\">before you pay a penny</strong>."
   ],
-  "noteSize": 14.2,
+  "noteSize": 15,
   "panel": {
-    "title": "What you get for £30/mo",
+    "title": "Included for £30/mo",
     "items": [
-      "A site built for you in 48 hours - we do the writing and the setup",
-      "Found on Google and ChatGPT when people search for coffee near you",
-      "Menu, opening hours, photos and directions, always up to date",
-      "Order-ahead and bookings, without the DMs",
-      "Changes whenever you want them - just message us",
-      "Your own domain, hosting and updates included"
-    ],
-    "footnote": "No contract, no setup fee, cancel anytime.<br>See it first at rowbo.dev/cafe"
+      "<strong>Zero maintenance:</strong> we handle all updates, hosting and menu changes for you.",
+      "<strong>Order-ahead &amp; bookings:</strong> direct to you, without the middleman apps.",
+      "<strong>Local search ready:</strong> optimised for Google Maps and local discovery.",
+      "<strong>Cancel anytime:</strong> no contracts, no setup fee, keep your domain."
+    ]
   },
   "theme": {
     "paper": "#FCF9F3",
     "ink": "#16233F",
-    "accent": "#C8102E",
+    "accent": "#FA4500",
     "body": "#42506B",
     "hairline": "#DEE2EA",
     "qrBorder": "#DDE2EB",
-    "logo": "rowbo-logo-navy.png",
+    "logo": "rowbo-logo-orange.png",
     "phoneBezel": "#16233F",
     "phoneShadow": "rgba(22,35,63,0.30)"
   },
   "url": "https://rowbo.dev/cafe",
   "urlDisplay": "rowbo.dev/cafe",
   "price": "£30",
-  "senders": "Tom &amp; Phoebe"
+  "senders": "Tom &amp; Phoebe",
+  "priceLine": false,
+  "greetingSize": 27
 }
