@@ -80,6 +80,7 @@ repo as 8 MB PNGs.
 | File | What it's for |
 | --- | --- |
 | `dist/<card>-postcard-print.pdf` | **Send this to the printer.** 2 pages (front, back), A6 landscape + 3 mm bleed (154 × 111 mm). |
+| `dist/<card>-both-slides.pdf` | **Both sides in one file, whole and uncropped** — the one to send someone who just wants to look at the card. 2 pages at the artboard's own ratio (148 × 103.6 mm), so nothing is trimmed into the bleed. |
 | `dist/front.png` / `back.png` | 2400 × 1680 previews (~400 dpi at A6). |
 | `dist/site-mobile.jpg` | Screenshot of the mock site, used in the phone mockup. |
 | `dist/<card>-a4-4up.pdf` | Handouts only: four cards to an A4 landscape sheet. Print duplex, **flip on short edge**, then cut the sheet in quarters — an A6 is exactly a quarter of an A4, so there's nothing to trim. |

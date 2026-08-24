@@ -118,7 +118,45 @@ await printPage.pdf({
 });
 await printPage.close();
 
-// 4. Handouts also get a 4-up A4 sheet, for running off a batch on an office
+// 4. Both artboards in one PDF, whole and uncropped — the file to send
+// someone who just wants to look at the card. Page matches the artboard's
+// ratio at A6 width, so nothing is trimmed and nothing is letterboxed.
+{
+  const PAGE_W = 148;
+  const PAGE_H = +(PAGE_W * H / W).toFixed(2);
+  const FIT = (PAGE_W * MM) / W;
+  const bothHtml = `<!doctype html>
+<html><head><meta charset="utf-8"><style>
+${fontFaces()}
+  @page { size: ${PAGE_W}mm ${PAGE_H}mm; margin: 0; }
+  html, body { margin: 0; padding: 0; background: ${PAPER}; }
+  .page {
+    width: ${PAGE_W}mm; height: ${PAGE_H}mm; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: ${PAPER}; break-after: page;
+  }
+  .page:last-child { break-after: auto; }
+  .art { transform: scale(${FIT.toFixed(5)}); transform-origin: center center; flex: 0 0 auto; }
+</style></head><body>
+  <div class="page"><div class="art">${artboard(frontHtml)}</div></div>
+  <div class="page"><div class="art">${artboard(backHtml)}</div></div>
+</body></html>`;
+  writeFileSync(join(dist, 'both-slides.html'), bothHtml);
+
+  const bothPage = await browser.newPage();
+  await bothPage.goto(`file://${join(dist, 'both-slides.html')}`);
+  await bothPage.evaluate(() => document.fonts.ready);
+  await bothPage.pdf({
+    path: join(dist, `${slug}-both-slides.pdf`),
+    width: `${PAGE_W}mm`,
+    height: `${PAGE_H}mm`,
+    printBackground: true,
+    margin: { top: '0', right: '0', bottom: '0', left: '0' },
+  });
+  await bothPage.close();
+}
+
+// 5. Handouts also get a 4-up A4 sheet, for running off a batch on an office
 // printer. An A6 is exactly a quarter of an A4, so the cards tile with no
 // waste and the cut lines are the two halves of the sheet.
 if (cfg.variant === 'handout') {
