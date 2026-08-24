@@ -13,24 +13,22 @@
   "panel": {
     "title": "Included for £30/mo",
     "items": [
-      "<strong>Zero maintenance:</strong> we handle all updates, hosting and menu changes for you.",
-      "<strong>Order-ahead &amp; bookings:</strong> direct to you, without the middleman apps.",
-      "<strong>Local search ready:</strong> optimised for Google Maps and local discovery.",
-      "<strong>Cancel anytime:</strong> no contracts, no setup fee, keep your domain."
+      "We handle hosting, updates and menu edits for you.",
+      "Take direct orders and bookings without third-party commission fees.",
+      "Optimised to help local customers find you on Google Maps.",
+      "Cancel anytime: no setup fees, no contracts, and you keep your domain."
     ]
   },
   "theme": {
-    "paper": "#FCF9F3",
+    "paper": "#F6F8FB",
     "ink": "#16233F",
     "accent": "#FA4500",
     "body": "#42506B",
-    "hairline": "#DEE2EA",
-    "qrBorder": "#DDE2EB",
+    "hairline": "#DEE4EC",
+    "qrBorder": "#E1E7F0",
     "logo": "rowbo-logo-orange.png",
     "phoneBezel": "#16233F",
-    "phoneShadow": "rgba(22,35,63,0.30)",
-    "coverImage": "../site/img/cover-bg.jpg",
-    "coverBlur": 7
+    "phoneShadow": "rgba(22,35,63,0.30)"
   },
   "url": "https://rowbo.dev/cafe",
   "urlDisplay": "rowbo.dev/cafe",

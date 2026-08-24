@@ -122,7 +122,7 @@ const panelSide = (cfg, t) => {
   return `
     <div style="background:${t.ink}; color:#fff; border-radius:14px; padding:22px 22px 20px; height:100%; box-sizing:border-box; display:flex; flex-direction:column;">
       <div style="font-family:${DISPLAY}; font-size:19px; font-weight:800; letter-spacing:-0.2px;">${p.title}</div>
-      <div style="margin-top:${p.items.length > 4 ? 16 : 20}px; flex:1; display:flex; flex-direction:column; justify-content:space-evenly; gap:${p.items.length > 4 ? 11 : 14}px;">
+      <div style="margin-top:${p.items.length > 4 ? 16 : 20}px; flex:1; display:flex; flex-direction:column; justify-content:${p.items.length > 4 ? 'space-evenly' : 'center'}; gap:${p.items.length > 4 ? 11 : 24}px;">
 ${p.items.map(item => `        <div style="display:flex; gap:9px; align-items:flex-start;">
           <div style="width:16px; height:16px; border-radius:50%; background:${t.accent}; flex-shrink:0; margin-top:1px; position:relative;">
             <div style="position:absolute; left:5px; top:3px; width:4px; height:7px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg);"></div>
