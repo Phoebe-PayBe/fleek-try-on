@@ -122,12 +122,12 @@ const panelSide = (cfg, t) => {
   return `
     <div style="background:${t.ink}; color:#fff; border-radius:14px; padding:22px 22px 20px; height:100%; box-sizing:border-box; display:flex; flex-direction:column;">
       <div style="font-family:${DISPLAY}; font-size:19px; font-weight:800; letter-spacing:-0.2px;">${p.title}</div>
-      <div style="margin-top:${p.items.length > 4 ? 16 : 20}px; flex:1; display:flex; flex-direction:column; justify-content:${p.items.length > 4 ? 'space-evenly' : 'center'}; gap:${p.items.length > 4 ? 11 : 24}px;">
+      <div style="margin-top:16px; flex:1; display:flex; flex-direction:column; justify-content:${p.items.length > 4 ? 'space-evenly' : 'flex-start'}; gap:${p.items.length > 4 ? 11 : 30}px;">
 ${p.items.map(item => `        <div style="display:flex; gap:9px; align-items:flex-start;">
           <div style="width:16px; height:16px; border-radius:50%; background:${t.accent}; flex-shrink:0; margin-top:1px; position:relative;">
             <div style="position:absolute; left:5px; top:3px; width:4px; height:7px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg);"></div>
           </div>
-          <div style="font-size:${p.items.length > 4 ? 12.8 : 13.4}px; line-height:1.5; color:#DCE0E8;">${item}</div>
+          <div style="font-size:${p.items.length > 4 ? 12.8 : 14}px; line-height:1.55; color:#DCE0E8;">${item}</div>
         </div>`).join('\n')}
       </div>
 ${p.footnote ? `      <div style="margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,0.16); font-size:12px; color:#C9CEDA; line-height:1.5;">${p.footnote}</div>` : ''}
@@ -136,7 +136,7 @@ ${p.footnote ? `      <div style="margin-top:auto; padding-top:16px; border-top:
 
 export function back(cfg, qrSvg) {
   const t = { ...theme(cfg), coverImage: null };
-  const note = cfg.note.map(p => `      ${p}`).join('\n      <div style="height: 9px;"></div>\n');
+  const note = cfg.note.map(p => `      ${p}`).join(`\n      <div style="height: ${cfg.noteGap ?? 9}px;"></div>\n`);
   const isHandout = cfg.variant === 'handout';
 
   return shell(t, `
@@ -153,7 +153,7 @@ export function back(cfg, qrSvg) {
 ${note}
       </div>
 
-      <div style="margin-top: 14px; font-family:${DISPLAY}; font-size: 15px; font-weight:700; color: ${t.ink};">- ${cfg.senders} &middot; <span style="color:${t.accent};">rowbo.dev</span></div>
+      <div style="margin-top: ${cfg.signatureGap ?? 14}px; font-family:${DISPLAY}; font-size: 15px; font-weight:700; color: ${t.ink};">- ${cfg.senders} &middot; <span style="color:${t.accent};">rowbo.dev</span></div>
     </div>
 
     <div style="margin-top: auto; display: flex; align-items: center; gap: 12px;">

@@ -41,5 +41,7 @@
   "frontSplit": [
     1.2,
     0.8
-  ]
+  ],
+  "noteGap": 20,
+  "signatureGap": 26
 }
