@@ -29,7 +29,8 @@
     "qrBorder": "#DDE2EB",
     "logo": "rowbo-logo-orange.png",
     "phoneBezel": "#16233F",
-    "phoneShadow": "rgba(22,35,63,0.30)"
+    "phoneShadow": "rgba(22,35,63,0.30)",
+    "qrInk": "#000000"
   },
   "url": "https://www.rowbo.dev/?build=1",
   "urlDisplay": "rowbo.dev",

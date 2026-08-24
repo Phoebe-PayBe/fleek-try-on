@@ -41,7 +41,7 @@ const rawQr = await QRCode.toString(cfg.url, {
   type: 'svg',
   margin: 0,
   errorCorrectionLevel: 'M',
-  color: { dark: cfg.theme?.ink ?? '#1D0802', light: '#ffffff' },
+  color: { dark: cfg.theme?.qrInk ?? cfg.theme?.ink ?? '#1D0802', light: '#ffffff' },
 });
 const qrSvg = rawQr
   .replace(/<\?xml[^>]*\?>/, '')

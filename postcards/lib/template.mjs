@@ -159,7 +159,7 @@ ${note}
     </div>
 
     <div style="margin-top: auto; display: flex; align-items: center; gap: 12px;">
-${qrTile(t, qrSvg, { size: 68, radius: 10, pad: 6 })}
+${qrTile(t, qrSvg, { size: 80, radius: 10, pad: 7 })}
       <div style="font-size:13px; color:#626262;">${cfg.claimLine ?? 'Scan to claim &rarr;'}<br><span style="color:${t.accent}; font-weight:600;">${cfg.urlDisplay}</span></div>
     </div>
   </div>
