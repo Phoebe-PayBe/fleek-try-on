@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Corner Cafe — speciality coffee, all-day brunch</title>
+<title>Coffee — speciality coffee, all-day brunch</title>
 <style>
   @font-face { font-family: Inter; font-style: normal; font-weight: 400;
     src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
@@ -11,19 +11,22 @@
     src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
   @font-face { font-family: Inter; font-style: normal; font-weight: 700;
     src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
-  @font-face { font-family: Inter; font-style: normal; font-weight: 800;
-    src: url('../../assets/fonts/inter-latin-800-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400;
+    src: url('../../assets/fonts/playfair-display-latin-400-normal.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700;
+    src: url('../../assets/fonts/playfair-display-latin-700-normal.woff2') format('woff2'); font-display: block; }
 
-  /* Deliberately generic: cream, navy, one orange accent. Whoever we hand this to
-     should be able to picture their own name in the roundel. */
+  /* Warm, quiet, photo-led: off-white paper, espresso brown, serif display.
+     Deliberately generic — whoever we hand the card to should be able to
+     picture their own name in the header. */
   :root {
-    --paper: #FCF9F3;
-    --stone: #F1EDE5;
-    --navy: #16233F;
-    --orange: #FA4500;
-    --ink: #1B2436;
-    --muted: #6B7387;
-    --line: #E4E0D7;
+    --paper: #FBF8F3;
+    --card: #F3EDE4;
+    --espresso: #4A3226;
+    --tan: #B08863;
+    --ink: #2B211B;
+    --muted: #857567;
+    --line: #E7DFD3;
   }
   * { box-sizing: border-box; }
   body {
@@ -31,114 +34,139 @@
     font-family: Inter, system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+  .serif { font-family: 'Playfair Display', Georgia, serif; }
 
+  /* Header — light, minimal: bean mark + wordmark, hamburger */
   .bar {
-    background: var(--navy); padding: 14px 18px;
+    background: var(--paper); padding: 16px 20px 14px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .burger { display: flex; flex-direction: column; gap: 4px; }
-  .burger span { width: 22px; height: 2px; background: #F4F1EA; border-radius: 2px; }
-  .roundel {
-    width: 82px; height: 82px; border-radius: 50%;
-    background: var(--paper); border: 2.5px solid var(--navy);
-    box-shadow: 0 0 0 2.5px var(--paper);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; color: var(--navy);
+  .mark { display: flex; align-items: center; gap: 9px; }
+  .mark svg { display: block; }
+  .wordmark {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 17px; letter-spacing: 3.4px; color: var(--ink);
   }
-  .roundel .n { font-size: 17px; font-weight: 800; letter-spacing: 0.5px; line-height: 1; }
-  .roundel .s { font-size: 7.5px; font-weight: 700; letter-spacing: 2.6px; margin-top: 4px; }
-  .bar .basket { font-size: 11px; font-weight: 700; color: #F4F1EA; letter-spacing: 0.4px; }
+  .burger { display: flex; flex-direction: column; gap: 5px; }
+  .burger span { width: 24px; height: 1.6px; background: var(--ink); border-radius: 2px; }
 
-  .hero img { width: 100%; height: 296px; object-fit: cover; display: block; }
-
-  .pitch { background: var(--stone); padding: 30px 22px 26px; text-align: center; }
-  .pitch .out {
-    font-size: 30px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.05;
-    color: transparent; -webkit-text-stroke: 1.3px var(--navy);
+  /* Hero — full-bleed photo, serif headline low-left, pill CTA */
+  .hero { position: relative; }
+  .hero img { width: 100%; height: 420px; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(30,20,14,0) 38%, rgba(30,20,14,0.42) 74%, rgba(30,20,14,0.62) 100%);
   }
-  .pitch .solid {
-    font-size: 30px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.05; color: var(--navy);
+  .hero .copy { position: absolute; left: 22px; right: 22px; bottom: 22px; }
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 38px; line-height: 1.08; font-weight: 400; color: #FDFBF7;
+    margin: 0 0 16px; text-shadow: 0 2px 14px rgba(30,20,14,0.35);
   }
-  .pitch p { font-size: 13.5px; line-height: 1.6; color: var(--muted); margin: 12px 22px 18px; }
-  .btn {
-    display: inline-block; text-decoration: none; font-size: 12.5px; font-weight: 700;
-    letter-spacing: 1.4px; text-transform: uppercase; padding: 13px 26px; border-radius: 4px;
+  .pill {
+    display: inline-block; text-decoration: none;
+    font-family: 'Playfair Display', Georgia, serif; font-size: 15px;
+    background: var(--espresso); color: #F6EFE7;
+    padding: 12px 26px; border-radius: 999px;
   }
-  .btn-orange { background: var(--orange); color: #fff; }
-  .btn-navy { background: var(--navy); color: #fff; }
-  .btn-ghost { border: 1.5px solid var(--navy); color: var(--navy); }
+  .pill-ghost { background: transparent; border: 1px solid rgba(74,50,38,0.35); color: var(--espresso); }
 
-  section { padding: 26px 20px 6px; }
-  .eyebrow {
-    font-size: 9.5px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase;
-    color: var(--orange); margin-bottom: 7px;
+  section { padding: 34px 20px 6px; }
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 27px; font-weight: 400; margin: 0 0 4px; text-align: center; color: var(--ink);
   }
-  h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin: 0 0 12px; color: var(--navy); }
-
-  .menu { list-style: none; margin: 0; padding: 0; }
-  .menu li {
-    display: flex; align-items: baseline; gap: 8px;
-    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px;
+  .sub {
+    text-align: center; font-size: 12px; color: var(--muted);
+    letter-spacing: 1.6px; text-transform: uppercase; margin: 0 0 20px;
   }
-  .menu .name { font-weight: 600; }
-  .menu .fill { flex: 1; border-bottom: 1px dotted #CFCABE; }
-  .menu .price { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-  .grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; display: block; }
-
-  .strip {
-    margin: 8px 20px 0; background: var(--navy); color: #EDEFF4;
-    border-radius: 12px; padding: 20px 20px 18px;
+  /* Menu tiles — three across, image over caption */
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tile { background: var(--card); border-radius: 10px; overflow: hidden; }
+  .tile img { width: 100%; height: 104px; object-fit: cover; display: block; }
+  .tile .cap {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 12.5px; text-align: center; padding: 11px 4px 13px; color: var(--ink);
   }
-  .strip h3 { margin: 0 0 8px; font-size: 19px; color: #fff; letter-spacing: -0.3px; }
-  .strip p { margin: 0 0 14px; font-size: 12.8px; line-height: 1.6; color: #C3CAD8; }
-  .strip .row { display: flex; gap: 9px; }
-  .strip .row .btn { flex: 1; text-align: center; padding: 12px 6px; letter-spacing: 1px; }
-  .strip .btn-outline { border: 1.5px solid rgba(255,255,255,0.35); color: #fff; }
 
-  .hours { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
+  /* Price list */
+  .list { list-style: none; margin: 22px 0 0; padding: 0; }
+  .list li {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+  }
+  .list .name { font-family: 'Playfair Display', Georgia, serif; font-size: 15px; }
+  .list .fill { flex: 1; border-bottom: 1px dotted #DCD2C4; }
+  .list .price { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+  /* Order block */
+  .order {
+    margin: 30px 20px 0; background: var(--espresso); color: #EFE6DB;
+    border-radius: 14px; padding: 26px 22px 24px; text-align: center;
+  }
+  .order h3 {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 400;
+    font-size: 24px; margin: 0 0 8px; color: #FDFBF7;
+  }
+  .order p { font-size: 13px; line-height: 1.65; color: #D6C8B8; margin: 0 0 18px; }
+  .order .row { display: flex; gap: 10px; }
+  .order .row .pill { flex: 1; padding: 12px 6px; }
+  .order .pill-solid { background: #F6EFE7; color: var(--espresso); }
+  .order .pill-outline { border: 1px solid rgba(246,239,231,0.45); color: #F6EFE7; }
+
+  /* Visit */
+  .hours { margin-top: 6px; }
   .hours div {
-    display: flex; justify-content: space-between; font-size: 13px;
-    padding: 9px 0; border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; font-size: 13.5px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
   }
   .hours span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
-  .where { font-size: 13px; line-height: 1.7; color: var(--muted); margin-top: 14px; }
-  .where strong { color: var(--ink); }
+  .where { text-align: center; font-size: 13.5px; line-height: 1.8; color: var(--muted); margin-top: 18px; }
+  .where strong { color: var(--ink); font-weight: 600; }
 
   footer {
-    margin-top: 22px; background: var(--navy); color: #A9B2C4;
-    text-align: center; padding: 22px 20px 26px; font-size: 11px; line-height: 1.7;
+    margin-top: 30px; background: var(--card); text-align: center;
+    padding: 24px 20px 30px; font-size: 11px; line-height: 1.8; color: var(--muted);
   }
-  footer .n { color: #fff; font-weight: 800; letter-spacing: 2px; font-size: 12px; }
+  footer .n {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px; letter-spacing: 3.4px; color: var(--ink); display: block; margin-bottom: 6px;
+  }
 </style>
 </head>
 <body>
 
 <div class="bar">
-  <div class="burger"><span></span><span></span><span></span></div>
-  <div class="roundel">
-    <div class="n">CAFÉ</div>
-    <div class="s">EST. 2019</div>
+  <div class="mark">
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+      <ellipse cx="12" cy="12" rx="7" ry="9.5" transform="rotate(-24 12 12)" fill="#6B4A32"/>
+      <path d="M12 3.4c-2.6 3.2-2.6 14 0 17.2" stroke="#FBF8F3" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="wordmark">COFFEE</div>
   </div>
-  <div class="basket">ORDER</div>
+  <div class="burger"><span></span><span></span><span></span></div>
 </div>
 
 <div class="hero">
   <img src="img/pour.jpg" alt="Barista pouring a flat white">
-</div>
-
-<div class="pitch">
-  <div class="out">GOOD COFFEE.</div>
-  <div class="solid">GOOD PEOPLE.</div>
-  <p>Speciality beans, proper brunch and the sort of easygoing welcome that makes a place your local.</p>
-  <a class="btn btn-orange" href="#menu">See the menu</a>
+  <div class="veil"></div>
+  <div class="copy">
+    <h1>Crafted<br>With Care</h1>
+    <a class="pill" href="#menu">Explore Our Menu</a>
+  </div>
 </div>
 
 <section id="menu">
-  <div class="eyebrow">All day, every day</div>
-  <h2>The menu</h2>
-  <ul class="menu">
+  <h2>Our Menu</h2>
+  <div class="sub">All day, every day</div>
+  <div class="tiles">
+    <div class="tile"><img src="img/latte.jpg" alt="Classic lattes"><div class="cap">Classic Lattes</div></div>
+    <div class="tile"><img src="img/toast.jpg" alt="Avocado toast"><div class="cap">Avocado Toast</div></div>
+    <div class="tile"><img src="img/pastry.jpg" alt="Fresh pastries"><div class="cap">Fresh Pastries</div></div>
+  </div>
+
+  <ul class="list">
     <li><span class="name">Flat white</span><span class="fill"></span><span class="price">£3.40</span></li>
     <li><span class="name">Filter / batch brew</span><span class="fill"></span><span class="price">£2.80</span></li>
     <li><span class="name">Iced latte</span><span class="fill"></span><span class="price">£3.90</span></li>
@@ -148,25 +176,18 @@
   </ul>
 </section>
 
-<section>
-  <div class="grid">
-    <img src="img/interior.jpg" alt="Inside the cafe">
-    <img src="img/brunch.jpg" alt="Coffee and brunch">
-  </div>
-</section>
-
-<div class="strip">
+<div class="order">
   <h3>Skip the queue</h3>
-  <p>Order ahead and we'll have it on the counter when you get here. Tables for four or more can be booked online too.</p>
+  <p>Order ahead and we'll have it waiting on the counter. Tables for four or more can be booked online.</p>
   <div class="row">
-    <a class="btn btn-orange" href="#">Order ahead</a>
-    <a class="btn btn-outline" href="#">Book a table</a>
+    <a class="pill pill-solid" href="#">Order ahead</a>
+    <a class="pill pill-outline" href="#">Book a table</a>
   </div>
 </div>
 
 <section>
-  <div class="eyebrow">Find us</div>
-  <h2>Open early, most days</h2>
+  <h2>Visit Us</h2>
+  <div class="sub">Open early, most days</div>
   <div class="hours">
     <div><span>Monday – Friday</span><span>7.00 – 16.00</span></div>
     <div><span>Saturday</span><span>8.00 – 17.00</span></div>
@@ -180,7 +201,7 @@
 </section>
 
 <footer>
-  <div class="n">CAFÉ</div>
+  <span class="n">COFFEE</span>
   A demo site by rowbo.dev — yours would carry your name.
 </footer>
 

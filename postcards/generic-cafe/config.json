@@ -2,7 +2,7 @@
   "business": "Generic cafe handout",
   "businessFull": "Hand-out card for independent cafes with no website",
   "variant": "handout",
-  "greeting": "A custom website<br>for your caf&eacute;.<br>Done in 48 hours.",
+  "greeting": "A custom website<br>for your caf&eacute;.<br>Done in 24 hours.",
   "headline": "Hey - We made you a website...",
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
@@ -28,7 +28,9 @@
     "qrBorder": "#DDE2EB",
     "logo": "rowbo-logo-orange.png",
     "phoneBezel": "#16233F",
-    "phoneShadow": "rgba(22,35,63,0.30)"
+    "phoneShadow": "rgba(22,35,63,0.30)",
+    "coverImage": "../site/img/cover-bg.jpg",
+    "coverBlur": 7
   },
   "url": "https://rowbo.dev/cafe",
   "urlDisplay": "rowbo.dev/cafe",

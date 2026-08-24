@@ -40,6 +40,13 @@ export const fontFaces = (base = `${ASSETS}/fonts`) => [400, 600, 700, 800]
     src: url('${base}/inter-latin-${w}-normal.woff2') format('woff2'); font-display: block; }`)
   .join('\n');
 
+// Optional photo background (the handout's cover): the image is blurred and
+// veiled so it reads as frosted glass and the type stays legible. The veil is
+// denser on the left, where the headline and QR sit.
+const coverLayers = t => t.coverImage ? `
+  <img src="${t.coverImage}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scale(1.08); filter:blur(${t.coverBlur ?? 7}px) saturate(1.02); display:block;">
+  <div style="position:absolute; inset:0; background:${t.coverVeil ?? `linear-gradient(100deg, ${t.paper}E8 0%, ${t.paper}D6 46%, ${t.paper}99 100%)`};"></div>` : '';
+
 const shell = (t, inner, padding) => `<!doctype html>
 <html>
 <head>
@@ -51,7 +58,8 @@ ${fontFaces()}
 </style>
 </head>
 <body>
-<div style="width: ${W}px; height: ${H}px; background: ${t.paper}; font-family: ${BODY}; color: ${t.ink}; box-sizing: border-box; padding: ${padding}; display: flex; gap: 30px;">
+<div style="position: relative; overflow: hidden; width: ${W}px; height: ${H}px; background: ${t.paper}; font-family: ${BODY}; color: ${t.ink}; box-sizing: border-box; padding: ${padding}; display: flex; gap: 30px;">
+${coverLayers(t)}
 ${inner}
 </div>
 </body>
@@ -67,7 +75,7 @@ export function front(cfg, qrSvg) {
   const t = theme(cfg);
   return shell(t, `
   <!-- LEFT: headline + CTA -->
-  <div style="flex: 1.18; display: flex; flex-direction: column; justify-content: center;">
+  <div style="position: relative; flex: 1.18; display: flex; flex-direction: column; justify-content: center;">
     <div style="font-family:${DISPLAY}; font-size: ${cfg.headlineSize ?? 37}px; line-height: 1.03; font-weight: 800; letter-spacing: -0.5px;">${cfg.headline}</div>
 ${cfg.subhead ? `
     <div style="margin-top: 14px; font-size: 14.5px; line-height: 1.55; color: ${t.body}; max-width: 330px;">${cfg.subhead}</div>` : ''}
@@ -83,7 +91,7 @@ ${cfg.priceLine === false ? '' : `        <div style="font-size:13px; color:#626
   </div>
 
   <!-- RIGHT: phone mockup -->
-  <div style="flex: 0.82; display: flex; align-items: center; justify-content: center;">
+  <div style="position: relative; flex: 0.82; display: flex; align-items: center; justify-content: center;">
     <div style="width:232px; height:472px; background:${t.phoneBezel ?? t.ink}; border-radius:36px; padding:8px; box-sizing:border-box; box-shadow:0 24px 50px ${t.phoneShadow ?? 'rgba(29,8,2,0.32)'};">
       <div style="width:100%; height:100%; border-radius:29px; overflow:hidden; background:#fff;">
         <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
@@ -127,7 +135,7 @@ ${p.footnote ? `      <div style="margin-top:auto; padding-top:16px; border-top:
 };
 
 export function back(cfg, qrSvg) {
-  const t = theme(cfg);
+  const t = { ...theme(cfg), coverImage: null };
   const note = cfg.note.map(p => `      ${p}`).join('\n      <div style="height: 9px;"></div>\n');
   const isHandout = cfg.variant === 'handout';
 
