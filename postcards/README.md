@@ -39,8 +39,8 @@ assets/       rowbo logo + bundled fonts, shared by every card
 ## Palette
 
 Posted cards use the design canvas palette (cream, ink brown, orange). A card
-can override any of it with `theme` in its config — `generic-cafe` runs cool
-white paper and navy ink with rowbo orange as the only accent; its demo site
+can override any of it with `theme` in its config — `generic-cafe` runs warm
+off-white paper and navy ink with rowbo orange as the only accent; its demo site
 runs a warmer scheme of its own (cream, espresso brown, Playfair Display). `lib/recolour-logo.mjs` makes single-colour versions of
 the logo (`rowbo-logo-orange.png` is the mark *and* the wordmark in `#FA4500`).
 The QR ink follows `theme.ink`, so it stays legible in the card's own colour.
