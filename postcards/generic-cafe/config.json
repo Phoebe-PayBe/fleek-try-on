@@ -3,7 +3,7 @@
   "businessFull": "Hand-out card for independent cafes with no website",
   "variant": "handout",
   "greeting": "A website for your caf&eacute;,<br>ready in 10 minutes.",
-  "headline": "Hey - We made you a website...",
+  "headline": "Hey,<br>we made you a website.",
   "scanLine": "Scan to see it live",
   "claimLine": "Scan to test the live demo &rarr;",
   "note": [
@@ -35,5 +35,10 @@
   "price": "£30",
   "senders": "Tom &amp; Phoebe",
   "priceLine": false,
-  "greetingSize": 27
+  "greetingSize": 27,
+  "headlineSize": 29,
+  "frontSplit": [
+    1.2,
+    0.8
+  ]
 }

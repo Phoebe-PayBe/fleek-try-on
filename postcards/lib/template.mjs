@@ -75,7 +75,7 @@ export function front(cfg, qrSvg) {
   const t = theme(cfg);
   return shell(t, `
   <!-- LEFT: headline + CTA -->
-  <div style="position: relative; flex: 1.18; display: flex; flex-direction: column; justify-content: center;">
+  <div style="position: relative; flex: ${cfg.frontSplit?.[0] ?? 1.18}; display: flex; flex-direction: column; justify-content: center;">
     <div style="font-family:${DISPLAY}; font-size: ${cfg.headlineSize ?? 37}px; line-height: 1.03; font-weight: 800; letter-spacing: -0.5px;">${cfg.headline}</div>
 ${cfg.subhead ? `
     <div style="margin-top: 14px; font-size: 14.5px; line-height: 1.55; color: ${t.body}; max-width: 330px;">${cfg.subhead}</div>` : ''}
@@ -91,7 +91,7 @@ ${cfg.priceLine === false ? '' : `        <div style="font-size:13px; color:#626
   </div>
 
   <!-- RIGHT: phone mockup -->
-  <div style="position: relative; flex: 0.82; display: flex; align-items: center; justify-content: center;">
+  <div style="position: relative; flex: ${cfg.frontSplit?.[1] ?? 0.82}; display: flex; align-items: center; justify-content: center;">
     <div style="width:232px; height:472px; background:${t.phoneBezel ?? t.ink}; border-radius:36px; padding:8px; box-sizing:border-box; box-shadow:0 24px 50px ${t.phoneShadow ?? 'rgba(29,8,2,0.32)'};">
       <div style="width:100%; height:100%; border-radius:29px; overflow:hidden; background:#fff;">
         <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
