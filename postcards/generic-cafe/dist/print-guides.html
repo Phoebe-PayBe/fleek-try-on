@@ -23,6 +23,15 @@
   }
   .page:last-child { break-after: auto; }
   .art { transform: scale(1.03937); transform-origin: center center; flex: 0 0 auto; }
+  .page { position: relative; }
+  .guide { position: absolute; pointer-events: none; }
+  .cut { left: 3mm; top: 3mm; right: 3mm; bottom: 3mm;
+         border: 0.25mm dashed rgba(226,32,32,0.95); }
+  .safe { left: 6mm; top: 6mm; right: 6mm; bottom: 6mm;
+          border: 0.25mm dashed rgba(30,120,235,0.95); }
+  .stamp { left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
+           font-family: Inter, sans-serif; font-size: 7mm; font-weight: 800; letter-spacing: 0.6mm;
+           color: rgba(226,32,32,0.55); }
 </style></head><body>
   <div class="page"><div class="art">
 <div style="position: relative; overflow: hidden; width: 800px; height: 560px; background: #2A1409; font-family: Inter, system-ui, -apple-system, sans-serif; color: #FFFFFF; box-sizing: border-box;">
@@ -112,7 +121,7 @@
     </div>
   </div>
 </div>
-</div></div>
+</div><div class="guide cut"></div><div class="guide safe"></div><div class="guide stamp">PROOF &middot; NOT FOR UPLOAD</div></div>
   <div class="page"><div class="art">
 <div style="position: relative; overflow: hidden; width: 800px; height: 560px; background: #F8F4EC; font-family: Inter, system-ui, -apple-system, sans-serif; color: #2A1409; box-sizing: border-box;">
 
@@ -167,5 +176,5 @@
     <div style="margin-top:auto; font-size:12.5px; color:#8A7A6E;">- Tom &amp; Phoebe &middot; rowbo.dev</div>
   </div>
 </div>
-</div></div>
+</div><div class="guide cut"></div><div class="guide safe"></div><div class="guide stamp">PROOF &middot; NOT FOR UPLOAD</div></div>
 </body></html>

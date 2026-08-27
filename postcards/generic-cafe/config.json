@@ -3,6 +3,10 @@
   "businessFull": "Hand-out card for independent cafes",
   "variant": "handout",
   "layout": "b",
+  "trimMm": [
+    210,
+    148
+  ],
   "headline": "We&rsquo;ll build your<br>website.",
   "headlineSize": 46,
   "headlineAccent": "Free to preview.",

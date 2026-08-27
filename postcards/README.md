@@ -93,12 +93,44 @@ repo as 8 MB PNGs.
 
 | File | What it's for |
 | --- | --- |
-| `dist/<card>-postcard-print.pdf` | **Send this to the printer.** 2 pages (front, back), A6 landscape + 3 mm bleed (154 × 111 mm). |
+| `dist/<card>-print-<w>x<h>mm-bleed.pdf` | **Send this to the printer.** 2 pages (front, back) at the card's trim size plus 3 mm bleed on every edge. `generic-cafe` is A5 landscape, so 216 × 154 mm. |
+| `dist/<card>-print-guides.pdf` | The same two pages with the cut line (red, 3 mm in) and the safe zone (blue, 6 mm in) drawn on top, watermarked **PROOF · NOT FOR UPLOAD**. Check against this, upload the other one. |
 | `dist/<card>-both-slides.pdf` | **Both sides in one file, whole and uncropped** — the one to send someone who just wants to look at the card. 2 pages at the artboard's own ratio (148 × 103.6 mm), so nothing is trimmed into the bleed. |
 | `dist/front.png` / `back.png` | 2400 × 1680 previews (~400 dpi at A6). |
 | `dist/site-mobile.jpg` | Screenshot of the mock site, used in the phone mockup. |
-| `dist/<card>-a4-4up.pdf` | Handouts only: four cards to an A4 landscape sheet. Print duplex, **flip on short edge**, then cut the sheet in quarters — an A6 is exactly a quarter of an A4, so there's nothing to trim. |
+| `dist/<card>-a4-<n>up.pdf` | Handouts only, for running a few off in the office. An A6 tiles four to an A4 landscape sheet; an A5 tiles two to an A4 portrait one. Print duplex, **flip on short edge**, then cut. |
 | `dist/*.html`, `dist/qr.svg` | The artboards and the QR on its own, for hand-editing. |
+
+## Sending artwork to a printer
+
+`trimMm: [w, h]` in a card's config sets the finished size; the build adds 3 mm
+of bleed on every edge and reports where the copy lands:
+
+```
+trim 210x148mm, page 216x154mm (+3mm bleed all round)
+artwork covers the page, 2.0mm trimmed off each side and 0.0mm off top and bottom
+nearest copy sits 6.0mm inside the cut line (needs 3mm)
+print PDF page measures 216.00 x 154.00mm
+```
+
+The artboard is 800 × 560, which is not quite any paper ratio, so it is scaled
+to *cover* the bleed page and the surplus is trimmed. That surplus is bleed,
+never artwork: the check above fails loudly if a trim-size change ever pushes
+copy inside the safe zone.
+
+Chromium can only make PDF pages in steps of 1/75 in (0.339 mm) and rounds up,
+so a page asked for at 216 mm comes out at 216.24 and a printer's preflight
+reads it as the wrong size and rescales the file. The build renders a hair
+oversize and then narrows each page's MediaBox to the exact size, centred,
+writing the new box over the old at the same byte length so the cross-reference
+table stays valid. `generic-cafe` matches instantprint's own A5 template
+(154 × 216 mm portrait; ours is the same rotated) to within 2 microns.
+
+One thing the build cannot do: **the PDFs are RGB.** Chromium has no CMYK
+output. instantprint and most online printers convert on receipt, which shifts
+saturated colour slightly — rowbo orange `#FA4500` will come back a little
+flatter. That is normal for this route; if a run ever needs to match exactly,
+the file has to go through a CMYK conversion first.
 
 ## Adding a card
 

@@ -25,15 +25,63 @@ mkdirSync(dist, { recursive: true });
 const cfg = JSON.parse(readFileSync(join(card, 'config.json'), 'utf8'));
 
 // --- print geometry -------------------------------------------------------
-// A6 landscape (148 x 105 mm) plus 3 mm bleed on every edge.
+// Trim size comes from config (`trimMm: [w, h]`, landscape), defaulting to A6.
+// Every printer we deal with wants 3 mm of bleed on every edge and the
+// important content 3 mm inside the cut, which is what `safe` below checks.
 const BLEED_MM = 3;
-const PAGE_W_MM = 148 + BLEED_MM * 2;
-const PAGE_H_MM = 105 + BLEED_MM * 2;
+const [TRIM_W_MM, TRIM_H_MM] = cfg.trimMm ?? [148, 105];
+const PAGE_W_MM = TRIM_W_MM + BLEED_MM * 2;
+const PAGE_H_MM = TRIM_H_MM + BLEED_MM * 2;
 const MM = 96 / 25.4; // CSS px per mm
+// Chromium rounds a mm page size through CSS pixels and lands ~0.2 mm over,
+// which a printer's preflight reads as the wrong page. Inches convert to
+// points exactly, so the MediaBox comes out at the template's own size.
+const IN = mm => `${(mm / 25.4).toFixed(6)}in`;
+
+// Chromium can only make pages in steps of 1/75 in (0.339 mm) and rounds up,
+// so 216 mm comes out 216.24 and a printer's preflight reads it as the wrong
+// size. Render a hair oversize, then narrow each page's MediaBox to the exact
+// size, centred — the sliver that falls outside is bleed, never artwork. The
+// new box is written over the old one at the same byte length so the file's
+// cross-reference offsets stay valid.
+const mediaBoxMm = file => {
+  const m = /MediaBox\s*\[([^\]]*)\]/.exec(readFileSync(file).toString('latin1'));
+  const [x0, y0, x1, y1] = m[1].trim().split(/\s+/).map(Number);
+  return [((x1 - x0) / 72) * 25.4, ((y1 - y0) / 72) * 25.4];
+};
+const exactPage = (file, wMm, hMm) => {
+  const wPt = (wMm / 25.4) * 72, hPt = (hMm / 25.4) * 72;
+  const txt = readFileSync(file).toString('latin1').replace(
+    /MediaBox\s*\[([^\]]*)\]/g,
+    (whole, inner) => {
+      const [x0, y0, x1, y1] = inner.trim().split(/\s+/).map(Number);
+      // Centred if it fits in the bytes we have, otherwise anchored at the
+      // origin, which trims the surplus off one edge instead of two.
+      for (const [ox, oy] of [[x0 + (x1 - x0 - wPt) / 2, y0 + (y1 - y0 - hPt) / 2], [0, 0]]) {
+        for (const dp of [4, 3, 2, 1, 0]) {
+          const box = [ox, oy, ox + wPt, oy + hPt].map(v => v.toFixed(dp)).join(' ');
+          if (box.length <= inner.length) return whole.replace(inner, box.padEnd(inner.length));
+        }
+      }
+      return whole;
+    }
+  );
+  writeFileSync(file, Buffer.from(txt, 'latin1'));
+  return mediaBoxMm(file);
+};
 // Scale the 800x560 artboard to cover the bleed page (uniform, so nothing
 // stretches; the overflow is trimmed at the bleed edge, well outside the
 // 40 px safety padding the layout already uses).
 const SCALE = Math.max((PAGE_W_MM * MM) / W, (PAGE_H_MM * MM) / H);
+
+// How much of the artboard falls outside the page once it covers, and how far
+// the layout's own padding then sits from the trimmed edge. Printed as a
+// safe-zone report so a trim-size change can't quietly push copy into the cut.
+const artW = (W * SCALE) / MM, artH = (H * SCALE) / MM;   // mm
+const overW = (artW - PAGE_W_MM) / 2, overH = (artH - PAGE_H_MM) / 2;
+const PAD_PX = cfg.layout === 'b' ? 40 : 40;              // smallest padding in the layout
+const padMm = (PAD_PX * SCALE) / MM;
+const safeMm = padMm - Math.max(overW, overH) - BLEED_MM; // clear of the cut line
 
 // --- QR -------------------------------------------------------------------
 // Error correction M: comfortably scannable at the 56 px / 76 px printed sizes.
@@ -107,17 +155,53 @@ ${fontFaces()}
 </body></html>`;
 writeFileSync(join(dist, 'print.html'), printHtml);
 
+const printPdf = join(dist, `${slug}-print-${TRIM_W_MM}x${TRIM_H_MM}mm-bleed.pdf`);
 const printPage = await browser.newPage();
 await printPage.goto(`file://${join(dist, 'print.html')}`);
 await printPage.evaluate(() => document.fonts.ready);
 await printPage.pdf({
-  path: join(dist, `${slug}-postcard-print.pdf`),
-  width: `${PAGE_W_MM}mm`,
-  height: `${PAGE_H_MM}mm`,
+  path: printPdf,
+  width: IN(PAGE_W_MM),
+  height: IN(PAGE_H_MM),
   printBackground: true,
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
 });
 await printPage.close();
+const [gotW, gotH] = exactPage(printPdf, PAGE_W_MM, PAGE_H_MM);
+
+// 3b. The same two pages with the printer's guides drawn on top: the cut line
+// at 3 mm in and the safe zone at 6 mm. A proof to check against, watermarked
+// so it can't be mistaken for the upload file.
+{
+  const guidesHtml = printHtml.replace(
+    '</style></head><body>',
+    `  .page { position: relative; }
+  .guide { position: absolute; pointer-events: none; }
+  .cut { left: ${BLEED_MM}mm; top: ${BLEED_MM}mm; right: ${BLEED_MM}mm; bottom: ${BLEED_MM}mm;
+         border: 0.25mm dashed rgba(226,32,32,0.95); }
+  .safe { left: ${BLEED_MM * 2}mm; top: ${BLEED_MM * 2}mm; right: ${BLEED_MM * 2}mm; bottom: ${BLEED_MM * 2}mm;
+          border: 0.25mm dashed rgba(30,120,235,0.95); }
+  .stamp { left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
+           font-family: Inter, sans-serif; font-size: 7mm; font-weight: 800; letter-spacing: 0.6mm;
+           color: rgba(226,32,32,0.55); }
+</style></head><body>`
+  ).replace(
+    /<\/div><\/div>/g,
+    `</div><div class="guide cut"></div><div class="guide safe"></div><div class="guide stamp">PROOF &middot; NOT FOR UPLOAD</div></div>`
+  );
+  writeFileSync(join(dist, 'print-guides.html'), guidesHtml);
+
+  const guidePdf = join(dist, `${slug}-print-guides.pdf`);
+  const guidePage = await browser.newPage();
+  await guidePage.goto(`file://${join(dist, 'print-guides.html')}`);
+  await guidePage.evaluate(() => document.fonts.ready);
+  await guidePage.pdf({
+    path: guidePdf, width: IN(PAGE_W_MM), height: IN(PAGE_H_MM),
+    printBackground: true, margin: { top: '0', right: '0', bottom: '0', left: '0' },
+  });
+  await guidePage.close();
+  exactPage(guidePdf, PAGE_W_MM, PAGE_H_MM);
+}
 
 // 4. Both artboards in one PDF, whole and uncropped — the file to send
 // someone who just wants to look at the card. Page matches the artboard's
@@ -161,8 +245,11 @@ ${fontFaces()}
 // printer. An A6 is exactly a quarter of an A4, so the cards tile with no
 // waste and the cut lines are the two halves of the sheet.
 if (cfg.variant === 'handout') {
-  const A4_W_MM = 297, A4_H_MM = 210;          // A4 landscape
-  const CELL_W_MM = A4_W_MM / 2, CELL_H_MM = A4_H_MM / 2;
+  // An A6 is a quarter of an A4 landscape; an A5 is half an A4 portrait.
+  const up = TRIM_W_MM > 180 ? 2 : 4;
+  const [A4_W_MM, A4_H_MM] = up === 2 ? [210, 297] : [297, 210];
+  const [COLS, ROWS] = up === 2 ? [1, 2] : [2, 2];
+  const CELL_W_MM = A4_W_MM / COLS, CELL_H_MM = A4_H_MM / ROWS;
   const CELL_SCALE = Math.max((CELL_W_MM * MM) / W, (CELL_H_MM * MM) / H);
   const cell = html => `<div class="cell"><div class="art">${artboard(html)}</div></div>`;
 
@@ -173,7 +260,7 @@ ${fontFaces()}
   html, body { margin: 0; padding: 0; background: ${PAPER}; }
   .sheet {
     width: ${A4_W_MM}mm; height: ${A4_H_MM}mm; display: grid;
-    grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    grid-template-columns: repeat(${COLS}, 1fr); grid-template-rows: repeat(${ROWS}, 1fr);
     background: ${PAPER}; break-after: page;
   }
   .sheet:last-child { break-after: auto; }
@@ -183,24 +270,34 @@ ${fontFaces()}
   }
   .art { transform: scale(${CELL_SCALE.toFixed(5)}); transform-origin: center center; flex: 0 0 auto; }
 </style></head><body>
-  <div class="sheet">${cell(frontHtml).repeat(4)}</div>
-  <div class="sheet">${cell(backHtml).repeat(4)}</div>
+  <div class="sheet">${cell(frontHtml).repeat(up)}</div>
+  <div class="sheet">${cell(backHtml).repeat(up)}</div>
 </body></html>`;
   writeFileSync(join(dist, 'sheet-a4-4up.html'), sheetHtml);
 
+  const sheetPdf = join(dist, `${slug}-a4-${up}up.pdf`);
   const sheetPage = await browser.newPage();
   await sheetPage.goto(`file://${join(dist, 'sheet-a4-4up.html')}`);
   await sheetPage.evaluate(() => document.fonts.ready);
   await sheetPage.pdf({
-    path: join(dist, `${slug}-a4-4up.pdf`),
-    width: `${A4_W_MM}mm`,
-    height: `${A4_H_MM}mm`,
+    path: sheetPdf,
+    width: IN(A4_W_MM),
+    height: IN(A4_H_MM),
     printBackground: true,
     margin: { top: '0', right: '0', bottom: '0', left: '0' },
   });
   await sheetPage.close();
-  console.log('Also built the 4-up A4 sheet (duplex, flip on SHORT edge; cut in quarters).');
+  exactPage(sheetPdf, A4_W_MM, A4_H_MM);
+  console.log(`Also built the ${up}-up A4 sheet (duplex, flip on SHORT edge; cut in ${up === 2 ? 'half' : 'quarters'}).`);
 }
 
 await browser.close();
-console.log(`Built ${slug}/dist — QR -> ${cfg.url}, page ${PAGE_W_MM}x${PAGE_H_MM}mm (A6 + ${BLEED_MM}mm bleed)`);
+console.log(`Built ${slug}/dist — QR -> ${cfg.url}`);
+console.log(`  trim ${TRIM_W_MM}x${TRIM_H_MM}mm, page ${PAGE_W_MM}x${PAGE_H_MM}mm (+${BLEED_MM}mm bleed all round)`);
+console.log(`  artwork covers the page, ${overW.toFixed(1)}mm trimmed off each side and ${overH.toFixed(1)}mm off top and bottom`);
+console.log(`  nearest copy sits ${safeMm.toFixed(1)}mm inside the cut line (needs 3mm)`);
+console.log(`  print PDF page measures ${gotW.toFixed(2)} x ${gotH.toFixed(2)}mm`);
+if (Math.abs(gotW - PAGE_W_MM) > 0.02 || Math.abs(gotH - PAGE_H_MM) > 0.02) {
+  console.warn('  WARNING: page size is off, the printer will rescale it');
+}
+if (safeMm < BLEED_MM) console.warn('  WARNING: copy is inside the safe zone margin');
