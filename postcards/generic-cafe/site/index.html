@@ -11,21 +11,23 @@
     src: url('../../assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: block; }
   @font-face { font-family: Inter; font-style: normal; font-weight: 700;
     src: url('../../assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: block; }
-  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400;
-    src: url('../../assets/fonts/playfair-display-latin-400-normal.woff2') format('woff2'); font-display: block; }
-  @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700;
-    src: url('../../assets/fonts/playfair-display-latin-700-normal.woff2') format('woff2'); font-display: block; }
+  /* Source Serif 4, variable on both weight and optical size — big type gets
+     the display cut, small type the text cut. */
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 200 900;
+    src: url('../../assets/fonts/source-serif-4.woff2') format('woff2'); font-display: block; }
+  @font-face { font-family: 'Source Serif 4'; font-style: italic; font-weight: 200 900;
+    src: url('../../assets/fonts/source-serif-4-italic.woff2') format('woff2'); font-display: block; }
 
-  /* Cool off-white, forest green and a brass button — the register
-     speciality coffee shops use. Deliberately generic: any cafe can see
+  /* Editorial: a cool off-white chrome, one full-bleed photograph, and the
+     serif doing all the talking. Deliberately generic — any cafe can see
      itself here. */
   :root {
     --paper: #F7F8F6;
     --paper-2: #EDEFEB;
-    --forest: #1F3A2A;
+    --forest: #1B3226;
     --brass: #8A7530;
-    --ink: #24211B;
-    --muted: #69706A;
+    --ink: #161815;
+    --muted: #6B7069;
     --line: #E2E5DF;
   }
   * { box-sizing: border-box; }
@@ -34,41 +36,83 @@
     font-family: Inter, system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .serif { font-family: 'Playfair Display', Georgia, serif; }
+  .serif {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-variation-settings: 'opsz' 20;
+  }
 
+  /* ---- chrome ---------------------------------------------------------- */
   .bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 58px 22px 6px;
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 58px 20px 15px;
   }
-  .word { font-size: 12.5px; font-weight: 700; letter-spacing: 2.6px; color: var(--forest); }
-  .burger { display: flex; flex-direction: column; gap: 5px; }
-  .burger span { width: 22px; height: 2px; background: var(--forest); border-radius: 2px; }
+  .word {
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 600;
+    font-variation-settings: 'opsz' 32; font-size: 21px; letter-spacing: -0.4px;
+    color: var(--ink);
+  }
+  .nav { display: flex; gap: 15px; }
+  .nav a {
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 400;
+    font-variation-settings: 'opsz' 12; font-size: 13.5px;
+    color: var(--ink); text-decoration: none;
+  }
 
-  .intro { padding: 26px 22px 0; }
+  /* ---- hero ------------------------------------------------------------ */
+  .hero { position: relative; height: 522px; overflow: hidden; }
+  .hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hero .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(12,10,8,0.30) 0%, rgba(12,10,8,0.05) 34%, rgba(12,10,8,0.72) 100%);
+  }
+  .slides {
+    position: absolute; top: 16px; left: 20px; display: flex; gap: 13px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.6px; color: rgba(255,255,255,0.55);
+    font-variant-numeric: tabular-nums;
+  }
+  .slides .on { color: #fff; }
+
+  .hero .copy { position: absolute; left: 20px; right: 20px; bottom: 22px; }
   h1 {
-    font-family: 'Playfair Display', Georgia, serif; font-weight: 700;
-    font-size: 34px; line-height: 1.12; letter-spacing: -0.4px;
-    color: var(--forest); margin: 0 0 14px;
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
+    font-variation-settings: 'opsz' 60; font-size: 44px; line-height: 1.0;
+    letter-spacing: -1px; color: #fff; margin: 0 0 26px;
   }
-  .lead { font-size: 14px; line-height: 1.6; color: var(--muted); margin: 0 0 20px; }
+  .rule { height: 1px; background: rgba(255,255,255,0.42); margin-bottom: 14px; }
+  .discover {
+    display: flex; align-items: center; justify-content: space-between;
+    text-decoration: none; color: #fff;
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 400;
+    font-variation-settings: 'opsz' 16; font-size: 16px;
+  }
+  .discover svg { display: block; }
 
-  .cta { display: flex; gap: 10px; }
+  /* ---- the line under the fold ----------------------------------------- */
+  .lede { padding: 26px 20px 4px; }
+  .lede p {
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 400;
+    font-variation-settings: 'opsz' 22; font-size: 19px; line-height: 1.42;
+    letter-spacing: -0.2px; color: var(--ink); margin: 0 0 20px;
+  }
+  .cta { display: flex; gap: 9px; }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    text-decoration: none; font-size: 11.5px; font-weight: 700;
-    letter-spacing: 1.6px; text-transform: uppercase; padding: 14px 18px;
+    text-decoration: none; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 18px;
   }
-  .btn-brass { background: var(--brass); color: #FCFDFB; }
+  .btn-ink { background: var(--forest); color: #F4F7F3; }
   .btn-ghost { border: 1px solid var(--line); color: var(--forest); background: #FCFDFB; }
   .btn svg { display: block; }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 24px 22px 0; }
-  .grid img { width: 100%; height: 132px; object-fit: cover; display: block; border-radius: 2px; }
+  /* ---- the rest of the page -------------------------------------------- */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 30px 20px 0; }
+  .grid img { width: 100%; height: 138px; object-fit: cover; display: block; }
 
-  section { padding: 34px 22px 0; }
+  section { padding: 36px 20px 0; }
   h2 {
-    font-family: 'Playfair Display', Georgia, serif; font-weight: 700;
-    font-size: 25px; letter-spacing: -0.3px; color: var(--forest); margin: 0 0 14px;
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
+    font-variation-settings: 'opsz' 40; font-size: 28px; letter-spacing: -0.6px;
+    color: var(--ink); margin: 0 0 16px;
   }
 
   .menu { list-style: none; margin: 0; padding: 0; }
@@ -76,20 +120,24 @@
     display: flex; align-items: baseline; gap: 10px;
     padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px;
   }
-  .menu .name { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; }
+  .menu .name {
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 400;
+    font-variation-settings: 'opsz' 18; font-size: 17px;
+  }
   .menu .fill { flex: 1; border-bottom: 1px dotted #D3D8CF; }
   .menu .price { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 
   .order {
-    margin: 32px 22px 0; background: var(--forest); color: #DCE6DD;
-    padding: 26px 22px 24px;
+    margin: 34px 20px 0; background: var(--forest); color: #CFDCD2;
+    padding: 28px 22px 26px;
   }
   .order h3 {
-    font-family: 'Playfair Display', Georgia, serif; font-weight: 700;
-    font-size: 22px; margin: 0 0 8px; color: #FBFDFA;
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
+    font-variation-settings: 'opsz' 32; font-size: 24px; letter-spacing: -0.4px;
+    margin: 0 0 9px; color: #FBFDFA;
   }
   .order p { font-size: 13px; line-height: 1.6; margin: 0 0 18px; }
-  .order .r { display: flex; gap: 10px; }
+  .order .r { display: flex; gap: 9px; }
   .order .r .btn { flex: 1; padding: 13px 8px; }
   .order .btn-cream { background: #FBFDFA; color: var(--forest); }
   .order .btn-line { border: 1px solid rgba(251,253,250,0.4); color: #FBFDFA; }
@@ -103,27 +151,46 @@
   .where strong { color: var(--ink); font-weight: 600; }
 
   footer {
-    margin-top: 34px; background: var(--paper-2);
-    padding: 26px 22px 30px; font-size: 11.5px; line-height: 1.7; color: var(--muted);
+    margin-top: 36px; background: var(--paper-2);
+    padding: 28px 20px 32px; font-size: 11.5px; line-height: 1.7; color: var(--muted);
   }
   footer .w {
-    font-size: 12.5px; font-weight: 700; letter-spacing: 2.6px;
-    color: var(--forest); display: block; margin-bottom: 7px;
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 600;
+    font-variation-settings: 'opsz' 24; font-size: 17px; letter-spacing: -0.3px;
+    color: var(--ink); display: block; margin-bottom: 7px;
   }
 </style>
 </head>
 <body>
 
 <div class="bar">
-  <div class="word">BLOOM &amp; BEAN</div>
-  <div class="burger"><span></span><span></span><span></span></div>
+  <div class="word">Bloom &amp; Bean.</div>
+  <div class="nav">
+    <a href="#menu">Menu.</a>
+    <a href="#visit">Visit us.</a>
+  </div>
 </div>
 
-<div class="intro">
-  <h1>Crafted with intent.</h1>
-  <p class="lead">Dedicated to sourcing and roasting exceptional specialty coffee from around the world.</p>
+<div class="hero">
+  <img src="img/pour.jpg" alt="Pouring a flat white">
+  <div class="veil"></div>
+  <div class="slides"><span class="on">01</span><span>02</span><span>03</span></div>
+  <div class="copy">
+    <h1>Crafted with intent.</h1>
+    <div class="rule"></div>
+    <a class="discover" href="#menu">
+      Discover now
+      <svg width="26" height="9" viewBox="0 0 26 9" fill="none" stroke="#fff" stroke-width="1.1" aria-hidden="true">
+        <path d="M0 4.5h24M20.4 1 24 4.5 20.4 8"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<div class="lede">
+  <p>Dedicated to sourcing and roasting exceptional specialty coffee from around the world.</p>
   <div class="cta">
-    <a class="btn btn-brass" href="#menu">View menu</a>
+    <a class="btn btn-ink" href="#menu">View menu</a>
     <a class="btn btn-ghost" href="#">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 2a10 10 0 0 0-8.7 15L2 22l5.2-1.3A10 10 0 1 0 12 2Zm5.4 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1a12 12 0 0 1-5.6-4.6c-.4-.6-.9-1.5-.9-2.4 0-.9.5-1.4.7-1.6.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.4l.7 1.7c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.3.5.8 1.2 1.4 1.7.7.6 1.3.8 1.6.9.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.6.8c.3.1.4.2.5.3v1Z"/>
@@ -135,9 +202,7 @@
 
 <div class="grid">
   <img src="img/latte.jpg" alt="Flat whites on the pass">
-  <img src="img/pour.jpg" alt="Pouring a flat white">
   <img src="img/toast.jpg" alt="Brunch">
-  <img src="img/pastry.jpg" alt="Pastries">
 </div>
 
 <section id="menu">
@@ -161,7 +226,7 @@
   </div>
 </div>
 
-<section>
+<section id="visit">
   <h2>Visit us</h2>
   <div class="hours">
     <div><span>Monday – Friday</span><span>7.00 – 16.00</span></div>
@@ -176,7 +241,7 @@
 </section>
 
 <footer>
-  <span class="w">BLOOM &amp; BEAN</span>
+  <span class="w">Bloom &amp; Bean.</span>
   A demo site by rowbo.dev and yours would carry your name.
 </footer>
 
