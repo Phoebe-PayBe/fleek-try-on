@@ -204,10 +204,12 @@ ${inner}
 // millimetre is almost exactly 3 px and the rail and bezel land at 3 and 4.
 const PHONE_W = 214;
 const PHONE_H = Math.round(PHONE_W * 149.6 / 71.5);   // 448
-const RAIL = 3;                                       // the aluminium edge
-const BEZEL = 4;                                      // the black border inside it
+const CHAMFER = 1;                                    // the polished outer edge
+const RAIL = 2;                                       // the brushed band behind it
+const BEZEL = 4;                                      // the black border inside that
 const R_OUT = 41;
-const R_BEZ = R_OUT - RAIL;
+const R_RAIL = R_OUT - CHAMFER;
+const R_BEZ = R_RAIL - RAIL;
 const R_SCR = R_BEZ - BEZEL;
 
 // The side buttons, as fractions of the body height, from the real device:
@@ -243,16 +245,23 @@ const phoneMockup = (t, cfg) => {
   const ink = cfg.statusInk ?? '#1B1B1B';
   const shadow = t.phoneShadow ?? '0 18px 40px rgba(42,20,9,0.20)';
 
-  // Brushed aluminium: the rail catches light on the corners and goes dark
-  // where it turns away, which is what stops a flat dark rectangle reading as
-  // a sticker on a dark card.
+  // The frame is two bands, as on the real phone: a polished chamfer on the
+  // very edge that throws a bright highlight, and a brushed band behind it
+  // that stays darker. One flat grey rectangle is what makes a mockup read as
+  // a drawing rather than a photograph.
+  const chamfer = t.phoneChamfer ?? `linear-gradient(122deg,
+      #E9E5DF 0%, #9B958D 8%, #FFFDF9 18%, #7D776F 32%, #D6D1C9 46%,
+      #6E6960 60%, #F2EEE8 76%, #8A847B 90%, #DAD5CD 100%)`;
   const rail = t.phoneRail ?? `linear-gradient(122deg,
-      #9A948C 0%, #46423E 9%, #7E7871 21%, #332F2C 38%,
-      #514C47 52%, #2C2926 68%, #837D76 84%, #3A3733 96%, #6E6862 100%)`;
-  const buttonFace = t.phoneButton ?? 'linear-gradient(180deg, #7A746D, #423E3A 55%, #6B655F)';
+      #8E887F 0%, #3B3733 10%, #756F67 22%, #2B2825 38%,
+      #4C4842 52%, #232120 68%, #7B756D 84%, #332F2C 96%, #635E58 100%)`;
+
+  // Buttons catch light on their outer face and fall away at both ends.
+  const buttonFace = t.phoneButton ?? `linear-gradient(180deg,
+      rgba(0,0,0,0.45) 0%, #6B655E 16%, #A9A29A 42%, #837D75 62%, #3E3A36 88%, rgba(0,0,0,0.45) 100%)`;
 
   const buttons = BUTTONS.map(([side, top, height]) => `
-        <div style="position:absolute; ${side}:-2px; top:${Math.round(PHONE_H * top)}px; width:3px; height:${Math.round(PHONE_H * height)}px; border-radius:2px; background:${buttonFace};"></div>`).join('');
+        <div style="position:absolute; ${side}:-2px; top:${Math.round(PHONE_H * top)}px; width:3px; height:${Math.round(PHONE_H * height)}px; border-radius:1.5px; background:${buttonFace}; box-shadow:0 0 1px rgba(0,0,0,0.55);"></div>`).join('');
 
   // A dark card needs the screen to spill light, or the phone floats on it as
   // a flat cut-out. The halo sits behind the body and is blurred well past it.
@@ -262,23 +271,28 @@ const phoneMockup = (t, cfg) => {
   return `
       <div style="position:relative; width:${PHONE_W}px; height:${PHONE_H}px;">
 ${glow}
-        <div style="position:absolute; inset:0; border-radius:${R_OUT}px; background:${rail}; padding:${RAIL}px; box-sizing:border-box; box-shadow:${shadow};">
+        <div style="position:absolute; inset:0; border-radius:${R_OUT}px; background:${chamfer}; padding:${CHAMFER}px; box-sizing:border-box; box-shadow:${shadow};">
 ${buttons}
-          <div style="width:100%; height:100%; border-radius:${R_BEZ}px; background:#08080A; padding:${BEZEL}px; box-sizing:border-box;">
-            <div style="position:relative; width:100%; height:100%; border-radius:${R_SCR}px; overflow:hidden; background:#fff;">
-              <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
-              <div style="position:absolute; top:0; left:0; right:0; height:28px; display:flex; align-items:center; justify-content:space-between; padding:0 15px 0 16px;">
-                <div style="font-size:10px; font-weight:700; letter-spacing:-0.1px; color:${ink}; font-variant-numeric:tabular-nums;">9:41</div>
-                <div style="display:flex; align-items:center; gap:4px;">${statusIcons(ink)}
+          <div style="width:100%; height:100%; border-radius:${R_RAIL}px; background:${rail}; padding:${RAIL}px; box-sizing:border-box;">
+            <div style="width:100%; height:100%; border-radius:${R_BEZ}px; background:#08080A; padding:${BEZEL}px; box-sizing:border-box; box-shadow:inset 0 0 2px rgba(0,0,0,0.9);">
+              <div style="position:relative; width:100%; height:100%; border-radius:${R_SCR}px; overflow:hidden; background:#fff;">
+                <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
+                <div style="position:absolute; top:0; left:0; right:0; height:28px; display:flex; align-items:center; justify-content:space-between; padding:0 15px 0 16px;">
+                  <div style="font-size:10px; font-weight:700; letter-spacing:-0.1px; color:${ink}; font-variant-numeric:tabular-nums;">9:41</div>
+                  <div style="display:flex; align-items:center; gap:4px;">${statusIcons(ink)}
+                  </div>
                 </div>
+                <!-- Dynamic Island, with the front camera showing at its right end -->
+                <div style="position:absolute; top:7px; left:50%; transform:translateX(-50%); width:66px; height:20px; border-radius:999px; background:#050506; display:flex; align-items:center; justify-content:flex-end; padding-right:5px; box-sizing:border-box;">
+                  <div style="width:7.5px; height:7.5px; border-radius:50%; background:radial-gradient(circle at 36% 30%, #222A3E 0%, #0E1119 50%, #050609 100%); box-shadow:inset 0 0 0 0.4px rgba(110,130,175,0.28);"></div>
+                </div>
+                <!-- home indicator -->
+                <div style="position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:86px; height:4px; border-radius:3px; background:rgba(18,16,14,0.32);"></div>
+                <!-- glass: one soft sweep off the top-left corner, kept light
+                     enough that the site underneath stays readable -->
+                <div style="position:absolute; inset:0; background:linear-gradient(126deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.10) 13%, rgba(255,255,255,0) 30%);"></div>
+                <div style="position:absolute; inset:0; border-radius:${R_SCR}px; box-shadow:inset 0 0 0 0.6px rgba(255,255,255,0.16);"></div>
               </div>
-              <div style="position:absolute; top:7px; left:50%; transform:translateX(-50%); width:62px; height:19px; border-radius:999px; background:#060606;"></div>
-              <!-- home indicator -->
-              <div style="position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:86px; height:4px; border-radius:3px; background:rgba(18,16,14,0.32);"></div>
-              <!-- glass: one soft sweep off the top-left corner, kept light
-                   enough that the site underneath stays readable -->
-              <div style="position:absolute; inset:0; background:linear-gradient(126deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.10) 13%, rgba(255,255,255,0) 30%);"></div>
-              <div style="position:absolute; inset:0; border-radius:${R_SCR}px; box-shadow:inset 0 0 0 0.6px rgba(255,255,255,0.16);"></div>
             </div>
           </div>
         </div>
