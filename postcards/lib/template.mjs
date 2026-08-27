@@ -298,7 +298,9 @@ ${p.footnote ? `    <div style="margin-top:auto; font-size:11.5px; line-height:1
 
   <!-- RIGHT: how to start -->
   <div style="position:absolute; right:0; top:0; bottom:0; width:${100 - split}%; padding:44px 38px 34px; box-sizing:border-box; display:flex; flex-direction:column;">
-    <img src="${ASSETS}/${t.logo}" style="height:24px; display:block;">
+    <!-- align-self, or the flex column stretches the logo to its full width
+         and squashes the mark. -->
+    <img src="${ASSETS}/${t.logo}" style="height:24px; width:auto; align-self:flex-start; display:block;">
 
     <div style="margin-top:26px; font-size:15px; line-height:1.6; color:${t.ink};">${cfg.rightNote}</div>
 
