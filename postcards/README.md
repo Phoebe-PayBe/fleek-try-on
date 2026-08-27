@@ -29,6 +29,13 @@ for the first café batch: headline over an accent line with the QR low-left on
 the cover, and a full-bleed dark panel of inclusions beside a cream
 how-to-start column on the back. The other cards run the original layout.
 
+Layout B's cover takes its own palette from `coverTheme`, which overrides
+`theme` on slide 1 only: the café card runs dark espresso paper, white type,
+rowbo orange for the accent line, the white-wordmark logo and a white tile
+under the QR so it still scans. `coverTheme.phoneShadow` carries the phone's
+drop shadow and hairline edge, since a dark bezel needs defining against a
+dark card.
+
 Cards come in two shapes, set by `variant` in config:
 
 - **`mailer`** (default) — postage box and address panel on the back, for post.
@@ -128,4 +135,7 @@ Logo artwork is the official pack (`Logomark` lockup):
 `rowbo-logo.png` is the brand default (orange mark, ink wordmark) and is what
 the two posted cards use; `rowbo-logo-orange.png` and `rowbo-logo-navy.png`
 are single-colour versions made from it by `lib/recolour-logo.mjs`, and the
-handouts run the orange one. `rowbo-logo.svg` is there for anything vector.
+handouts run the orange one. `rowbo-logo-on-dark.png` keeps the orange mark and
+knocks the wordmark out to white for dark backgrounds (`recolour-logo.mjs
+--wordmark`), and is what the café cover uses. `rowbo-logo.svg` is there for
+anything vector.

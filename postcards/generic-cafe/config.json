@@ -32,6 +32,15 @@
     "logo": "rowbo-logo.png",
     "phoneBezel": "#2A1409"
   },
+  "coverTheme": {
+    "paper": "#2A1409",
+    "ink": "#FFFFFF",
+    "accent": "#FA4500",
+    "logo": "rowbo-logo-on-dark.png",
+    "qrTile": "#FFFFFF",
+    "phoneBezel": "#100C0A",
+    "phoneShadow": "0 22px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.10)"
+  },
   "url": "https://www.rowbo.dev/?build=1",
   "urlDisplay": "rowbo.dev",
   "price": "£30",

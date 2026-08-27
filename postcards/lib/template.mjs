@@ -225,8 +225,9 @@ const statusIcons = ink => `
 
 const phoneMockup = (t, cfg) => {
   const ink = cfg.statusInk ?? '#1B1B1B';
+  const shadow = t.phoneShadow ?? '0 18px 40px rgba(42,20,9,0.20)';
   return `
-      <div style="width:${PHONE_W}px; height:${PHONE_H}px; background:${t.phoneBezel ?? t.ink}; border-radius:41px; padding:${BEZEL}px; box-sizing:border-box; box-shadow:0 18px 40px rgba(42,20,9,0.20);">
+      <div style="width:${PHONE_W}px; height:${PHONE_H}px; background:${t.phoneBezel ?? t.ink}; border-radius:41px; padding:${BEZEL}px; box-sizing:border-box; box-shadow:${shadow};">
         <div style="position:relative; width:100%; height:100%; border-radius:36px; overflow:hidden; background:#fff;">
           <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
           <div style="position:absolute; top:0; left:0; right:0; height:28px; display:flex; align-items:center; justify-content:space-between; padding:0 16px 0 17px;">
@@ -240,7 +241,16 @@ const phoneMockup = (t, cfg) => {
 };
 
 export function frontB(cfg, qrSvg) {
-  const t = theme(cfg);
+  // The cover can run its own palette (config.coverTheme) so slide 1 can go
+  // dark while the back keeps its cream how-to-start column.
+  const t = { ...theme(cfg), ...(cfg.coverTheme ?? {}) };
+
+  // On a dark cover the QR needs its own light field to scan from, so it sits
+  // on a padded tile rather than butting straight up against the background.
+  const qr = t.qrTile
+    ? `<div style="width:122px; height:122px; flex-shrink:0; box-sizing:border-box; padding:9px; border-radius:9px; background:${t.qrTile};">${qrSvg}</div>`
+    : `<div style="width:104px; height:104px; flex-shrink:0;">${qrSvg}</div>`;
+
   return shellB(t, `
   <div style="position:absolute; inset:0; display:flex; padding:46px 44px 40px; box-sizing:border-box; gap:26px;">
 
@@ -250,7 +260,7 @@ export function frontB(cfg, qrSvg) {
       <div style="margin-top:12px; font-family:${DISPLAY}; font-size:${cfg.accentSize ?? 27}px; line-height:1.05; font-weight:800; letter-spacing:-0.6px; color:${t.accent};">${cfg.headlineAccent}</div>
 
       <div style="margin-top:auto; display:flex; align-items:center; gap:20px;">
-        <div style="width:104px; height:104px; flex-shrink:0;">${qrSvg}</div>
+        ${qr}
         <div style="font-family:${DISPLAY}; font-size:19px; font-weight:800; line-height:1.2; letter-spacing:-0.2px;">${cfg.scanFront ?? 'Scan to<br>try it'}</div>
       </div>
 
