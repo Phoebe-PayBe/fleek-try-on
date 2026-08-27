@@ -85,6 +85,28 @@ node lib/verify-qr.mjs bliss-in-the-park # decodes the QR back out of the render
 and checks it resolves to that card's `url` — so a layout tweak that shrinks or
 clips the code fails loudly instead of shipping an unscannable card.
 
+```bash
+node lib/verify-print.mjs generic-cafe   # page size and image resolution
+```
+
+`verify-print` opens the print PDFs and checks what a printer's preflight
+checks: that every page measures exactly trim plus bleed, and that every raster
+image clears 300 dpi *as placed*. It walks the nested form XObjects Chromium
+wraps a page in and multiplies the matrices down the chain, so the number is
+the real one rather than the image's own pixel count. Run it before any upload:
+
+```
+generic-cafe-print-front-216x154mm.pdf  (1 page)
+  PASS  page 216.00 x 154.00mm (want 216 x 154)
+  PASS  2 images, lowest 538 dpi (want 300+) — 1170x2532px placed 55.3 x 119.3mm
+```
+
+Only two things on the card are raster at all — the phone screenshot and the
+logo. Type is live font, the QR is vector, and the flat colour is vector fill.
+Watch CSS `filter` in particular: Chromium rasterises a filtered layer at
+exactly 300 dpi, so the phone's glow used to land on the limit until it was
+rewritten as a plain radial gradient, which the PDF carries as a shading.
+
 `node lib/optimise-images.mjs <card> [maxWidth] [quality]` re-encodes anything
 dropped in `<card>/site/img/` as JPEG, so generated artwork doesn't land in the
 repo as 8 MB PNGs.
@@ -93,7 +115,8 @@ repo as 8 MB PNGs.
 
 | File | What it's for |
 | --- | --- |
-| `dist/<card>-print-<w>x<h>mm-bleed.pdf` | **Send this to the printer.** 2 pages (front, back) at the card's trim size plus 3 mm bleed on every edge. `generic-cafe` is A5 landscape, so 216 × 154 mm. |
+| `dist/<card>-print-front-<w>x<h>mm.pdf` / `-back-` | **Upload these.** One page each, at the card's trim size plus 3 mm bleed on every edge — instantprint's two-file upload wants a separate FRONT and BACK. `generic-cafe` is A5 landscape, so 216 × 154 mm. |
+| `dist/<card>-print-both-<w>x<h>mm.pdf` | The same two pages in one file, for a printer that asks for a single upload. |
 | `dist/<card>-print-guides.pdf` | The same two pages with the cut line (red, 3 mm in) and the safe zone (blue, 6 mm in) drawn on top, watermarked **PROOF · NOT FOR UPLOAD**. Check against this, upload the other one. |
 | `dist/<card>-both-slides.pdf` | **Both sides in one file, whole and uncropped** — the one to send someone who just wants to look at the card. 2 pages at the artboard's own ratio (148 × 103.6 mm), so nothing is trimmed into the bleed. |
 | `dist/front.png` / `back.png` | 2400 × 1680 previews (~400 dpi at A6). |

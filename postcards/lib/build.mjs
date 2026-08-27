@@ -137,7 +137,7 @@ await artPage.close();
 // 3. Print PDF: two pages, A6 + bleed, artwork scaled to cover.
 const PAPER = cfg.theme?.paper ?? '#FBF5EC';
 const artboard = html => html.split('<body>')[1].split('</body>')[0];
-const printHtml = `<!doctype html>
+const printShell = (...arts) => `<!doctype html>
 <html><head><meta charset="utf-8"><style>
 ${fontFaces()}
   @page { size: ${PAGE_W_MM}mm ${PAGE_H_MM}mm; margin: 0; }
@@ -150,30 +150,36 @@ ${fontFaces()}
   .page:last-child { break-after: auto; }
   .art { transform: scale(${SCALE.toFixed(5)}); transform-origin: center center; flex: 0 0 auto; }
 </style></head><body>
-  <div class="page"><div class="art">${artboard(frontHtml)}</div></div>
-  <div class="page"><div class="art">${artboard(backHtml)}</div></div>
+${arts.map(a => `  <div class="page"><div class="art">${a}</div></div>`).join('\n')}
 </body></html>`;
-writeFileSync(join(dist, 'print.html'), printHtml);
 
-const printPdf = join(dist, `${slug}-print-${TRIM_W_MM}x${TRIM_H_MM}mm-bleed.pdf`);
-const printPage = await browser.newPage();
-await printPage.goto(`file://${join(dist, 'print.html')}`);
-await printPage.evaluate(() => document.fonts.ready);
-await printPage.pdf({
-  path: printPdf,
-  width: IN(PAGE_W_MM),
-  height: IN(PAGE_H_MM),
-  printBackground: true,
-  margin: { top: '0', right: '0', bottom: '0', left: '0' },
-});
-await printPage.close();
-const [gotW, gotH] = exactPage(printPdf, PAGE_W_MM, PAGE_H_MM);
+// Printers ask for the sides as separate uploads as often as one file, so
+// build both: front on its own, back on its own, and the pair together.
+const SIZE = `${PAGE_W_MM}x${PAGE_H_MM}mm`;
+const renderPrint = async (name, html) => {
+  const file = join(dist, `${slug}-print-${name}-${SIZE}.pdf`);
+  const src = join(dist, `print-${name}.html`);
+  writeFileSync(src, html);
+  const page = await browser.newPage();
+  await page.goto(`file://${src}`);
+  await page.evaluate(() => document.fonts.ready);
+  await page.pdf({
+    path: file, width: IN(PAGE_W_MM), height: IN(PAGE_H_MM),
+    printBackground: true, margin: { top: '0', right: '0', bottom: '0', left: '0' },
+  });
+  await page.close();
+  return exactPage(file, PAGE_W_MM, PAGE_H_MM);
+};
+
+await renderPrint('front', printShell(artboard(frontHtml)));
+await renderPrint('back', printShell(artboard(backHtml)));
+const [gotW, gotH] = await renderPrint('both', printShell(artboard(frontHtml), artboard(backHtml)));
 
 // 3b. The same two pages with the printer's guides drawn on top: the cut line
 // at 3 mm in and the safe zone at 6 mm. A proof to check against, watermarked
 // so it can't be mistaken for the upload file.
 {
-  const guidesHtml = printHtml.replace(
+  const guidesHtml = printShell(artboard(frontHtml), artboard(backHtml)).replace(
     '</style></head><body>',
     `  .page { position: relative; }
   .guide { position: absolute; pointer-events: none; }
@@ -296,7 +302,7 @@ console.log(`Built ${slug}/dist — QR -> ${cfg.url}`);
 console.log(`  trim ${TRIM_W_MM}x${TRIM_H_MM}mm, page ${PAGE_W_MM}x${PAGE_H_MM}mm (+${BLEED_MM}mm bleed all round)`);
 console.log(`  artwork covers the page, ${overW.toFixed(1)}mm trimmed off each side and ${overH.toFixed(1)}mm off top and bottom`);
 console.log(`  nearest copy sits ${safeMm.toFixed(1)}mm inside the cut line (needs 3mm)`);
-console.log(`  print PDF page measures ${gotW.toFixed(2)} x ${gotH.toFixed(2)}mm`);
+console.log(`  print PDFs (front, back, both) page ${gotW.toFixed(2)} x ${gotH.toFixed(2)}mm`);
 if (Math.abs(gotW - PAGE_W_MM) > 0.02 || Math.abs(gotH - PAGE_H_MM) > 0.02) {
   console.warn('  WARNING: page size is off, the printer will rescale it');
 }

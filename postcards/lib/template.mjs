@@ -274,7 +274,7 @@ const phoneMockup = (t, cfg) => {
   // A dark card needs the screen to spill light, or the phone floats on it as
   // a flat cut-out. The halo sits behind the body and is blurred well past it.
   const glow = t.phoneGlow ? `
-      <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:${Math.round(PHONE_W * 2.1)}px; height:${Math.round(PHONE_H * 1.32)}px; border-radius:50%; background:${t.phoneGlow}; filter:blur(30px);"></div>` : '';
+      <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:${Math.round(PHONE_W * 2.1)}px; height:${Math.round(PHONE_H * 1.32)}px; border-radius:50%; background:${t.phoneGlow};"></div>` : '';
 
   return `
       <div style="position:relative; width:${PHONE_W}px; height:${PHONE_H}px;">
