@@ -24,6 +24,11 @@ The five handouts share a cover and a back; only the trade word in the note
 ("your timetable" / "your price list" / …), one panel bullet and the demo site
 behind the QR change between them.
 
+`generic-cafe` runs **layout B** (`layout: "b"` in config) — the design chosen
+for the first café batch: headline over an accent line with the QR low-left on
+the cover, and a full-bleed dark panel of inclusions beside a cream
+how-to-start column on the back. The other cards run the original layout.
+
 Cards come in two shapes, set by `variant` in config:
 
 - **`mailer`** (default) — postage box and address panel on the back, for post.

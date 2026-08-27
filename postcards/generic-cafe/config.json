@@ -1,44 +1,39 @@
 {
-  "business": "Generic cafe handout",
-  "businessFull": "Hand-out card for independent cafes with no website",
+  "business": "Cafe handout, first batch",
+  "businessFull": "Hand-out card for independent cafes",
   "variant": "handout",
-  "greeting": "",
-  "headline": "Hey,<br>we made you a website.",
-  "scanLine": "Scan to see it live",
-  "claimLine": "Scan to preview free website &rarr;",
-  "note": [
-    "Paste your Google Maps, Instagram, or Deliveroo link.",
-    "We&rsquo;ll extract your menu, photos, and opening times instantly and give you a <strong style=\"color:#16233F;\">free preview</strong>."
-  ],
-  "noteSize": 16,
+  "layout": "b",
+  "headline": "We&rsquo;ll build your<br>website.",
+  "headlineSize": 46,
+  "headlineAccent": "Free to preview.",
+  "accentSize": 27,
+  "scanFront": "Scan to<br>try it",
   "panel": {
-    "title": "Included for £30/mo",
+    "title": "Included for £30 a month",
     "items": [
-      "Direct WhatsApp orders and table bookings with zero commission",
-      "Recommended on Google and AI searches when locals ask where to eat",
-      "Menu and seasonal special updates done for you",
+      "Enquiries and bookings straight to your WhatsApp, no commission",
+      "Found on Google and recommended by AI search when locals look",
+      "Edit it yourself with AI, or leave the updates to us",
       "Cancel anytime, keep your domain, no setup fee"
-    ]
+    ],
+    "footnote": "Local business websites, built from what you already have. No setup fee."
   },
+  "rightNote": "Send us a link to Google, Facebook or Instagram. We&rsquo;ll turn your photos, services, prices and hours into a real website - <strong>free to preview</strong>.",
+  "scanBack": "Scan to<br>start yours",
+  "backSplit": 60,
   "theme": {
-    "paper": "#FCF9F3",
-    "ink": "#16233F",
+    "paper": "#F8F4EC",
+    "ink": "#2A1409",
     "accent": "#FA4500",
-    "body": "#42506B",
-    "hairline": "#DEE2EA",
-    "qrBorder": "#DDE2EB",
-    "logo": "rowbo-logo-orange.png",
-    "phoneBezel": "#16233F",
-    "phoneShadow": "rgba(22,35,63,0.30)",
-    "qrInk": "#000000"
+    "body": "#4A3629",
+    "qrInk": "#000000",
+    "qrBorder": "#E6DED2",
+    "hairline": "#E6DED2",
+    "logo": "rowbo-logo.png",
+    "phoneBezel": "#2A1409"
   },
   "url": "https://www.rowbo.dev/?build=1",
   "urlDisplay": "rowbo.dev",
   "price": "£30",
-  "senders": "Tom &amp; Phoebe",
-  "priceLine": false,
-  "greetingSize": 27,
-  "headlineSize": 35,
-  "noteGap": 22,
-  "signatureGap": 46
+  "senders": "Tom &amp; Phoebe"
 }

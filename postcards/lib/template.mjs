@@ -172,3 +172,93 @@ ${isHandout ? '' : `
 ${isHandout ? panelSide(cfg, t) : addressSide(cfg, t)}
   </div>`, '40px 40px 34px');
 }
+
+// ---------------------------------------------------------------------------
+// Layout B — the design we settled on for the first café batch.
+//
+// Front: headline over an accent line, QR low-left, phone right.
+// Back:  a full-bleed dark panel of what's included, and a cream column that
+//        says how to start. No postage furniture on either side.
+// ---------------------------------------------------------------------------
+
+const shellB = (t, inner) => `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+${fontFaces()}
+  body { margin: 0; }
+</style>
+</head>
+<body>
+<div style="position: relative; overflow: hidden; width: ${W}px; height: ${H}px; background: ${t.paper}; font-family: ${BODY}; color: ${t.ink}; box-sizing: border-box;">
+${inner}
+</div>
+</body>
+</html>`;
+
+export function frontB(cfg, qrSvg) {
+  const t = theme(cfg);
+  return shellB(t, `
+  <div style="position:absolute; inset:0; display:flex; padding:46px 44px 40px; box-sizing:border-box; gap:26px;">
+
+    <!-- LEFT: the offer -->
+    <div style="flex:1.06; display:flex; flex-direction:column;">
+      <div style="font-family:${DISPLAY}; font-size:${cfg.headlineSize ?? 46}px; line-height:0.98; font-weight:800; letter-spacing:-1.4px;">${cfg.headline}</div>
+      <div style="margin-top:12px; font-family:${DISPLAY}; font-size:${cfg.accentSize ?? 27}px; line-height:1.05; font-weight:800; letter-spacing:-0.6px; color:${t.accent};">${cfg.headlineAccent}</div>
+
+      <div style="margin-top:auto; display:flex; align-items:center; gap:20px;">
+        <div style="width:104px; height:104px; flex-shrink:0;">${qrSvg}</div>
+        <div style="font-family:${DISPLAY}; font-size:19px; font-weight:800; line-height:1.2; letter-spacing:-0.2px;">${cfg.scanFront ?? 'Scan to<br>try it'}</div>
+      </div>
+
+      <div style="margin-top:30px;"><img src="${ASSETS}/${t.logo}" style="height:23px; display:block;"></div>
+    </div>
+
+    <!-- RIGHT: the phone -->
+    <div style="flex:0.94; display:flex; align-items:center; justify-content:center;">
+      <div style="width:268px; height:468px; background:${t.phoneBezel ?? t.ink}; border-radius:34px; padding:9px; box-sizing:border-box;">
+        <div style="width:100%; height:100%; border-radius:26px; overflow:hidden; background:#fff;">
+          <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
+        </div>
+      </div>
+    </div>
+  </div>`);
+}
+
+export function backB(cfg, qrSvg) {
+  const t = theme(cfg);
+  const p = cfg.panel;
+  const split = cfg.backSplit ?? 60;
+
+  return shellB(t, `
+  <!-- LEFT: full-bleed dark panel -->
+  <div style="position:absolute; left:0; top:0; bottom:0; width:${split}%; background:${t.ink}; color:#fff; padding:44px 40px 34px; box-sizing:border-box; display:flex; flex-direction:column;">
+    <div style="font-family:${DISPLAY}; font-size:25px; font-weight:800; letter-spacing:-0.4px;">${p.title}</div>
+
+    <div style="margin-top:26px; display:flex; flex-direction:column; gap:19px;">
+${p.items.map(item => `      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="width:17px; height:17px; border-radius:50%; background:${t.accent}; flex-shrink:0; margin-top:2px; position:relative;">
+          <div style="position:absolute; left:5.5px; top:3.5px; width:4px; height:7.5px; border:solid #fff; border-width:0 1.8px 1.8px 0; transform:rotate(45deg);"></div>
+        </div>
+        <div style="font-size:15px; line-height:1.45; color:#F2ECE4;">${item}</div>
+      </div>`).join('\n')}
+    </div>
+
+${p.footnote ? `    <div style="margin-top:auto; font-size:11.5px; line-height:1.5; color:#9A897B;">${p.footnote}</div>` : ''}
+  </div>
+
+  <!-- RIGHT: how to start -->
+  <div style="position:absolute; right:0; top:0; bottom:0; width:${100 - split}%; padding:44px 38px 34px; box-sizing:border-box; display:flex; flex-direction:column;">
+    <img src="${ASSETS}/${t.logo}" style="height:24px; display:block;">
+
+    <div style="margin-top:26px; font-size:15px; line-height:1.6; color:${t.ink};">${cfg.rightNote}</div>
+
+    <div style="margin-top:30px; display:flex; align-items:center; gap:16px;">
+      <div style="width:92px; height:92px; flex-shrink:0;">${qrSvg}</div>
+      <div style="font-family:${DISPLAY}; font-size:16px; font-weight:800; line-height:1.2; letter-spacing:-0.2px;">${cfg.scanBack ?? 'Scan to<br>start yours'}</div>
+    </div>
+
+    <div style="margin-top:auto; font-size:12.5px; color:#8A7A6E;">- ${cfg.senders} &middot; ${cfg.urlDisplay}</div>
+  </div>`);
+}

@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import QRCode from 'qrcode';
 import { chromium } from 'playwright';
-import { front, back, fontFaces, W, H } from './template.mjs';
+import { front, back, frontB, backB, fontFaces, W, H } from './template.mjs';
 
 const slug = process.argv[2];
 if (!slug) {
@@ -68,8 +68,9 @@ await phone.screenshot({ path: join(dist, 'site-mobile.jpg'), quality: 92, type:
 await phone.close();
 
 // 2. Artboards.
-const frontHtml = front(cfg, qrSvg);
-const backHtml = back(cfg, qrSvg);
+const layoutB = cfg.layout === 'b';
+const frontHtml = (layoutB ? frontB : front)(cfg, qrSvg);
+const backHtml = (layoutB ? backB : back)(cfg, qrSvg);
 writeFileSync(join(dist, 'front.html'), frontHtml);
 writeFileSync(join(dist, 'back.html'), backHtml);
 
