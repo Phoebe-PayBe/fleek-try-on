@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bloom &amp; Bean · speciality coffee and all-day brunch</title>
+<title>Coffee House · speciality coffee and all-day brunch</title>
 <style>
   @font-face { font-family: Inter; font-style: normal; font-weight: 400;
     src: url('../../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: block; }
@@ -18,17 +18,16 @@
   @font-face { font-family: 'Source Serif 4'; font-style: italic; font-weight: 200 900;
     src: url('../../assets/fonts/source-serif-4-italic.woff2') format('woff2'); font-display: block; }
 
-  /* Cool off-white, forest green, one brass button. The copy is the cafe's;
-     the design is a wide serif opener over a full-bleed band of photography,
-     so the page reads as a magazine rather than a stack of cards. */
+  /* Warm cream and near-black, and nothing else: the register speciality
+     coffee brands print in. The design is a wide serif opener over a
+     full-bleed band of photography, so the page reads as a magazine rather
+     than a stack of cards. */
   :root {
-    --paper: #F7F8F6;
-    --paper-2: #EDEFEB;
-    --forest: #1B3226;
-    --brass: #8A7530;
-    --ink: #161815;
-    --muted: #6B7069;
-    --line: #E2E5DF;
+    --paper: #F6F2E9;
+    --paper-2: #EDE8DC;
+    --ink: #12100D;
+    --muted: #6E685E;
+    --line: #E3DDD0;
   }
   * { box-sizing: border-box; }
   body {
@@ -43,19 +42,19 @@
     padding: 58px 20px 13px; border-bottom: 1px solid var(--line);
   }
   .word {
-    font-family: 'Source Serif 4', Georgia, serif; font-weight: 600;
-    font-variation-settings: 'opsz' 14; font-size: 12.5px;
-    letter-spacing: 2.6px; color: var(--forest);
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 700;
+    font-variation-settings: 'opsz' 32; font-size: 21px;
+    letter-spacing: -0.6px; color: var(--ink);
   }
   .burger { display: flex; flex-direction: column; gap: 5px; }
-  .burger span { width: 22px; height: 1.6px; background: var(--forest); border-radius: 2px; }
+  .burger span { width: 22px; height: 1.6px; background: var(--ink); border-radius: 2px; }
 
   /* ---- opener ---------------------------------------------------------- */
   .intro { padding: 30px 20px 0; }
   h1 {
     font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
     font-variation-settings: 'opsz' 60; font-size: 45px; line-height: 0.98;
-    letter-spacing: -1.4px; color: var(--forest); margin: 0 0 16px;
+    letter-spacing: -1.4px; color: var(--ink); margin: 0 0 16px;
   }
   .lead {
     font-size: 14.5px; line-height: 1.62; color: var(--muted);
@@ -68,8 +67,8 @@
     text-decoration: none; font-size: 11px; font-weight: 700;
     letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 18px;
   }
-  .btn-brass { background: var(--brass); color: #FCFDFB; }
-  .btn-ghost { border: 1px solid var(--line); color: var(--forest); background: #FCFDFB; }
+  .btn-ink { background: var(--ink); color: var(--paper); }
+  .btn-ghost { border: 1px solid #CFC7B6; color: var(--ink); background: transparent; }
   .btn svg { display: block; }
 
   /* ---- full-bleed band of photography ---------------------------------- */
@@ -85,7 +84,7 @@
   h2 {
     font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
     font-variation-settings: 'opsz' 40; font-size: 28px; letter-spacing: -0.7px;
-    color: var(--forest); margin: 0 0 14px;
+    color: var(--ink); margin: 0 0 14px;
   }
 
   .menu { list-style: none; margin: 0; padding: 0; }
@@ -97,23 +96,23 @@
     font-family: 'Source Serif 4', Georgia, serif; font-weight: 400;
     font-variation-settings: 'opsz' 18; font-size: 17px;
   }
-  .menu .fill { flex: 1; border-bottom: 1px dotted #D3D8CF; }
+  .menu .fill { flex: 1; border-bottom: 1px dotted #D5CEBE; }
   .menu .price { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 
   .order {
-    margin: 34px 0 0; background: var(--forest); color: #CFDCD2;
+    margin: 34px 0 0; background: var(--ink); color: #C6BFB2;
     padding: 30px 20px 28px;
   }
   .order h3 {
     font-family: 'Source Serif 4', Georgia, serif; font-weight: 500;
     font-variation-settings: 'opsz' 32; font-size: 25px; letter-spacing: -0.5px;
-    margin: 0 0 9px; color: #FBFDFA;
+    margin: 0 0 9px; color: var(--paper);
   }
   .order p { font-size: 13px; line-height: 1.6; margin: 0 0 18px; }
   .order .r { display: flex; gap: 9px; }
   .order .r .btn { flex: 1; padding: 13px 8px; }
-  .order .btn-cream { background: #FBFDFA; color: var(--forest); }
-  .order .btn-line { border: 1px solid rgba(251,253,250,0.4); color: #FBFDFA; }
+  .order .btn-cream { background: var(--paper); color: var(--ink); }
+  .order .btn-line { border: 1px solid rgba(246,242,233,0.38); color: var(--paper); }
 
   .hours div {
     display: flex; justify-content: space-between; font-size: 14px;
@@ -128,16 +127,16 @@
     padding: 28px 20px 32px; font-size: 11.5px; line-height: 1.7; color: var(--muted);
   }
   footer .w {
-    font-family: 'Source Serif 4', Georgia, serif; font-weight: 600;
-    font-variation-settings: 'opsz' 14; font-size: 12.5px; letter-spacing: 2.6px;
-    color: var(--forest); display: block; margin-bottom: 7px;
+    font-family: 'Source Serif 4', Georgia, serif; font-weight: 700;
+    font-variation-settings: 'opsz' 26; font-size: 18px; letter-spacing: -0.5px;
+    color: var(--ink); display: block; margin-bottom: 7px;
   }
 </style>
 </head>
 <body>
 
 <div class="bar">
-  <div class="word">BLOOM &amp; BEAN</div>
+  <div class="word">Coffee House.</div>
   <div class="burger"><span></span><span></span><span></span></div>
 </div>
 
@@ -145,7 +144,7 @@
   <h1>Crafted with intent.</h1>
   <p class="lead">Dedicated to sourcing and roasting exceptional specialty coffee from around the world.</p>
   <div class="cta">
-    <a class="btn btn-brass" href="#menu">View menu</a>
+    <a class="btn btn-ink" href="#menu">View menu</a>
     <a class="btn btn-ghost" href="#">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 2a10 10 0 0 0-8.7 15L2 22l5.2-1.3A10 10 0 1 0 12 2Zm5.4 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1a12 12 0 0 1-5.6-4.6c-.4-.6-.9-1.5-.9-2.4 0-.9.5-1.4.7-1.6.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.4l.7 1.7c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.3.5.8 1.2 1.4 1.7.7.6 1.3.8 1.6.9.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.6.8c.3.1.4.2.5.3v1Z"/>
@@ -197,7 +196,7 @@
 </section>
 
 <footer>
-  <span class="w">BLOOM &amp; BEAN</span>
+  <span class="w">Coffee House.</span>
   A demo site by rowbo.dev and yours would carry your name.
 </footer>
 

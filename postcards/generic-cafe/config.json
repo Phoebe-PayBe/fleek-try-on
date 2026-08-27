@@ -38,7 +38,7 @@
     "accent": "#FA4500",
     "logo": "rowbo-logo-on-dark.png",
     "qrTile": "#FFFFFF",
-    "phoneShadow": "0 26px 54px rgba(0,0,0,0.55), 0 6px 16px rgba(0,0,0,0.40)",
+    "phoneShadow": "0 28px 56px rgba(0,0,0,0.55), 0 8px 18px rgba(0,0,0,0.45), 0 2px 4px rgba(0,0,0,0.50)",
     "phoneGlow": "radial-gradient(closest-side, rgba(255,244,228,0.34) 0%, rgba(255,206,150,0.17) 46%, rgba(255,150,70,0.06) 70%, rgba(255,140,60,0) 100%)"
   },
   "url": "https://www.rowbo.dev/?build=1",

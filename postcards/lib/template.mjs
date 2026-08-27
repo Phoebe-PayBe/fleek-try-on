@@ -249,10 +249,18 @@ const phoneMockup = (t, cfg) => {
   // very edge that throws a bright highlight, and a brushed band behind it
   // that stays darker. One flat grey rectangle is what makes a mockup read as
   // a drawing rather than a photograph.
-  const chamfer = t.phoneChamfer ?? `linear-gradient(122deg,
+  // A radial catch of light at the top-left corner over the brushed sweep,
+  // the way a polished edge picks up whatever is lighting the room.
+  const chamfer = t.phoneChamfer ?? `radial-gradient(120% 80% at 16% 4%, rgba(255,255,255,0.60) 0%, rgba(255,255,255,0) 46%),
+    linear-gradient(122deg,
       #E9E5DF 0%, #9B958D 8%, #FFFDF9 18%, #7D776F 32%, #D6D1C9 46%,
       #6E6960 60%, #F2EEE8 76%, #8A847B 90%, #DAD5CD 100%)`;
-  const rail = t.phoneRail ?? `linear-gradient(122deg,
+  // The top and bottom of the band face away from the light and go almost
+  // black; the sides stay brushed. Two layers, dark shading over the sweep.
+  const rail = t.phoneRail ?? `linear-gradient(180deg,
+      rgba(0,0,0,0.55) 0%, rgba(255,255,255,0.10) 3.5%, rgba(0,0,0,0) 12%,
+      rgba(0,0,0,0) 88%, rgba(255,255,255,0.07) 96.5%, rgba(0,0,0,0.55) 100%),
+    linear-gradient(122deg,
       #8E887F 0%, #3B3733 10%, #756F67 22%, #2B2825 38%,
       #4C4842 52%, #232120 68%, #7B756D 84%, #332F2C 96%, #635E58 100%)`;
 
@@ -273,7 +281,7 @@ const phoneMockup = (t, cfg) => {
 ${glow}
         <div style="position:absolute; inset:0; border-radius:${R_OUT}px; background:${chamfer}; padding:${CHAMFER}px; box-sizing:border-box; box-shadow:${shadow};">
 ${buttons}
-          <div style="width:100%; height:100%; border-radius:${R_RAIL}px; background:${rail}; padding:${RAIL}px; box-sizing:border-box;">
+          <div style="width:100%; height:100%; border-radius:${R_RAIL}px; background:${rail}; padding:${RAIL}px; box-sizing:border-box; box-shadow:inset 0 0 0 0.5px rgba(255,255,255,0.13);">
             <div style="width:100%; height:100%; border-radius:${R_BEZ}px; background:#08080A; padding:${BEZEL}px; box-sizing:border-box; box-shadow:inset 0 0 2px rgba(0,0,0,0.9);">
               <div style="position:relative; width:100%; height:100%; border-radius:${R_SCR}px; overflow:hidden; background:#fff;">
                 <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
@@ -291,7 +299,7 @@ ${buttons}
                 <!-- glass: one soft sweep off the top-left corner, kept light
                      enough that the site underneath stays readable -->
                 <div style="position:absolute; inset:0; background:linear-gradient(126deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.10) 13%, rgba(255,255,255,0) 30%);"></div>
-                <div style="position:absolute; inset:0; border-radius:${R_SCR}px; box-shadow:inset 0 0 0 0.6px rgba(255,255,255,0.16);"></div>
+                <div style="position:absolute; inset:0; border-radius:${R_SCR}px; box-shadow:inset 0 0 0 0.6px rgba(255,255,255,0.16), inset 0 0 9px rgba(20,16,12,0.16);"></div>
               </div>
             </div>
           </div>
