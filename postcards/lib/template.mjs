@@ -197,6 +197,48 @@ ${inner}
 </body>
 </html>`;
 
+
+// iPhone 17 mockup, drawn to the real device: 149.6 x 71.5 mm body (2.092:1),
+// a display corner radius of about 13.9 mm, and the ~1.5 mm uniform bezel.
+// At 224 px wide that is 469 px tall, a 43 px outer radius and a 5 px bezel.
+const PHONE_W = 214;
+const PHONE_H = Math.round(PHONE_W * 149.6 / 71.5);   // 448
+const BEZEL = 5;
+
+const statusIcons = ink => `
+        <svg width="12" height="8" viewBox="0 0 12 8" fill="${ink}" aria-hidden="true">
+          <rect x="0" y="5.4" width="2" height="2.6" rx="0.6"/>
+          <rect x="3.2" y="3.9" width="2" height="4.1" rx="0.6"/>
+          <rect x="6.4" y="2.2" width="2" height="5.8" rx="0.6"/>
+          <rect x="9.6" y="0.4" width="2" height="7.6" rx="0.6"/>
+        </svg>
+        <svg width="11" height="8" viewBox="0 0 11 8" fill="none" stroke="${ink}" stroke-width="1.1" stroke-linecap="round" aria-hidden="true">
+          <path d="M1 2.6a6.6 6.6 0 0 1 9 0"/>
+          <path d="M2.9 4.7a3.9 3.9 0 0 1 5.2 0"/>
+          <circle cx="5.5" cy="6.9" r="0.8" fill="${ink}" stroke="none"/>
+        </svg>
+        <svg width="18" height="8" viewBox="0 0 18 8" fill="none" aria-hidden="true">
+          <rect x="0.5" y="0.5" width="14.6" height="7" rx="2.2" stroke="${ink}" stroke-opacity="0.45"/>
+          <rect x="2" y="2" width="10.4" height="4" rx="1.1" fill="${ink}"/>
+          <path d="M16.4 3.1v1.8a1.6 1.6 0 0 0 0-1.8Z" fill="${ink}" fill-opacity="0.5"/>
+        </svg>`;
+
+const phoneMockup = (t, cfg) => {
+  const ink = cfg.statusInk ?? '#1B1B1B';
+  return `
+      <div style="width:${PHONE_W}px; height:${PHONE_H}px; background:${t.phoneBezel ?? t.ink}; border-radius:41px; padding:${BEZEL}px; box-sizing:border-box; box-shadow:0 18px 40px rgba(42,20,9,0.20);">
+        <div style="position:relative; width:100%; height:100%; border-radius:36px; overflow:hidden; background:#fff;">
+          <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
+          <div style="position:absolute; top:0; left:0; right:0; height:28px; display:flex; align-items:center; justify-content:space-between; padding:0 16px 0 17px;">
+            <div style="font-size:10px; font-weight:700; letter-spacing:-0.1px; color:${ink}; font-variant-numeric:tabular-nums;">9:41</div>
+            <div style="display:flex; align-items:center; gap:4px;">${statusIcons(ink)}
+            </div>
+          </div>
+          <div style="position:absolute; top:7px; left:50%; transform:translateX(-50%); width:62px; height:19px; border-radius:999px; background:#080808;"></div>
+        </div>
+      </div>`;
+};
+
 export function frontB(cfg, qrSvg) {
   const t = theme(cfg);
   return shellB(t, `
@@ -216,12 +258,8 @@ export function frontB(cfg, qrSvg) {
     </div>
 
     <!-- RIGHT: the phone -->
-    <div style="flex:0.94; display:flex; align-items:center; justify-content:center;">
-      <div style="width:268px; height:468px; background:${t.phoneBezel ?? t.ink}; border-radius:34px; padding:9px; box-sizing:border-box;">
-        <div style="width:100%; height:100%; border-radius:26px; overflow:hidden; background:#fff;">
-          <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
-        </div>
-      </div>
+    <div style="flex:0.9; display:flex; align-items:center; justify-content:center;">
+${phoneMockup(t, cfg)}
     </div>
   </div>`);
 }
