@@ -199,11 +199,27 @@ ${inner}
 
 
 // iPhone 17 mockup, drawn to the real device: 149.6 x 71.5 mm body (2.092:1),
-// a display corner radius of about 13.9 mm, and the ~1.5 mm uniform bezel.
-// At 224 px wide that is 469 px tall, a 43 px outer radius and a 5 px bezel.
+// a display corner radius of about 13.9 mm, a ~1 mm metal rail and a ~1.3 mm
+// black bezel inside it. At 214 px wide the phone is 448 px tall, so a
+// millimetre is almost exactly 3 px and the rail and bezel land at 3 and 4.
 const PHONE_W = 214;
 const PHONE_H = Math.round(PHONE_W * 149.6 / 71.5);   // 448
-const BEZEL = 5;
+const RAIL = 3;                                       // the aluminium edge
+const BEZEL = 4;                                      // the black border inside it
+const R_OUT = 41;
+const R_BEZ = R_OUT - RAIL;
+const R_SCR = R_BEZ - BEZEL;
+
+// The side buttons, as fractions of the body height, from the real device:
+// action button and volume rocker on the left, side button and camera control
+// on the right.
+const BUTTONS = [
+  ['left', 0.205, 0.050],
+  ['left', 0.282, 0.076],
+  ['left', 0.376, 0.076],
+  ['right', 0.313, 0.116],
+  ['right', 0.470, 0.066],
+];
 
 const statusIcons = ink => `
         <svg width="12" height="8" viewBox="0 0 12 8" fill="${ink}" aria-hidden="true">
@@ -226,16 +242,45 @@ const statusIcons = ink => `
 const phoneMockup = (t, cfg) => {
   const ink = cfg.statusInk ?? '#1B1B1B';
   const shadow = t.phoneShadow ?? '0 18px 40px rgba(42,20,9,0.20)';
+
+  // Brushed aluminium: the rail catches light on the corners and goes dark
+  // where it turns away, which is what stops a flat dark rectangle reading as
+  // a sticker on a dark card.
+  const rail = t.phoneRail ?? `linear-gradient(122deg,
+      #9A948C 0%, #46423E 9%, #7E7871 21%, #332F2C 38%,
+      #514C47 52%, #2C2926 68%, #837D76 84%, #3A3733 96%, #6E6862 100%)`;
+  const buttonFace = t.phoneButton ?? 'linear-gradient(180deg, #7A746D, #423E3A 55%, #6B655F)';
+
+  const buttons = BUTTONS.map(([side, top, height]) => `
+        <div style="position:absolute; ${side}:-2px; top:${Math.round(PHONE_H * top)}px; width:3px; height:${Math.round(PHONE_H * height)}px; border-radius:2px; background:${buttonFace};"></div>`).join('');
+
+  // A dark card needs the screen to spill light, or the phone floats on it as
+  // a flat cut-out. The halo sits behind the body and is blurred well past it.
+  const glow = t.phoneGlow ? `
+      <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:${Math.round(PHONE_W * 2.1)}px; height:${Math.round(PHONE_H * 1.32)}px; border-radius:50%; background:${t.phoneGlow}; filter:blur(30px);"></div>` : '';
+
   return `
-      <div style="width:${PHONE_W}px; height:${PHONE_H}px; background:${t.phoneBezel ?? t.ink}; border-radius:41px; padding:${BEZEL}px; box-sizing:border-box; box-shadow:${shadow};">
-        <div style="position:relative; width:100%; height:100%; border-radius:36px; overflow:hidden; background:#fff;">
-          <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
-          <div style="position:absolute; top:0; left:0; right:0; height:28px; display:flex; align-items:center; justify-content:space-between; padding:0 16px 0 17px;">
-            <div style="font-size:10px; font-weight:700; letter-spacing:-0.1px; color:${ink}; font-variant-numeric:tabular-nums;">9:41</div>
-            <div style="display:flex; align-items:center; gap:4px;">${statusIcons(ink)}
+      <div style="position:relative; width:${PHONE_W}px; height:${PHONE_H}px;">
+${glow}
+        <div style="position:absolute; inset:0; border-radius:${R_OUT}px; background:${rail}; padding:${RAIL}px; box-sizing:border-box; box-shadow:${shadow};">
+${buttons}
+          <div style="width:100%; height:100%; border-radius:${R_BEZ}px; background:#08080A; padding:${BEZEL}px; box-sizing:border-box;">
+            <div style="position:relative; width:100%; height:100%; border-radius:${R_SCR}px; overflow:hidden; background:#fff;">
+              <img src="site-mobile.jpg" style="width:100%; height:100%; object-fit:cover; object-position:top; display:block;">
+              <div style="position:absolute; top:0; left:0; right:0; height:28px; display:flex; align-items:center; justify-content:space-between; padding:0 15px 0 16px;">
+                <div style="font-size:10px; font-weight:700; letter-spacing:-0.1px; color:${ink}; font-variant-numeric:tabular-nums;">9:41</div>
+                <div style="display:flex; align-items:center; gap:4px;">${statusIcons(ink)}
+                </div>
+              </div>
+              <div style="position:absolute; top:7px; left:50%; transform:translateX(-50%); width:62px; height:19px; border-radius:999px; background:#060606;"></div>
+              <!-- home indicator -->
+              <div style="position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:86px; height:4px; border-radius:3px; background:rgba(18,16,14,0.32);"></div>
+              <!-- glass: one soft sweep off the top-left corner, kept light
+                   enough that the site underneath stays readable -->
+              <div style="position:absolute; inset:0; background:linear-gradient(126deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.10) 13%, rgba(255,255,255,0) 30%);"></div>
+              <div style="position:absolute; inset:0; border-radius:${R_SCR}px; box-shadow:inset 0 0 0 0.6px rgba(255,255,255,0.16);"></div>
             </div>
           </div>
-          <div style="position:absolute; top:7px; left:50%; transform:translateX(-50%); width:62px; height:19px; border-radius:999px; background:#080808;"></div>
         </div>
       </div>`;
 };

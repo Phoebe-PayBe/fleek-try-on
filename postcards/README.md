@@ -33,8 +33,9 @@ Layout B's cover takes its own palette from `coverTheme`, which overrides
 `theme` on slide 1 only: the café card runs dark espresso paper, white type,
 rowbo orange for the accent line, the white-wordmark logo and a white tile
 under the QR so it still scans. `coverTheme.phoneShadow` carries the phone's
-drop shadow and hairline edge, since a dark bezel needs defining against a
-dark card.
+drop shadow and `coverTheme.phoneGlow` the halo of screen light behind it,
+without which the phone reads as a flat cut-out on a dark card. `phoneRail`
+and `phoneButton` override the aluminium edge and the side buttons.
 
 Cards come in two shapes, set by `variant` in config:
 
